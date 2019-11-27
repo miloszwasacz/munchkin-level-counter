@@ -14,15 +14,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
 
 public class MainActivity extends AppCompatActivity
 {
 
     FloatingActionButton floatingActionButton;
     PlayerAdapter adapter;
+    List<Player> list;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener()
@@ -57,10 +60,24 @@ public class MainActivity extends AppCompatActivity
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-        final List<Player> list = new ArrayList<Player>();
-        list.add(new Player("Gracz 1", 1));
-        list.add(new Player("Gracz 2", 1));
-        list.add(new Player("Gracz 3", 1));
+        list = new ArrayList<Player>();
+
+
+        if(savedInstanceState == null)
+        {
+            //Tworzenie domyślnej listy
+            list.add(new Player("Gracz 1", 1));
+            list.add(new Player("Gracz 2", 1));
+            list.add(new Player("Gracz 3", 1));
+        }
+        else
+        {
+            //Przywracanie stanu poprzedniego listy graczy
+            Gson gson = new Gson();
+            String json = savedInstanceState.getString("ListaGraczy");
+            Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
+            list = new Gson().fromJson(json, listType);
+        }
 
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -176,19 +193,17 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    //Zapisywanie stanu listy graczy
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
         super.onSaveInstanceState(savedInstanceState);
         // Save UI state changes to the savedInstanceState.
         // This bundle will be passed to onCreate if the process is
         // killed and restarted.
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
 
-        /*
-        savedInstanceState.putBoolean("MyBoolean", true);
-        savedInstanceState.putDouble("myDouble", 1.9);
-        savedInstanceState.putInt("MyInt", 1);
-        savedInstanceState.putString("MyString", "Welcome back to Android");
-        */
-        // etc.
+        savedInstanceState.putString("ListaGraczy", json);
     }
 }
