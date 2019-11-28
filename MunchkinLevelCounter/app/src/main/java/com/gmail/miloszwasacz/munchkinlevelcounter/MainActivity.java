@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
+import android.content.SharedPreferences;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton floatingActionButton;
     PlayerAdapter adapter;
     List<Player> list;
+    String SharedPrefs;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener()
@@ -79,6 +83,33 @@ public class MainActivity extends AppCompatActivity
             list = new Gson().fromJson(json, listType);
         }
 
+        setPlayerAdapter();
+
+        //Zmiana guzika: tryb edycji/dodawanie gracza
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        floatingActionButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (adapter.editMode)
+                {
+                    list.add(new Player("Nowy gracz"));
+                    adapter.notifyItemInserted(list.size() - 1);
+                } else
+                {
+                    floatingActionButton.setImageResource(R.drawable.ic_baseline_add_white_24dp);
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    adapter.editMode = true;
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    //RecyclerView i PlayerAdapter
+    public void setPlayerAdapter()
+    {
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -142,30 +173,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
         recyclerView.setAdapter(adapter);
-
-        //Zmiana guzika: tryb edycji/dodawanie gracza
-        floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-        floatingActionButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if (adapter.editMode)
-                {
-                    list.add(new Player("Nowy gracz"));
-                    adapter.notifyItemInserted(list.size() - 1);
-                } else
-                {
-                    floatingActionButton.setImageResource(R.drawable.ic_baseline_add_white_24dp);
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                    adapter.editMode = true;
-                    adapter.notifyDataSetChanged();
-                }
-            }
-        });
     }
 
-    //Strzałeczka w tył
+    //Strzałeczka w tył (tryb edycji)
     @Override
     public void onBackPressed()
     {
@@ -180,30 +190,73 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-    //Strzałeczka w tył
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        int id = item.getItemId();
-
-        if(id == android.R.id.home)
-        {
-            onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     //Zapisywanie stanu listy graczy
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState)
     {
         super.onSaveInstanceState(savedInstanceState);
-        // Save UI state changes to the savedInstanceState.
-        // This bundle will be passed to onCreate if the process is
-        // killed and restarted.
         Gson gson = new Gson();
         String json = gson.toJson(list);
 
         savedInstanceState.putString("ListaGraczy", json);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    //Guziki na app barze
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            //Zapisanie rozgrywki
+            case R.id.action_save:
+                Gson gson = new Gson();
+                String json = gson.toJson(list);
+
+                SharedPreferences.Editor editor = getSharedPreferences(SharedPrefs, MODE_PRIVATE).edit();
+                editor.putString("ListaGraczyPrefs", json);
+                editor.commit();
+                Toast.makeText(this, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show();
+                return true;
+
+            //Wczytanie ostatniej rozgrywki
+            case R.id.action_folder:
+                SharedPreferences prefs = getSharedPreferences(SharedPrefs, MODE_PRIVATE);
+                String listaGraczy = prefs.getString("ListaGraczyPrefs", null);
+                Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
+                list = new Gson().fromJson(listaGraczy, listType);
+                setPlayerAdapter();
+
+                Toast.makeText(this, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show();
+                return true;
+
+            //Przywrócenie stanu domyślnego
+            case R.id.action_clear:
+                list = new ArrayList<Player>();
+                list.add(new Player("Gracz 1", 1));
+                list.add(new Player("Gracz 2", 1));
+                list.add(new Player("Gracz 3", 1));
+                setPlayerAdapter();
+
+                Toast.makeText(this, "Przywrócono domyśnych graczy", Toast.LENGTH_SHORT).show();
+                return true;
+
+
+            //Strzałeczka "back"
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
 }

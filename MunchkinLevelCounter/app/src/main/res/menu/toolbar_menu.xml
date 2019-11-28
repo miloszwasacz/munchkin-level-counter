@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_save_white_24dp"
+        android:title="@string/title_save"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_folder"
+        android:icon="@drawable/ic_folder_white_24dp"
+        android:title="@string/title_load"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_clear"
+        android:icon="@drawable/ic_delete_white_24dp"
+        android:title="@string/title_clear"
+        app:showAsAction="always" />
+
+</menu>

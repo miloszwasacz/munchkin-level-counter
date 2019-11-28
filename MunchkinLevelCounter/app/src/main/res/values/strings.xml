@@ -3,4 +3,7 @@
     <string name="title_counter">Licznik</string>
     <string name="title_kill_o_meter">Kill-O-Meter</string>
     <string name="title_settings">Ustawienia</string>
+    <string name="title_save">Zapisz</string>
+    <string name="title_load">Wczytaj</string>
+    <string name="title_clear">Wyczysc</string>
 </resources>
