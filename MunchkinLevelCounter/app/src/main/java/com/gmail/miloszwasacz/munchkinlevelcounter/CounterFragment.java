@@ -1,84 +1,49 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter;
 
-import android.content.DialogInterface;
-import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.reflect.Type;
-import com.google.gson.reflect.TypeToken;
+import android.view.Menu;
 import android.content.SharedPreferences;
-import android.widget.Toast;
-import androidx.fragment.app.Fragment;
 
-public class MainActivity extends AppCompatActivity
+public class CounterFragment extends Fragment
 {
     FloatingActionButton floatingActionButton;
     PlayerAdapter adapter;
     List<Player> list;
     String SharedPrefs;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener()
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item)
-        {
-            Fragment fragment = null;
-            switch (item.getItemId())
-            {
-                case R.id.navigation_counter:
-                    fragment = new CounterFragment();
-                    break;
-                case R.id.navigation_kill_o_meter:
-                    fragment = new KillOMeterFragment();
-                    break;
-                case R.id.navigation_settings:
-                    fragment = new SettingsFragment();
-                    break;
-            }
-            return loadFragment(fragment);
-        }
-    };
-
-    private boolean loadFragment(Fragment fragment)
-    {
-        if (fragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit();
-            return true;
-        }
-        return false;
+        return inflater.inflate(R.layout.fragment_counter, null);
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public void onActivityCreated (Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
-        loadFragment(new CounterFragment());
+        super.onActivityCreated(savedInstanceState);
 
         list = new ArrayList<Player>();
 
@@ -101,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         setPlayerAdapter();
 
         //Zmiana guzika: tryb edycji/dodawanie gracza
-        floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        floatingActionButton = (FloatingActionButton) getView().findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -125,9 +90,9 @@ public class MainActivity extends AppCompatActivity
     //RecyclerView i PlayerAdapter
     public void setPlayerAdapter()
     {
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        final RecyclerView recyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         adapter = new PlayerAdapter(list);
         adapter.setOnItemClickListener(new PlayerAdapter.OnItemClickListener()
         {
@@ -139,7 +104,7 @@ public class MainActivity extends AppCompatActivity
                 editText.setText(list.get(position).name);
 
                 //Okienko do edycji poszczególnego gracza
-                new AlertDialog.Builder(MainActivity.this)
+                new AlertDialog.Builder(getActivity())
                         .setTitle("Edytuj gracza")
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener()
                         {
@@ -190,6 +155,17 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setAdapter(adapter);
     }
 
+    //Zapisywanie stanu listy graczy
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+        super.onSaveInstanceState(savedInstanceState);
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+
+        savedInstanceState.putString("ListaGraczy", json);
+    }
+
     //Strzałeczka w tył (tryb edycji)
     @Override
     public void onBackPressed()
@@ -206,22 +182,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    //Zapisywanie stanu listy graczy
+    /*
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState)
-    {
-        super.onSaveInstanceState(savedInstanceState);
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-
-        savedInstanceState.putString("ListaGraczy", json);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+    public boolean onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_menu, menu);
+        return super.onCreateOptionsMenu(menu, inflater);
+    }*/
 
     //Guziki na app barze
     @Override
@@ -234,21 +200,21 @@ public class MainActivity extends AppCompatActivity
                 Gson gson = new Gson();
                 String json = gson.toJson(list);
 
-                SharedPreferences.Editor editor = getSharedPreferences(SharedPrefs, MODE_PRIVATE).edit();
+                SharedPreferences.Editor editor = this.getActivity().getSharedPreferences(SharedPrefs, Context.MODE_PRIVATE).edit();
                 editor.putString("ListaGraczyPrefs", json);
                 editor.commit();
-                Toast.makeText(this, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getActivity(), "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show();
                 return true;
 
             //Wczytanie ostatniej rozgrywki
             case R.id.action_folder:
-                SharedPreferences prefs = getSharedPreferences(SharedPrefs, MODE_PRIVATE);
+                SharedPreferences prefs = this.getActivity().getSharedPreferences(SharedPrefs, Context.MODE_PRIVATE);
                 String listaGraczy = prefs.getString("ListaGraczyPrefs", null);
                 Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
                 list = new Gson().fromJson(listaGraczy, listType);
                 setPlayerAdapter();
 
-                Toast.makeText(this, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getActivity(), "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show();
                 return true;
 
             //Przywrócenie stanu domyślnego
@@ -259,7 +225,7 @@ public class MainActivity extends AppCompatActivity
                 list.add(new Player("Gracz 3", 1));
                 setPlayerAdapter();
 
-                Toast.makeText(this, "Przywrócono domyśnych graczy", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getActivity(), "Przywrócono domyśnych graczy", Toast.LENGTH_SHORT).show();
                 return true;
 
 
@@ -273,5 +239,4 @@ public class MainActivity extends AppCompatActivity
 
         }
     }
-
 }
