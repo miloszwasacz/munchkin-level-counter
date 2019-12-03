@@ -31,6 +31,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
         LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.player_item, parent, false);
         MyViewHolder vh = new MyViewHolder(linearLayout,
+                (ImageView) linearLayout.findViewById(R.id.imageViewFight),
                 (TextView) linearLayout.findViewById(R.id.textViewPlayerName),
                 (ImageView) linearLayout.findViewById(R.id.imageViewAdd),
                 (TextView) linearLayout.findViewById(R.id.textViewPlayerLevel),
@@ -82,6 +83,18 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
                 }
             }
         });
+
+        holder.imageViewFight.setOnClickListener(editMode ? null : new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (listener != null)
+                {
+                    listener.
+                }
+            }
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -103,14 +116,16 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
     {
         // each data item is just a string in this case
         public LinearLayout linearLayout;
+        public ImageView imageViewFight;
         public TextView textViewPlayerName;
         public ImageView imageViewAdd;
         public TextView textViewPlayerLevel;
         public ImageView imageViewRemove;
 
-        public MyViewHolder(LinearLayout linearLayout, TextView textViewPlayerName, ImageView imageViewAdd, TextView textViewPlayerLevel, ImageView imageViewRemove)
+        public MyViewHolder(LinearLayout linearLayout,ImageView imageViewFight, TextView textViewPlayerName, ImageView imageViewAdd, TextView textViewPlayerLevel, ImageView imageViewRemove)
         {
             super(linearLayout);
+            this.imageViewFight = imageViewFight;
             this.linearLayout = linearLayout;
             this.textViewPlayerName = textViewPlayerName;
             this.imageViewAdd = imageViewAdd;
