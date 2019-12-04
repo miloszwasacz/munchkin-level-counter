@@ -1,6 +1,7 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,38 +32,14 @@ public class MainActivity extends AppCompatActivity
     List<Player> list;
     String SharedPrefs;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener()
-    {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item)
-        {
-            switch (item.getItemId())
-            {
-                case R.id.navigation_counter:
-                    //mTextMessage.setText(R.string.title_home);
-                    return true;
-                case R.id.navigation_kill_o_meter:
-                    //mTextMessage.setText(R.string.title_dashboard);
-                    return true;
-                case R.id.navigation_settings:
-                    //mTextMessage.setText(R.string.title_notifications);
-                    return true;
-            }
-            return false;
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setTitle("Licznik");
 
         list = new ArrayList<Player>();
 
@@ -170,6 +147,18 @@ public class MainActivity extends AppCompatActivity
                     list.get(position).level--;
                     adapter.notifyItemChanged(position);
                 }
+            }
+
+            //Wejście w tryb Kill-O-Meter
+            @Override
+            public void onFightClick(int position)
+            {
+                Intent intent = new Intent(MainActivity.this, KillOMeterActivity.class);
+                int playerLevel = list.get(position).level;
+                String playerName = list.get(position).name;
+                intent.putExtra("EXTRA_LEVEL", playerLevel);
+                intent.putExtra("EXTRA_NAME", playerName);
+                startActivity(intent);
             }
         });
         recyclerView.setAdapter(adapter);

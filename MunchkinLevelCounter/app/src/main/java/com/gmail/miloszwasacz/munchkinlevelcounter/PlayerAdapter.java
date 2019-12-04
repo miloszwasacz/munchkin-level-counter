@@ -91,7 +91,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
             {
                 if (listener != null)
                 {
-                    listener.
+                    listener.onFightClick(holder.getAdapterPosition());
                 }
             }
         });
@@ -139,6 +139,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
         void onItemClick(int position);
         void onAddClick(int position);
         void onRemoveClick(int position);
+        void onFightClick(int position);
     }
 }
 
