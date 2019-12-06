@@ -32,9 +32,9 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
                 .inflate(R.layout.player_item, parent, false);
         MyViewHolder vh = new MyViewHolder(linearLayout,
                 (ImageView) linearLayout.findViewById(R.id.imageViewFight),
-                (TextView) linearLayout.findViewById(R.id.textViewPlayerName),
+                (TextView) linearLayout.findViewById(R.id.textViewName),
                 (ImageView) linearLayout.findViewById(R.id.imageViewAdd),
-                (TextView) linearLayout.findViewById(R.id.textViewPlayerLevel),
+                (TextView) linearLayout.findViewById(R.id.textViewLevel),
                 (ImageView) linearLayout.findViewById(R.id.imageViewRemove));
         return vh;
     }

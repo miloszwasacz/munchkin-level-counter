@@ -156,9 +156,11 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(MainActivity.this, KillOMeterActivity.class);
                 int playerLevel = list.get(position).level;
                 String playerName = list.get(position).name;
+                int playerPosition = position;
                 intent.putExtra("EXTRA_LEVEL", playerLevel);
                 intent.putExtra("EXTRA_NAME", playerName);
-                startActivity(intent);
+                intent.putExtra("EXTRA_POSITION", playerPosition);
+                startActivityForResult(intent, 1);
             }
         });
         recyclerView.setAdapter(adapter);
@@ -191,6 +193,7 @@ public class MainActivity extends AppCompatActivity
         savedInstanceState.putString("ListaGraczy", json);
     }
 
+    //Guziki na app barze
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
@@ -248,4 +251,19 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //Aktualizacja poziomu z Kill-O-Meter'a
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == 1)
+        {
+            int resultPosition = data.getIntExtra("resultPosition", 0);
+            int resultLevel = data.getIntExtra("resultLevel", 1);
+            if (resultCode == RESULT_OK)
+            {
+                list.get(resultPosition).level = resultLevel;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }
