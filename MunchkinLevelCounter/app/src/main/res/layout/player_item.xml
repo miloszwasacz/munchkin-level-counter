@@ -18,7 +18,7 @@
         app:srcCompat="@drawable/ic_munchkin_kill_o_meter_24dp" />
 
     <TextView
-        android:id="@+id/textViewPlayerName"
+        android:id="@+id/textViewName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -34,7 +34,7 @@
         app:srcCompat="@drawable/ic_baseline_remove_24dp" />
 
     <TextView
-        android:id="@+id/textViewPlayerLevel"
+        android:id="@+id/textViewLevel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
