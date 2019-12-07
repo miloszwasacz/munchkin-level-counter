@@ -1,7 +1,6 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter;
 
-import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +31,10 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
         LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.player_item, parent, false);
         MyViewHolder vh = new MyViewHolder(linearLayout,
-                (TextView) linearLayout.findViewById(R.id.textViewPlayerName),
+                (ImageView) linearLayout.findViewById(R.id.imageViewFight),
+                (TextView) linearLayout.findViewById(R.id.textViewName),
                 (ImageView) linearLayout.findViewById(R.id.imageViewAdd),
-                (TextView) linearLayout.findViewById(R.id.textViewPlayerLevel),
+                (TextView) linearLayout.findViewById(R.id.textViewLevel),
                 (ImageView) linearLayout.findViewById(R.id.imageViewRemove));
         return vh;
     }
@@ -83,6 +83,18 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
                 }
             }
         });
+
+        holder.imageViewFight.setOnClickListener(editMode ? null : new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (listener != null)
+                {
+                    listener.onFightClick(holder.getAdapterPosition());
+                }
+            }
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -104,14 +116,16 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
     {
         // each data item is just a string in this case
         public LinearLayout linearLayout;
+        public ImageView imageViewFight;
         public TextView textViewPlayerName;
         public ImageView imageViewAdd;
         public TextView textViewPlayerLevel;
         public ImageView imageViewRemove;
 
-        public MyViewHolder(LinearLayout linearLayout, TextView textViewPlayerName, ImageView imageViewAdd, TextView textViewPlayerLevel, ImageView imageViewRemove)
+        public MyViewHolder(LinearLayout linearLayout,ImageView imageViewFight, TextView textViewPlayerName, ImageView imageViewAdd, TextView textViewPlayerLevel, ImageView imageViewRemove)
         {
             super(linearLayout);
+            this.imageViewFight = imageViewFight;
             this.linearLayout = linearLayout;
             this.textViewPlayerName = textViewPlayerName;
             this.imageViewAdd = imageViewAdd;
@@ -125,6 +139,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
         void onItemClick(int position);
         void onAddClick(int position);
         void onRemoveClick(int position);
+        void onFightClick(int position);
     }
 }
 

@@ -1,15 +1,13 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,42 +29,18 @@ public class MainActivity extends AppCompatActivity
     List<Player> list;
     String SharedPrefs;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener()
-    {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item)
-        {
-            switch (item.getItemId())
-            {
-                case R.id.navigation_counter:
-                    //mTextMessage.setText(R.string.title_home);
-                    return true;
-                case R.id.navigation_kill_o_meter:
-                    //mTextMessage.setText(R.string.title_dashboard);
-                    return true;
-                case R.id.navigation_settings:
-                    //mTextMessage.setText(R.string.title_notifications);
-                    return true;
-            }
-            return false;
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setTitle("Licznik");
 
         list = new ArrayList<Player>();
 
-
+        //Tworzenie domyślnej listy graczy
         if(savedInstanceState == null)
         {
             //Tworzenie domyślnej listy
@@ -74,9 +48,9 @@ public class MainActivity extends AppCompatActivity
             list.add(new Player("Gracz 2", 1));
             list.add(new Player("Gracz 3", 1));
         }
+        //Przywracanie stanu poprzedniego listy graczy
         else
         {
-            //Przywracanie stanu poprzedniego listy graczy
             Gson gson = new Gson();
             String json = savedInstanceState.getString("ListaGraczy");
             Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
@@ -96,7 +70,8 @@ public class MainActivity extends AppCompatActivity
                 {
                     list.add(new Player("Nowy gracz"));
                     adapter.notifyItemInserted(list.size() - 1);
-                } else
+                }
+                else
                 {
                     floatingActionButton.setImageResource(R.drawable.ic_baseline_add_white_24dp);
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -171,6 +146,23 @@ public class MainActivity extends AppCompatActivity
                     adapter.notifyItemChanged(position);
                 }
             }
+
+            //Wejście w tryb Kill-O-Meter
+            @Override
+            public void onFightClick(int position)
+            {
+                Intent intent = new Intent(MainActivity.this, KillOMeterActivity.class);
+                int playerLevel = list.get(position).level;
+                String playerName = list.get(position).name;
+                int playerPosition = position;
+                Gson gson = new Gson();
+                String json = gson.toJson(list);
+                intent.putExtra("EXTRA_LEVEL", playerLevel);
+                intent.putExtra("EXTRA_NAME", playerName);
+                intent.putExtra("EXTRA_POSITION", playerPosition);
+                intent.putExtra("EXTRA_LIST", json);
+                startActivityForResult(intent, 1);
+            }
         });
         recyclerView.setAdapter(adapter);
     }
@@ -202,6 +194,7 @@ public class MainActivity extends AppCompatActivity
         savedInstanceState.putString("ListaGraczy", json);
     }
 
+    //Guziki na app barze
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
@@ -259,4 +252,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //Aktualizacja poziomu z Kill-O-Meter'a
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == 1)
+        {
+            int resultPosition = data.getIntExtra("resultPosition", 0);
+            int resultLevel = data.getIntExtra("resultLevel", 1);
+            String json = data.getStringExtra("resultList");
+            Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
+            list = new Gson().fromJson(json, listType);
+            if (resultCode == RESULT_OK)
+            {
+                list.get(resultPosition).level = resultLevel;
+                setPlayerAdapter();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }
