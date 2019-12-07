@@ -3,14 +3,11 @@ package com.gmail.miloszwasacz.munchkinlevelcounter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +40,7 @@ public class MainActivity extends AppCompatActivity
 
         list = new ArrayList<Player>();
 
-
+        //Tworzenie domyślnej listy graczy
         if(savedInstanceState == null)
         {
             //Tworzenie domyślnej listy
@@ -51,9 +48,9 @@ public class MainActivity extends AppCompatActivity
             list.add(new Player("Gracz 2", 1));
             list.add(new Player("Gracz 3", 1));
         }
+        //Przywracanie stanu poprzedniego listy graczy
         else
         {
-            //Przywracanie stanu poprzedniego listy graczy
             Gson gson = new Gson();
             String json = savedInstanceState.getString("ListaGraczy");
             Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
@@ -73,7 +70,8 @@ public class MainActivity extends AppCompatActivity
                 {
                     list.add(new Player("Nowy gracz"));
                     adapter.notifyItemInserted(list.size() - 1);
-                } else
+                }
+                else
                 {
                     floatingActionButton.setImageResource(R.drawable.ic_baseline_add_white_24dp);
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -157,9 +155,12 @@ public class MainActivity extends AppCompatActivity
                 int playerLevel = list.get(position).level;
                 String playerName = list.get(position).name;
                 int playerPosition = position;
+                Gson gson = new Gson();
+                String json = gson.toJson(list);
                 intent.putExtra("EXTRA_LEVEL", playerLevel);
                 intent.putExtra("EXTRA_NAME", playerName);
                 intent.putExtra("EXTRA_POSITION", playerPosition);
+                intent.putExtra("EXTRA_LIST", json);
                 startActivityForResult(intent, 1);
             }
         });
@@ -259,9 +260,13 @@ public class MainActivity extends AppCompatActivity
         {
             int resultPosition = data.getIntExtra("resultPosition", 0);
             int resultLevel = data.getIntExtra("resultLevel", 1);
+            String json = data.getStringExtra("resultList");
+            Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
+            list = new Gson().fromJson(json, listType);
             if (resultCode == RESULT_OK)
             {
                 list.get(resultPosition).level = resultLevel;
+                setPlayerAdapter();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
