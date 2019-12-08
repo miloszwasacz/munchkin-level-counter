@@ -15,7 +15,16 @@ public class KillOMeterActivity extends AppCompatActivity
     int playerLevel;
     int playerPosition;
     EditText editTextPlayerLevel;
+    EditText editTextPlayerItems;
+    EditText editTextPlayerBonus;
+    EditText editTextPlayerSummary;
+    EditText editTextMonsterLevel;
+    EditText editTextMonsterEnhancer;
+    EditText editTextMonsterBonus;
+    EditText editTextMonsterSummary;
     String playerList;
+    int maxPlayerLevel;
+    int noMaxValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -24,6 +33,7 @@ public class KillOMeterActivity extends AppCompatActivity
         setContentView(R.layout.activity_kill_o_meter);
 
         getSupportActionBar().setTitle("Kill-O-Meter");
+        maxPlayerLevel = 22;
 
         //Odbieranie danych o poziomie i pozycji
         Intent intent = getIntent();
@@ -44,32 +54,31 @@ public class KillOMeterActivity extends AppCompatActivity
 
         ImageView imageViewPlayerItemsRemove = findViewById(R.id.imageViewPlayerItemsRemove);
         ImageView imageViewPlayerItemsAdd = findViewById(R.id.imageViewPlayerItemsAdd);
-        final EditText editTextPlayerItems = findViewById(R.id.editTextPlayerItems);
+        editTextPlayerItems = findViewById(R.id.editTextPlayerItems);
 
         ImageView imageViewPlayerBonusRemove = findViewById(R.id.imageViewPlayerBonusRemove);
         ImageView imageViewPlayerBonusAdd = findViewById(R.id.imageViewPlayerBonusAdd);
-        final EditText editTextPlayerBonus = findViewById(R.id.editTextPlayerBonus);
+        editTextPlayerBonus = findViewById(R.id.editTextPlayerBonus);
 
-        final EditText editTextPlayerSummary = findViewById(R.id.editTextPlayerSummary);
+        editTextPlayerSummary = findViewById(R.id.editTextPlayerSummary);
 
         //Kontrolki potwora
         ImageView imageViewMonsterLevelRemove = findViewById(R.id.imageViewMonsterLevelRemove);
         ImageView imageViewMonsterLevelAdd = findViewById(R.id.imageViewMonsterLevelAdd);
-        final EditText editTextMonsterLevel = findViewById(R.id.editTextMonsterLevel);
+        editTextMonsterLevel = findViewById(R.id.editTextMonsterLevel);
 
         ImageView imageViewMonsterEnhancerRemove = findViewById(R.id.imageViewMonsterEnhancerRemove);
         ImageView imageViewMonsterEnhancerAdd = findViewById(R.id.imageViewMonsterEnhancerAdd);
-        final EditText editTextMonsterEnhancer = findViewById(R.id.editTextMonsterEnhancer);
+        editTextMonsterEnhancer = findViewById(R.id.editTextMonsterEnhancer);
 
         ImageView imageViewMonsterBonusRemove = findViewById(R.id.imageViewMonsterBonusRemove);
         ImageView imageViewMonsterBonusAdd = findViewById(R.id.imageViewMonsterBonusAdd);
-        final EditText editTextMonsterBonus = findViewById(R.id.editTextMonsterBonus);
+        editTextMonsterBonus = findViewById(R.id.editTextMonsterBonus);
 
-        final EditText editTextMonsterSummary = findViewById(R.id.editTextMonsterSummary);
+        editTextMonsterSummary = findViewById(R.id.editTextMonsterSummary);
 
         //Zsumuj moc gracza i potwora
-        editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
-        editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+        updateSummary();
 
         //Odejmij poziom graczowi
         imageViewPlayerLevelRemove.setOnClickListener(new View.OnClickListener()
@@ -77,11 +86,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextPlayerLevel.getText().toString().equals("") || Integer.parseInt(editTextPlayerLevel.getText().toString()) < 1)
-                    editTextPlayerLevel.setText("1");
-                if(Integer.parseInt(editTextPlayerLevel.getText().toString()) > 1)
-                    editTextPlayerLevel.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) - 1));
-                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+                editValueInBracket(1, maxPlayerLevel, editTextPlayerLevel, "Remove", 1);
             }
         });
 
@@ -91,14 +96,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextPlayerLevel.getText().toString().equals(""))
-                    editTextPlayerLevel.setText("1");
-                else
-                {
-                    if (Integer.parseInt(editTextPlayerLevel.getText().toString()) < 22)
-                        editTextPlayerLevel.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + 1));
-                }
-                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+                editValueInBracket(1, maxPlayerLevel, editTextPlayerLevel, "Add", 1);
             }
         });
 
@@ -108,11 +106,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                if(editTextPlayerLevel.getText().toString().equals("") || Integer.parseInt(editTextPlayerLevel.getText().toString()) < 1)
-                    editTextPlayerLevel.setText("1");
-                if(Integer.parseInt(editTextPlayerLevel.getText().toString()) > 22)
-                    editTextPlayerLevel.setText("22");
-                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+                editValueInBracket(1, maxPlayerLevel, editTextPlayerLevel, "Check", 1);
             }
         });
 
@@ -122,11 +116,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextPlayerItems.getText().toString().equals(""))
-                    editTextPlayerItems.setText("0");
-                if(Integer.parseInt(editTextPlayerItems.getText().toString()) > 0)
-                    editTextPlayerItems.setText(String.valueOf(Integer.parseInt(editTextPlayerItems.getText().toString()) - 1));
-                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextPlayerItems, "Remove", 1);
             }
         });
 
@@ -136,11 +126,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextPlayerItems.getText().toString().equals(""))
-                    editTextPlayerItems.setText("0");
-                else
-                    editTextPlayerItems.setText(String.valueOf(Integer.parseInt(editTextPlayerItems.getText().toString()) + 1));
-                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextPlayerItems, "Add", 1);
             }
         });
 
@@ -150,9 +136,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                if(editTextPlayerItems.getText().toString().equals(""))
-                    editTextPlayerItems.setText("0");
-                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextPlayerItems, "Check", 1);
             }
         });
 
@@ -162,11 +146,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextPlayerBonus.getText().toString().equals(""))
-                    editTextPlayerBonus.setText("0");
-                if(Integer.parseInt(editTextPlayerBonus.getText().toString()) > 0)
-                    editTextPlayerBonus.setText(String.valueOf(Integer.parseInt(editTextPlayerBonus.getText().toString()) - 1));
-                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextPlayerBonus, "Remove", 1);
             }
         });
 
@@ -176,11 +156,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextPlayerBonus.getText().toString().equals(""))
-                    editTextPlayerBonus.setText("0");
-                else
-                    editTextPlayerBonus.setText(String.valueOf(Integer.parseInt(editTextPlayerBonus.getText().toString()) + 1));
-                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextPlayerBonus, "Add", 1);
             }
         });
 
@@ -190,9 +166,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                if(editTextPlayerBonus.getText().toString().equals(""))
-                    editTextPlayerBonus.setText("0");
-                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextPlayerBonus, "Check", 1);
             }
         });
 
@@ -204,11 +178,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextMonsterLevel.getText().toString().equals("") || Integer.parseInt(editTextMonsterLevel.getText().toString()) < 1)
-                    editTextMonsterLevel.setText("1");
-                if(Integer.parseInt(editTextMonsterLevel.getText().toString()) > 1)
-                    editTextMonsterLevel.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) - 1));
-                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+                editValueInBracket(1, noMaxValue, editTextMonsterLevel, "Remove", 1);
             }
         });
 
@@ -218,11 +188,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextMonsterLevel.getText().toString().equals(""))
-                    editTextMonsterLevel.setText("1");
-                else
-                    editTextMonsterLevel.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + 1));
-                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+                editValueInBracket(1, noMaxValue, editTextMonsterLevel, "Add", 1);
             }
         });
 
@@ -232,9 +198,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                if(editTextMonsterLevel.getText().toString().equals("") || Integer.parseInt(editTextMonsterLevel.getText().toString()) < 1)
-                    editTextMonsterLevel.setText("1");
-                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+                editValueInBracket(1, noMaxValue, editTextMonsterLevel, "Check", 1);
             }
         });
 
@@ -244,13 +208,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextMonsterEnhancer.getText().toString().equals(""))
-                    editTextMonsterEnhancer.setText("0");
-                if(Integer.parseInt(editTextMonsterEnhancer.getText().toString()) >= 5)
-                    editTextMonsterEnhancer.setText(String.valueOf(((Integer.parseInt(editTextMonsterEnhancer.getText().toString())/5)*5) - 5));
-                if(Integer.parseInt(editTextMonsterEnhancer.getText().toString()) < 5)
-                    editTextMonsterEnhancer.setText("0");
-                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextMonsterEnhancer, "Remove", 5);
             }
         });
 
@@ -260,11 +218,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextMonsterEnhancer.getText().toString().equals(""))
-                    editTextMonsterEnhancer.setText("0");
-                else
-                    editTextMonsterEnhancer.setText(String.valueOf(((Integer.parseInt(editTextMonsterEnhancer.getText().toString())/5)*5) + 5));
-                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextMonsterEnhancer, "Add", 5);
             }
         });
 
@@ -274,9 +228,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                if(editTextMonsterEnhancer.getText().toString().equals(""))
-                    editTextMonsterEnhancer.setText("0");
-                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextMonsterEnhancer, "Check", 5);
             }
         });
 
@@ -286,11 +238,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextMonsterBonus.getText().toString().equals(""))
-                    editTextMonsterBonus.setText("0");
-                if(Integer.parseInt(editTextMonsterBonus.getText().toString()) > 0)
-                    editTextMonsterBonus.setText(String.valueOf(Integer.parseInt(editTextMonsterBonus.getText().toString()) - 1));
-                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextMonsterBonus, "Remove", 1);
             }
         });
 
@@ -300,11 +248,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(editTextMonsterBonus.getText().toString().equals(""))
-                    editTextMonsterBonus.setText("0");
-                else
-                    editTextMonsterBonus.setText(String.valueOf(Integer.parseInt(editTextMonsterBonus.getText().toString()) + 1));
-                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextMonsterBonus, "Add", 1);
             }
         });
 
@@ -314,11 +258,70 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                if(editTextMonsterBonus.getText().toString().equals(""))
-                    editTextMonsterBonus.setText("0");
-                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+                editValueInBracket(0, noMaxValue, editTextMonsterBonus, "Check", 1);
             }
         });
+    }
+
+    //Metoda "Zsumuj moc gracza i potwora"
+    public void updateSummary ()
+    {
+        editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+        editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+    }
+
+
+    public void editValueInBracket(int minValue, int maxValue, EditText bracket, String operation, int changingValue)
+    {
+        if(operation == "Add")
+        {
+            if(bracket.getText().toString().equals("") || Integer.parseInt(bracket.getText().toString()) < minValue)
+                bracket.setText(String.valueOf(minValue));
+            else
+            {
+                if(maxValue == noMaxValue)
+                {
+                    if(changingValue == 1)
+                        bracket.setText(String.valueOf(Integer.parseInt(bracket.getText().toString()) + changingValue));
+                    if(changingValue == 5)
+                        bracket.setText(String.valueOf(((Integer.parseInt(bracket.getText().toString()) / 5) * 5) + changingValue));
+                }
+                else
+                {
+                    if(Integer.parseInt(bracket.getText().toString()) < maxValue)
+                        bracket.setText(String.valueOf(Integer.parseInt(bracket.getText().toString()) + changingValue));
+                }
+            }
+
+        }
+        if(operation == "Remove")
+        {
+            if(bracket.getText().toString().equals("") || Integer.parseInt(bracket.getText().toString()) < minValue)
+                bracket.setText(String.valueOf(minValue));
+            else
+            {
+                if(changingValue == 1)
+                {
+                    if(Integer.parseInt(bracket.getText().toString()) > minValue)
+                        bracket.setText(String.valueOf(Integer.parseInt(bracket.getText().toString()) - 1));
+                }
+                if(changingValue == 5)
+                {
+                    if(Integer.parseInt(bracket.getText().toString()) < 5)
+                        bracket.setText(String.valueOf(minValue));
+                    else
+                        bracket.setText(String.valueOf((Integer.parseInt(bracket.getText().toString())/5)*5));
+                }
+            }
+        }
+        if(operation == "Check");
+        {
+            if(bracket.getText().toString().equals("") || Integer.parseInt(bracket.getText().toString()) < minValue)
+                bracket.setText(String.valueOf(minValue));
+            if(maxValue != noMaxValue && Integer.parseInt(bracket.getText().toString()) > maxValue)
+                bracket.setText(String.valueOf(maxValue));
+            updateSummary();
+        }
     }
 
     //Obsługa strzałeczki w tył
