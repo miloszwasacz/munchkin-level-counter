@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
 
         setPlayerAdapter();
 
-        //Zmiana guzika: tryb edycji/dodawanie gracza
+        //Zmiana trybu guzika: edycja/dodawanie graczy
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener()
         {
@@ -72,12 +72,7 @@ public class MainActivity extends AppCompatActivity
                     adapter.notifyItemInserted(list.size() - 1);
                 }
                 else
-                {
-                    floatingActionButton.setImageResource(R.drawable.ic_baseline_add_white_24dp);
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                    adapter.editMode = true;
-                    adapter.notifyDataSetChanged();
-                }
+                    changeEditMode(R.drawable.ic_baseline_add_white_24dp, true, "Edytuj graczy");
             }
         });
     }
@@ -167,41 +162,56 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setAdapter(adapter);
     }
 
+    //Włączanie/wyłączanie trybu edycji
+    public void changeEditMode(int icon, Boolean bool, String title)
+    {
+        getSupportActionBar().setTitle(title);
+        floatingActionButton.setImageResource(icon);
+        adapter.editMode = bool;
+        invalidateOptionsMenu();
+        adapter.notifyDataSetChanged();
+    }
+
     //Strzałeczka w tył (tryb edycji)
     @Override
     public void onBackPressed()
     {
         if (adapter.editMode)
-        {
-            floatingActionButton.setImageResource(R.drawable.ic_baseline_edit_white_24dp);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            adapter.editMode = false;
-            adapter.notifyDataSetChanged();
-        } else
-        {
+            changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
+        else
             super.onBackPressed();
-        }
     }
 
-    //Zapisywanie stanu listy graczy
+    //Tworzenie guzików na app barze
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState)
+    public boolean onCreateOptionsMenu(Menu menu)
     {
-        super.onSaveInstanceState(savedInstanceState);
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-
-        savedInstanceState.putString("ListaGraczy", json);
-    }
-
-    //Guziki na app barze
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.clear();
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        MenuItem mSaveButton = menu.findItem(R.id.action_save);
+        MenuItem mLoadButton = menu.findItem(R.id.action_folder);
+        MenuItem mClearButton = menu.findItem(R.id.action_clear);
+        MenuItem mSettingsButton = menu.findItem(R.id.navigation_settings);
+        if(adapter.editMode)
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mSaveButton.setVisible(true);
+            mLoadButton.setVisible(true);
+            mClearButton.setVisible(true);
+            mSettingsButton.setVisible(false);
+        }
+        else
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            mSaveButton.setVisible(false);
+            mLoadButton.setVisible(false);
+            mClearButton.setVisible(false);
+            mSettingsButton.setVisible(true);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
-    //Guziki na app barze
+    //Obsługa guzików na app barze
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -215,6 +225,8 @@ public class MainActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = getSharedPreferences(SharedPrefs, MODE_PRIVATE).edit();
                 editor.putString("ListaGraczyPrefs", json);
                 editor.commit();
+                changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
+
                 Toast.makeText(this, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show();
                 return true;
 
@@ -225,6 +237,7 @@ public class MainActivity extends AppCompatActivity
                 Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
                 list = new Gson().fromJson(listaGraczy, listType);
                 setPlayerAdapter();
+                changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
 
                 Toast.makeText(this, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show();
                 return true;
@@ -236,6 +249,7 @@ public class MainActivity extends AppCompatActivity
                 list.add(new Player("Gracz 2", 1));
                 list.add(new Player("Gracz 3", 1));
                 setPlayerAdapter();
+                changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
 
                 Toast.makeText(this, "Przywrócono domyśnych graczy", Toast.LENGTH_SHORT).show();
                 return true;
@@ -250,6 +264,17 @@ public class MainActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    //Zapisywanie stanu listy graczy
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+        super.onSaveInstanceState(savedInstanceState);
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+
+        savedInstanceState.putString("ListaGraczy", json);
     }
 
     //Aktualizacja poziomu z Kill-O-Meter'a
