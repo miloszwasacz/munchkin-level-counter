@@ -179,6 +179,51 @@
                         app:srcCompat="@drawable/ic_baseline_add_24dp" />
                 </TableRow>
 
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp">
+
+                    <TextView
+                        android:id="@+id/textViewPlayerSummaryName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:text="Suma:"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                        android:textSize="24sp" />
+
+                    <ImageView
+                        android:id="@+id/imageViewPlayerDummyLeft"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center" />
+
+                    <EditText
+                        android:id="@+id/editTextPlayerSummary"
+                        style="@style/Widget.AppCompat.TextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:layout_weight="0"
+                        android:inputType="number"
+                        android:maxEms="2"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                        android:textColor="@color/text_color" />
+
+                    <ImageView
+                        android:id="@+id/imageViewPlayerDummyRight"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center" />
+
+                </TableRow>
+
             </TableLayout>
 
             <TextView
@@ -347,6 +392,51 @@
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
                         app:srcCompat="@drawable/ic_baseline_add_24dp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp">
+
+                    <TextView
+                        android:id="@+id/textViewMonsterSummaryName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:text="Suma:"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                        android:textSize="24sp" />
+
+                    <ImageView
+                        android:id="@+id/imageViewMonsterDummyLeft"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center" />
+
+                    <EditText
+                        android:id="@+id/editTextMonsterSummary"
+                        style="@style/Widget.AppCompat.TextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:layout_weight="0"
+                        android:inputType="number"
+                        android:maxEms="2"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                        android:textColor="@color/text_color" />
+
+                    <ImageView
+                        android:id="@+id/imageViewMonsterDummyRight"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center" />
+
                 </TableRow>
 
             </TableLayout>

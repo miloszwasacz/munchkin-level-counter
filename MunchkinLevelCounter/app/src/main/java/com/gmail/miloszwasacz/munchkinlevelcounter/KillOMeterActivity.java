@@ -50,6 +50,8 @@ public class KillOMeterActivity extends AppCompatActivity
         ImageView imageViewPlayerBonusAdd = findViewById(R.id.imageViewPlayerBonusAdd);
         final EditText editTextPlayerBonus = findViewById(R.id.editTextPlayerBonus);
 
+        final EditText editTextPlayerSummary = findViewById(R.id.editTextPlayerSummary);
+
         //Kontrolki potwora
         ImageView imageViewMonsterLevelRemove = findViewById(R.id.imageViewMonsterLevelRemove);
         ImageView imageViewMonsterLevelAdd = findViewById(R.id.imageViewMonsterLevelAdd);
@@ -63,6 +65,12 @@ public class KillOMeterActivity extends AppCompatActivity
         ImageView imageViewMonsterBonusAdd = findViewById(R.id.imageViewMonsterBonusAdd);
         final EditText editTextMonsterBonus = findViewById(R.id.editTextMonsterBonus);
 
+        final EditText editTextMonsterSummary = findViewById(R.id.editTextMonsterSummary);
+
+        //Zsumuj moc gracza i potwora
+        editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
+        editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+
         //Odejmij poziom graczowi
         imageViewPlayerLevelRemove.setOnClickListener(new View.OnClickListener()
         {
@@ -73,6 +81,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextPlayerLevel.setText("1");
                 if(Integer.parseInt(editTextPlayerLevel.getText().toString()) > 1)
                     editTextPlayerLevel.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) - 1));
+                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
             }
         });
 
@@ -89,6 +98,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     if (Integer.parseInt(editTextPlayerLevel.getText().toString()) < 22)
                         editTextPlayerLevel.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + 1));
                 }
+                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
             }
         });
 
@@ -102,6 +112,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextPlayerLevel.setText("1");
                 if(Integer.parseInt(editTextPlayerLevel.getText().toString()) > 22)
                     editTextPlayerLevel.setText("22");
+                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
             }
         });
 
@@ -115,6 +126,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextPlayerItems.setText("0");
                 if(Integer.parseInt(editTextPlayerItems.getText().toString()) > 0)
                     editTextPlayerItems.setText(String.valueOf(Integer.parseInt(editTextPlayerItems.getText().toString()) - 1));
+                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
             }
         });
 
@@ -128,6 +140,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextPlayerItems.setText("0");
                 else
                     editTextPlayerItems.setText(String.valueOf(Integer.parseInt(editTextPlayerItems.getText().toString()) + 1));
+                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
             }
         });
 
@@ -139,6 +152,7 @@ public class KillOMeterActivity extends AppCompatActivity
             {
                 if(editTextPlayerItems.getText().toString().equals(""))
                     editTextPlayerItems.setText("0");
+                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
             }
         });
 
@@ -152,6 +166,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextPlayerBonus.setText("0");
                 if(Integer.parseInt(editTextPlayerBonus.getText().toString()) > 0)
                     editTextPlayerBonus.setText(String.valueOf(Integer.parseInt(editTextPlayerBonus.getText().toString()) - 1));
+                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
             }
         });
 
@@ -165,6 +180,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextPlayerBonus.setText("0");
                 else
                     editTextPlayerBonus.setText(String.valueOf(Integer.parseInt(editTextPlayerBonus.getText().toString()) + 1));
+                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
             }
         });
 
@@ -176,6 +192,7 @@ public class KillOMeterActivity extends AppCompatActivity
             {
                 if(editTextPlayerBonus.getText().toString().equals(""))
                     editTextPlayerBonus.setText("0");
+                editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
             }
         });
 
@@ -191,6 +208,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextMonsterLevel.setText("1");
                 if(Integer.parseInt(editTextMonsterLevel.getText().toString()) > 1)
                     editTextMonsterLevel.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) - 1));
+                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
             }
         });
 
@@ -204,6 +222,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextMonsterLevel.setText("1");
                 else
                     editTextMonsterLevel.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + 1));
+                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
             }
         });
 
@@ -215,6 +234,7 @@ public class KillOMeterActivity extends AppCompatActivity
             {
                 if(editTextMonsterLevel.getText().toString().equals("") || Integer.parseInt(editTextMonsterLevel.getText().toString()) < 1)
                     editTextMonsterLevel.setText("1");
+                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
             }
         });
 
@@ -230,6 +250,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextMonsterEnhancer.setText(String.valueOf(((Integer.parseInt(editTextMonsterEnhancer.getText().toString())/5)*5) - 5));
                 if(Integer.parseInt(editTextMonsterEnhancer.getText().toString()) < 5)
                     editTextMonsterEnhancer.setText("0");
+                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
             }
         });
 
@@ -243,6 +264,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextMonsterEnhancer.setText("0");
                 else
                     editTextMonsterEnhancer.setText(String.valueOf(((Integer.parseInt(editTextMonsterEnhancer.getText().toString())/5)*5) + 5));
+                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
             }
         });
 
@@ -254,6 +276,7 @@ public class KillOMeterActivity extends AppCompatActivity
             {
                 if(editTextMonsterEnhancer.getText().toString().equals(""))
                     editTextMonsterEnhancer.setText("0");
+                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
             }
         });
 
@@ -267,6 +290,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextMonsterBonus.setText("0");
                 if(Integer.parseInt(editTextMonsterBonus.getText().toString()) > 0)
                     editTextMonsterBonus.setText(String.valueOf(Integer.parseInt(editTextMonsterBonus.getText().toString()) - 1));
+                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
             }
         });
 
@@ -280,6 +304,7 @@ public class KillOMeterActivity extends AppCompatActivity
                     editTextMonsterBonus.setText("0");
                 else
                     editTextMonsterBonus.setText(String.valueOf(Integer.parseInt(editTextMonsterBonus.getText().toString()) + 1));
+                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
             }
         });
 
@@ -291,6 +316,7 @@ public class KillOMeterActivity extends AppCompatActivity
             {
                 if(editTextMonsterBonus.getText().toString().equals(""))
                     editTextMonsterBonus.setText("0");
+                editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
             }
         });
     }
