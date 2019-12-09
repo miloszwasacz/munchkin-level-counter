@@ -39,6 +39,11 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle("Licznik");
 
         list = new ArrayList<Player>();
+        SharedPreferences prefs = getSharedPreferences(SharedPrefs, MODE_PRIVATE);
+        int maksymalnyPoziom = prefs.getInt("MaksymalnyPoziomPrefs", 10);
+        int minimalnyPoziom = prefs.getInt("MinimalnyPoziomPrefs", 1);
+        ((Variables)getApplication()).setMaxPlayerLevel(maksymalnyPoziom);
+        ((Variables)getApplication()).setMinLevel(minimalnyPoziom);
 
         //Tworzenie domyślnej listy graczy
         if(savedInstanceState == null)
@@ -84,6 +89,16 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new PlayerAdapter(list);
+
+        //Sprawdzenie czy poziomy graczy są w dozwolonym zakresie
+        for (Player element:list)
+        {
+            if(element.level > ((Variables)getApplication()).getMaxPlayerLevel())
+                element.level = ((Variables)getApplication()).getMaxPlayerLevel();
+            else if(element.level < ((Variables)getApplication()).getMinLevel())
+                element.level = ((Variables)getApplication()).getMinLevel();
+        }
+
         adapter.setOnItemClickListener(new PlayerAdapter.OnItemClickListener()
         {
             @Override
@@ -124,7 +139,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onAddClick(int position)
             {
-                if (list.get(position).level < 22)
+                if (list.get(position).level < ((Variables)getApplication()).getMaxPlayerLevel())
                 {
                     list.get(position).level++;
                     adapter.notifyItemChanged(position);
@@ -135,7 +150,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRemoveClick(int position)
             {
-                if (list.get(position).level > 1)
+                if (list.get(position).level > ((Variables)getApplication()).getMinLevel())
                 {
                     list.get(position).level--;
                     adapter.notifyItemChanged(position);
@@ -219,11 +234,11 @@ public class MainActivity extends AppCompatActivity
         {
             //Zapisanie rozgrywki
             case R.id.action_save:
-                Gson gson = new Gson();
-                String json = gson.toJson(list);
+                Gson gsonSave = new Gson();
+                String jsonSave = gsonSave.toJson(list);
 
                 SharedPreferences.Editor editor = getSharedPreferences(SharedPrefs, MODE_PRIVATE).edit();
-                editor.putString("ListaGraczyPrefs", json);
+                editor.putString("ListaGraczyPrefs", jsonSave);
                 editor.commit();
                 changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
 
@@ -254,6 +269,14 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(this, "Przywrócono domyśnych graczy", Toast.LENGTH_SHORT).show();
                 return true;
 
+            //Otwarcie ustawień
+            case R.id.navigation_settings:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                Gson gsonSettings = new Gson();
+                String jsonSettings = gsonSettings.toJson(list);
+                intent.putExtra("EXTRA_LIST", jsonSettings);
+                startActivityForResult(intent, 2);
+                return true;
 
             //Strzałeczka "back"
             case android.R.id.home:
@@ -277,22 +300,32 @@ public class MainActivity extends AppCompatActivity
         savedInstanceState.putString("ListaGraczy", json);
     }
 
-    //Aktualizacja poziomu z Kill-O-Meter'a
+    //Odebranie danych z innych Activity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (requestCode == 1)
+        //Aktualizacja poziomu z Kill-O-Meter'a
+        if(requestCode == 1)
         {
             int resultPosition = data.getIntExtra("resultPosition", 0);
             int resultLevel = data.getIntExtra("resultLevel", 1);
             String json = data.getStringExtra("resultList");
             Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
             list = new Gson().fromJson(json, listType);
-            if (resultCode == RESULT_OK)
+            if(resultCode == RESULT_OK)
             {
                 list.get(resultPosition).level = resultLevel;
                 setPlayerAdapter();
             }
+        }
+        //Sprawdzenie poziomów po aktualizacji maksymalnego poziomu
+        else if(requestCode == 2)
+        {
+            String json = data.getStringExtra("resultList");
+            Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
+            list = new Gson().fromJson(json, listType);
+            if(resultCode == RESULT_OK)
+                setPlayerAdapter();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

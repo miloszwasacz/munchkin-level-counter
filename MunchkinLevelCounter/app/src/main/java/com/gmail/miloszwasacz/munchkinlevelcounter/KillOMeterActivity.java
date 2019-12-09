@@ -10,10 +10,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class KillOMeterActivity extends AppCompatActivity
 {
     int playerLevel;
     int playerPosition;
+    String playerList;
+
     EditText editTextPlayerLevel;
     EditText editTextPlayerItems;
     EditText editTextPlayerBonus;
@@ -22,9 +26,12 @@ public class KillOMeterActivity extends AppCompatActivity
     EditText editTextMonsterEnhancer;
     EditText editTextMonsterBonus;
     EditText editTextMonsterSummary;
-    String playerList;
+    ArrayList<EditText> editTextList;
     int maxPlayerLevel;
-    int noMaxValue;
+    int maxViewValue;
+    int minLevel;
+    int minBonus;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,7 +40,10 @@ public class KillOMeterActivity extends AppCompatActivity
         setContentView(R.layout.activity_kill_o_meter);
 
         getSupportActionBar().setTitle("Kill-O-Meter");
-        maxPlayerLevel = 22;
+        maxPlayerLevel = ((Variables)getApplication()).getMaxPlayerLevel();
+        maxViewValue = 999;
+        minLevel = ((Variables)getApplication()).getMinLevel();
+        minBonus = 0;
 
         //Odbieranie danych o poziomie i pozycji
         Intent intent = getIntent();
@@ -77,7 +87,15 @@ public class KillOMeterActivity extends AppCompatActivity
 
         editTextMonsterSummary = findViewById(R.id.editTextMonsterSummary);
 
-        //Zsumuj moc gracza i potwora
+        //Stwórz listę pól
+        editTextList = new ArrayList<EditText>();
+        editTextList.add(editTextPlayerLevel);
+        editTextList.add(editTextPlayerItems);
+        editTextList.add(editTextPlayerBonus);
+        editTextList.add(editTextMonsterLevel);
+        editTextList.add(editTextMonsterEnhancer);
+        editTextList.add(editTextMonsterBonus);
+
         updateSummary();
 
         //Odejmij poziom graczowi
@@ -86,7 +104,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(1, maxPlayerLevel, editTextPlayerLevel, "Remove", 1);
+                editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, "Remove", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -96,7 +115,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(1, maxPlayerLevel, editTextPlayerLevel, "Add", 1);
+                editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, "Add", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -106,7 +126,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                editValueInBracket(1, maxPlayerLevel, editTextPlayerLevel, "Check", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -116,7 +136,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(0, noMaxValue, editTextPlayerItems, "Remove", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, "Remove", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -126,7 +147,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(0, noMaxValue, editTextPlayerItems, "Add", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, "Add", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -136,7 +158,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                editValueInBracket(0, noMaxValue, editTextPlayerItems, "Check", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -146,7 +168,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(0, noMaxValue, editTextPlayerBonus, "Remove", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, "Remove", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -156,7 +179,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(0, noMaxValue, editTextPlayerBonus, "Add", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, "Add", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -166,7 +190,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                editValueInBracket(0, noMaxValue, editTextPlayerBonus, "Check", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -178,7 +202,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(1, noMaxValue, editTextMonsterLevel, "Remove", 1);
+                editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, "Remove", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -188,7 +213,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(1, noMaxValue, editTextMonsterLevel, "Add", 1);
+                editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, "Add", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -198,7 +224,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                editValueInBracket(1, noMaxValue, editTextMonsterLevel, "Check", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -208,7 +234,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(0, noMaxValue, editTextMonsterEnhancer, "Remove", 5);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, "Remove", 5);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -218,7 +245,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(0, noMaxValue, editTextMonsterEnhancer, "Add", 5);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, "Add", 5);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -228,7 +256,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                editValueInBracket(0, noMaxValue, editTextMonsterEnhancer, "Check", 5);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -238,7 +266,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(0, noMaxValue, editTextMonsterBonus, "Remove", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, "Remove", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -248,7 +277,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(0, noMaxValue, editTextMonsterBonus, "Add", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, "Add", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
 
@@ -258,7 +288,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                editValueInBracket(0, noMaxValue, editTextMonsterBonus, "Check", 1);
+                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
     }
@@ -266,60 +296,64 @@ public class KillOMeterActivity extends AppCompatActivity
     //Metoda "Zsumuj moc gracza i potwora"
     public void updateSummary ()
     {
-        editTextPlayerSummary.setText(String.valueOf(Integer.parseInt(editTextPlayerLevel.getText().toString()) + Integer.parseInt(editTextPlayerItems.getText().toString()) + Integer.parseInt(editTextPlayerBonus.getText().toString())));
-        editTextMonsterSummary.setText(String.valueOf(Integer.parseInt(editTextMonsterLevel.getText().toString()) + Integer.parseInt(editTextMonsterEnhancer.getText().toString()) + Integer.parseInt(editTextMonsterBonus.getText().toString())));
+        editTextPlayerSummary.setText(String.valueOf(tryParse(editTextPlayerLevel.getText().toString(), maxPlayerLevel) + tryParse(editTextPlayerItems.getText().toString(), maxViewValue) + tryParse(editTextPlayerBonus.getText().toString(), maxViewValue)));
+        editTextMonsterSummary.setText(String.valueOf(tryParse(editTextMonsterLevel.getText().toString(), maxViewValue) + tryParse(editTextMonsterEnhancer.getText().toString(), maxViewValue) + tryParse(editTextMonsterBonus.getText().toString(), maxViewValue)));
     }
 
-
-    public void editValueInBracket(int minValue, int maxValue, EditText bracket, String operation, int changingValue)
+    //Metoda "Zastosuj podaną operację na liczbach z pola"
+    public void editValueInBracket(int minValue, int maxValue, EditText bracket, String operation, int incrementationValue)
     {
         if(operation == "Add")
         {
-            if(bracket.getText().toString().equals("") || Integer.parseInt(bracket.getText().toString()) < minValue)
+            if(bracket.getText().toString().equals("") || tryParse(bracket.getText().toString(), maxValue) < minValue)
                 bracket.setText(String.valueOf(minValue));
             else
             {
-                if(maxValue == noMaxValue)
-                {
-                    if(changingValue == 1)
-                        bracket.setText(String.valueOf(Integer.parseInt(bracket.getText().toString()) + changingValue));
-                    if(changingValue == 5)
-                        bracket.setText(String.valueOf(((Integer.parseInt(bracket.getText().toString()) / 5) * 5) + changingValue));
-                }
+                if(tryParse(bracket.getText().toString(), maxValue) < maxValue)
+                    bracket.setText(String.valueOf(((tryParse(bracket.getText().toString(), maxValue) / incrementationValue) * incrementationValue) + incrementationValue));
                 else
-                {
-                    if(Integer.parseInt(bracket.getText().toString()) < maxValue)
-                        bracket.setText(String.valueOf(Integer.parseInt(bracket.getText().toString()) + changingValue));
-                }
+                    bracket.setText(String.valueOf(maxValue));
             }
 
         }
-        if(operation == "Remove")
+        else if(operation == "Remove")
         {
-            if(bracket.getText().toString().equals("") || Integer.parseInt(bracket.getText().toString()) < minValue)
+            if(bracket.getText().toString().equals("") || tryParse(bracket.getText().toString(), maxValue) < minValue)
                 bracket.setText(String.valueOf(minValue));
             else
             {
-                if(changingValue == 1)
+                if(tryParse(bracket.getText().toString(), maxValue) < incrementationValue)
+                    bracket.setText(String.valueOf(minValue));
+                else
                 {
-                    if(Integer.parseInt(bracket.getText().toString()) > minValue)
-                        bracket.setText(String.valueOf(Integer.parseInt(bracket.getText().toString()) - 1));
-                }
-                if(changingValue == 5)
-                {
-                    if(Integer.parseInt(bracket.getText().toString()) < 5)
-                        bracket.setText(String.valueOf(minValue));
+                    if((tryParse(bracket.getText().toString(), maxValue)%incrementationValue) != 0)
+                        bracket.setText(String.valueOf((tryParse(bracket.getText().toString(), maxValue)/incrementationValue)*incrementationValue));
                     else
-                        bracket.setText(String.valueOf((Integer.parseInt(bracket.getText().toString())/5)*5));
+                        bracket.setText(String.valueOf(tryParse(bracket.getText().toString(), maxValue) - incrementationValue));
                 }
             }
         }
-        if(operation == "Check");
+    }
+
+    //Metoda "Sprawdź czy żadne pole nie jest puste"
+    public void checkValuesInBrackets(int minLevelValue, int minBonusValue, int maxValue, ArrayList<EditText> bracketList)
+    {
+        for (EditText element:bracketList)
         {
-            if(bracket.getText().toString().equals("") || Integer.parseInt(bracket.getText().toString()) < minValue)
-                bracket.setText(String.valueOf(minValue));
-            if(maxValue != noMaxValue && Integer.parseInt(bracket.getText().toString()) > maxValue)
-                bracket.setText(String.valueOf(maxValue));
+            if(element == editTextPlayerLevel || element == editTextMonsterLevel)
+            {
+                if (element.getText().toString().equals("") || tryParse(element.getText().toString(), maxValue) < minLevelValue)
+                    element.setText(String.valueOf(minLevelValue));
+                else if (tryParse(element.getText().toString(), maxValue) > maxValue)
+                    element.setText(String.valueOf(maxValue));
+            }
+            else
+            {
+                if (element.getText().toString().equals("") || tryParse(element.getText().toString(), maxValue) < minBonusValue)
+                    element.setText(String.valueOf(minBonusValue));
+                else if (tryParse(element.getText().toString(), maxValue) > maxValue)
+                    element.setText(String.valueOf(maxValue));
+            }
             updateSummary();
         }
     }
@@ -341,12 +375,21 @@ public class KillOMeterActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        playerLevel = Integer.parseInt(editTextPlayerLevel.getText().toString());
+        playerLevel = tryParse(editTextPlayerLevel.getText().toString(), maxPlayerLevel);
         Intent returnIntent = new Intent();
         returnIntent.putExtra("resultLevel", playerLevel);
         returnIntent.putExtra("resultPosition", playerPosition);
         returnIntent.putExtra("resultList", playerList);
         setResult(RESULT_OK, returnIntent);
         finish();
+    }
+
+    //tryParse int
+    public int tryParse(String value, int defaultVal) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultVal;
+        }
     }
 }

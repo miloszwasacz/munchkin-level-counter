@@ -55,6 +55,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:text="Poziom:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textSize="24sp" />
@@ -100,6 +102,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:text="Przedmioty:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textSize="24sp" />
@@ -145,6 +149,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:text="Jednorazowego użytku:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textSize="24sp" />
@@ -190,6 +196,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:text="Suma:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textSize="24sp" />
@@ -267,6 +275,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:text="Poziom:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textSize="24sp" />
@@ -315,6 +325,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:text="Wzmacniacze:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textSize="24sp" />
@@ -360,6 +372,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:text="Jednorazowego użytku:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textSize="24sp" />
@@ -405,6 +419,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
                         android:text="Suma:"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textSize="24sp" />
