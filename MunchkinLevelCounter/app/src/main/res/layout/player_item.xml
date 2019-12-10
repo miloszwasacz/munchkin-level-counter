@@ -15,7 +15,7 @@
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
         android:scaleType="center"
-        app:srcCompat="@drawable/ic_munchkin_kill_o_meter_24dp" />
+        app:srcCompat="@drawable/ic_munchkin_sword_24dp" />
 
     <TextView
         android:id="@+id/textViewName"
