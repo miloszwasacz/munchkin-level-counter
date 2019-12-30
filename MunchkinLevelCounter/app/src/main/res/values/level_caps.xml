@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="deafult_rules">10</integer>
+    <integer name="epic_rules">20</integer>
+    <integer name="dungeon_rules">11</integer>
+    <integer name="epic_dungeon_rules">22</integer>
+    <integer name="deafult_min_level">1</integer>
+    <integer name="deafult_min_bonus">0</integer>
+</resources>

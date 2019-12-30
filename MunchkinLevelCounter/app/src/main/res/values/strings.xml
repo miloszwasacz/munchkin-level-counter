@@ -6,4 +6,6 @@
     <string name="title_save">Zapisz</string>
     <string name="title_load">Wczytaj</string>
     <string name="title_clear">Wyczysc</string>
+    <string name="operation_add">Add</string>
+    <string name="operation_remove">Remove</string>
 </resources>

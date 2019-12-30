@@ -1,7 +1,6 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 
 public class KillOMeterActivity extends AppCompatActivity
@@ -40,17 +38,17 @@ public class KillOMeterActivity extends AppCompatActivity
         setContentView(R.layout.activity_kill_o_meter);
 
         getSupportActionBar().setTitle("Kill-O-Meter");
-        maxPlayerLevel = ((Variables)getApplication()).getMaxPlayerLevel();
-        maxViewValue = 999;
-        minLevel = ((Variables)getApplication()).getMinLevel();
-        minBonus = 0;
 
         //Odbieranie danych o poziomie i pozycji
         Intent intent = getIntent();
         String playerName = intent.getStringExtra("EXTRA_NAME");
-        playerLevel = intent.getIntExtra("EXTRA_LEVEL", 1);
+        playerLevel = intent.getIntExtra("EXTRA_LEVEL", getResources().getInteger(R.integer.deafult_min_level));
         playerPosition = intent.getIntExtra("EXTRA_POSITION", 0);
         playerList = intent.getStringExtra("EXTRA_LIST");
+        maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", getResources().getInteger(R.integer.deafult_rules));
+        minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", getResources().getInteger(R.integer.deafult_min_level));
+        minBonus = getResources().getInteger(R.integer.deafult_min_bonus);
+        maxViewValue = 999;
 
         //Ustawianie poziomu i nazwy gracza
         TextView textViewPlayerName = findViewById(R.id.textViewPlayerName);
@@ -104,7 +102,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, "Remove", 1);
+                editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.level_incremetation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -115,7 +113,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, "Add", 1);
+                editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.level_incremetation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -136,7 +134,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, "Remove", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.items_incrementation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -147,7 +145,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, "Add", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.items_incrementation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -168,7 +166,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, "Remove", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.bonus_incrementation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -179,7 +177,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, "Add", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.bonus_incrementation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -202,7 +200,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, "Remove", 1);
+                editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.level_incremetation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -213,7 +211,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, "Add", 1);
+                editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.level_incremetation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -234,7 +232,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, "Remove", 5);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.enhancer_incrementation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -245,7 +243,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, "Add", 5);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.enhancer_incrementation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -266,7 +264,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, "Remove", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.bonus_incrementation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -277,7 +275,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, "Add", 1);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.bonus_incrementation));
                 checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
             }
         });
@@ -303,7 +301,7 @@ public class KillOMeterActivity extends AppCompatActivity
     //Metoda "Zastosuj podaną operację na liczbach z pola"
     public void editValueInBracket(int minValue, int maxValue, EditText bracket, String operation, int incrementationValue)
     {
-        if(operation == "Add")
+        if(operation == getResources().getString(R.string.operation_add))
         {
             if(bracket.getText().toString().equals("") || tryParse(bracket.getText().toString(), maxValue) < minValue)
                 bracket.setText(String.valueOf(minValue));
@@ -316,7 +314,7 @@ public class KillOMeterActivity extends AppCompatActivity
             }
 
         }
-        else if(operation == "Remove")
+        else if(operation == getResources().getString(R.string.operation_remove))
         {
             if(bracket.getText().toString().equals("") || tryParse(bracket.getText().toString(), maxValue) < minValue)
                 bracket.setText(String.valueOf(minValue));
@@ -380,12 +378,15 @@ public class KillOMeterActivity extends AppCompatActivity
         returnIntent.putExtra("resultLevel", playerLevel);
         returnIntent.putExtra("resultPosition", playerPosition);
         returnIntent.putExtra("resultList", playerList);
+        returnIntent.putExtra("resultMaxLevel", maxPlayerLevel);
+        returnIntent.putExtra("resultMinLevel", minLevel);
         setResult(RESULT_OK, returnIntent);
         finish();
     }
 
     //tryParse int
-    public int tryParse(String value, int defaultVal) {
+    public int tryParse(String value, int defaultVal)
+    {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {

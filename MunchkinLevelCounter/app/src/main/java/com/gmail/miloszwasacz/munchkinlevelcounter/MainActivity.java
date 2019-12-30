@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity
     PlayerAdapter adapter;
     List<Player> list;
     String SharedPrefs;
+    int MaxPlayerLevel;
+    int MinLevel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,19 +41,16 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle("Licznik");
 
         list = new ArrayList<Player>();
-        SharedPreferences prefs = getSharedPreferences(SharedPrefs, MODE_PRIVATE);
-        int maksymalnyPoziom = prefs.getInt("MaksymalnyPoziomPrefs", 10);
-        int minimalnyPoziom = prefs.getInt("MinimalnyPoziomPrefs", 1);
-        ((Variables)getApplication()).setMaxPlayerLevel(maksymalnyPoziom);
-        ((Variables)getApplication()).setMinLevel(minimalnyPoziom);
+        MaxPlayerLevel = getResources().getInteger(R.integer.deafult_rules);
+        MinLevel = getResources().getInteger(R.integer.deafult_min_level);
 
         //Tworzenie domyślnej listy graczy
         if(savedInstanceState == null)
         {
             //Tworzenie domyślnej listy
-            list.add(new Player("Gracz 1", 1));
-            list.add(new Player("Gracz 2", 1));
-            list.add(new Player("Gracz 3", 1));
+            list.add(new Player("Gracz 1", MinLevel));
+            list.add(new Player("Gracz 2", MinLevel));
+            list.add(new Player("Gracz 3", MinLevel));
         }
         //Przywracanie stanu poprzedniego listy graczy
         else
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity
             {
                 if (adapter.editMode)
                 {
-                    list.add(new Player("Nowy gracz"));
+                    list.add(new Player("Nowy gracz", MinLevel));
                     adapter.notifyItemInserted(list.size() - 1);
                 }
                 else
@@ -93,10 +92,10 @@ public class MainActivity extends AppCompatActivity
         //Sprawdzenie czy poziomy graczy są w dozwolonym zakresie
         for (Player element:list)
         {
-            if(element.level > ((Variables)getApplication()).getMaxPlayerLevel())
-                element.level = ((Variables)getApplication()).getMaxPlayerLevel();
-            else if(element.level < ((Variables)getApplication()).getMinLevel())
-                element.level = ((Variables)getApplication()).getMinLevel();
+            if(element.level > MaxPlayerLevel)
+                element.level = MaxPlayerLevel;
+            else if(element.level < MinLevel)
+                element.level = MinLevel;
         }
 
         adapter.setOnItemClickListener(new PlayerAdapter.OnItemClickListener()
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onAddClick(int position)
             {
-                if (list.get(position).level < ((Variables)getApplication()).getMaxPlayerLevel())
+                if (list.get(position).level < MaxPlayerLevel)
                 {
                     list.get(position).level++;
                     adapter.notifyItemChanged(position);
@@ -150,7 +149,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRemoveClick(int position)
             {
-                if (list.get(position).level > ((Variables)getApplication()).getMinLevel())
+                if (list.get(position).level > MinLevel)
                 {
                     list.get(position).level--;
                     adapter.notifyItemChanged(position);
@@ -171,6 +170,8 @@ public class MainActivity extends AppCompatActivity
                 intent.putExtra("EXTRA_NAME", playerName);
                 intent.putExtra("EXTRA_POSITION", playerPosition);
                 intent.putExtra("EXTRA_LIST", json);
+                intent.putExtra("EXTRA_MAX_LEVEL", MaxPlayerLevel);
+                intent.putExtra("EXTRA_MIN_LEVEL", MinLevel);
                 startActivityForResult(intent, 1);
             }
         });
@@ -238,6 +239,8 @@ public class MainActivity extends AppCompatActivity
                 String jsonSave = gsonSave.toJson(list);
 
                 SharedPreferences.Editor editor = getSharedPreferences(SharedPrefs, MODE_PRIVATE).edit();
+                editor.putInt("MaksymalnyPoziom", MaxPlayerLevel);
+                editor.putInt("MinimalnyPoziom", MinLevel);
                 editor.putString("ListaGraczyPrefs", jsonSave);
                 editor.commit();
                 changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
@@ -248,6 +251,8 @@ public class MainActivity extends AppCompatActivity
             //Wczytanie ostatniej rozgrywki
             case R.id.action_folder:
                 SharedPreferences prefs = getSharedPreferences(SharedPrefs, MODE_PRIVATE);
+                MaxPlayerLevel = prefs.getInt("MaksymalnyPoziom", getResources().getInteger(R.integer.deafult_rules));
+                MinLevel = prefs.getInt("MinimalnyPoziom", getResources().getInteger(R.integer.deafult_min_level));
                 String listaGraczy = prefs.getString("ListaGraczyPrefs", null);
                 Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
                 list = new Gson().fromJson(listaGraczy, listType);
@@ -260,10 +265,12 @@ public class MainActivity extends AppCompatActivity
             //Przywrócenie stanu domyślnego
             case R.id.action_clear:
                 list = new ArrayList<Player>();
-                list.add(new Player("Gracz 1", 1));
-                list.add(new Player("Gracz 2", 1));
-                list.add(new Player("Gracz 3", 1));
+                list.add(new Player("Gracz 1", MinLevel));
+                list.add(new Player("Gracz 2", MinLevel));
+                list.add(new Player("Gracz 3", MinLevel));
                 setPlayerAdapter();
+                MaxPlayerLevel = getResources().getInteger(R.integer.deafult_rules);
+                MinLevel = getResources().getInteger(R.integer.deafult_min_level);
                 changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
 
                 Toast.makeText(this, "Przywrócono domyśnych graczy", Toast.LENGTH_SHORT).show();
@@ -275,6 +282,8 @@ public class MainActivity extends AppCompatActivity
                 Gson gsonSettings = new Gson();
                 String jsonSettings = gsonSettings.toJson(list);
                 intent.putExtra("EXTRA_LIST", jsonSettings);
+                intent.putExtra("EXTRA_MAX_LEVEL", MaxPlayerLevel);
+                intent.putExtra("EXTRA_MIN_LEVEL", MinLevel);
                 startActivityForResult(intent, 2);
                 return true;
 
@@ -307,8 +316,10 @@ public class MainActivity extends AppCompatActivity
         //Aktualizacja poziomu z Kill-O-Meter'a
         if(requestCode == 1)
         {
+            MaxPlayerLevel = data.getIntExtra("resultMaxLevel", getResources().getInteger(R.integer.deafult_rules));
+            MinLevel = data.getIntExtra("resultMinLevel", getResources().getInteger(R.integer.deafult_min_level));
             int resultPosition = data.getIntExtra("resultPosition", 0);
-            int resultLevel = data.getIntExtra("resultLevel", 1);
+            int resultLevel = data.getIntExtra("resultLevel", MinLevel);
             String json = data.getStringExtra("resultList");
             Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
             list = new Gson().fromJson(json, listType);
@@ -321,6 +332,8 @@ public class MainActivity extends AppCompatActivity
         //Sprawdzenie poziomów po aktualizacji maksymalnego poziomu
         else if(requestCode == 2)
         {
+            MaxPlayerLevel = data.getIntExtra("resultMaxLevel", getResources().getInteger(R.integer.deafult_rules));
+            MinLevel = data.getIntExtra("resultMinLevel", getResources().getInteger(R.integer.deafult_min_level));
             String json = data.getStringExtra("resultList");
             Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
             list = new Gson().fromJson(json, listType);
