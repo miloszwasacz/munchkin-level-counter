@@ -41,12 +41,13 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle("Licznik");
 
         list = new ArrayList<Player>();
-        MaxPlayerLevel = getResources().getInteger(R.integer.deafult_rules);
-        MinLevel = getResources().getInteger(R.integer.deafult_min_level);
 
         //Tworzenie domyślnej listy graczy
         if(savedInstanceState == null)
         {
+            MaxPlayerLevel = getResources().getInteger(R.integer.deafult_rules);
+            MinLevel = getResources().getInteger(R.integer.deafult_min_level);
+
             //Tworzenie domyślnej listy
             list.add(new Player("Gracz 1", MinLevel));
             list.add(new Player("Gracz 2", MinLevel));
@@ -55,7 +56,8 @@ public class MainActivity extends AppCompatActivity
         //Przywracanie stanu poprzedniego listy graczy
         else
         {
-            Gson gson = new Gson();
+            MaxPlayerLevel = savedInstanceState.getInt("MaksymalnyPoziom", getResources().getInteger(R.integer.deafult_rules));
+            MinLevel = savedInstanceState.getInt("MinimalnyPoziom", getResources().getInteger(R.integer.deafult_min_level));
             String json = savedInstanceState.getString("ListaGraczy");
             Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
             list = new Gson().fromJson(json, listType);
@@ -307,6 +309,8 @@ public class MainActivity extends AppCompatActivity
         String json = gson.toJson(list);
 
         savedInstanceState.putString("ListaGraczy", json);
+        savedInstanceState.putInt("MaksymalnyPoziom", MaxPlayerLevel);
+        savedInstanceState.putInt("MinimalnyPoziom", MinLevel);
     }
 
     //Odebranie danych z innych Activity
