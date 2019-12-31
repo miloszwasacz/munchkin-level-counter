@@ -2,6 +2,8 @@ package com.gmail.miloszwasacz.munchkinlevelcounter;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +31,12 @@ public class KillOMeterActivity extends AppCompatActivity
     int maxViewValue;
     int minLevel;
     int minBonus;
+    String operationAdd;
+    String operationRemove;
+    int levelIncrementation;
+    int itemIncrementation;
+    int bonusIncrementation;
+    int enhancerIncrementation;
 
 
     @Override
@@ -39,7 +47,7 @@ public class KillOMeterActivity extends AppCompatActivity
 
         getSupportActionBar().setTitle("Kill-O-Meter");
 
-        //Odbieranie danych o poziomie i pozycji
+        //Ustawianie domyślnych wartości
         Intent intent = getIntent();
         String playerName = intent.getStringExtra("EXTRA_NAME");
         playerLevel = intent.getIntExtra("EXTRA_LEVEL", getResources().getInteger(R.integer.deafult_min_level));
@@ -49,6 +57,13 @@ public class KillOMeterActivity extends AppCompatActivity
         minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", getResources().getInteger(R.integer.deafult_min_level));
         minBonus = getResources().getInteger(R.integer.deafult_min_bonus);
         maxViewValue = 999;
+        operationAdd = getResources().getString(R.string.operation_add);
+        operationRemove = getResources().getString(R.string.operation_remove);
+        levelIncrementation = getResources().getInteger(R.integer.level_incremetation);
+        itemIncrementation = getResources().getInteger(R.integer.items_incrementation);
+        bonusIncrementation = getResources().getInteger(R.integer.bonus_incrementation);
+        enhancerIncrementation = getResources().getInteger(R.integer.enhancer_incrementation);
+
 
         //Ustawianie poziomu i nazwy gracza
         TextView textViewPlayerName = findViewById(R.id.textViewPlayerName);
@@ -102,8 +117,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.level_incremetation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, operationRemove, levelIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -113,8 +128,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.level_incremetation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, operationAdd, levelIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -124,7 +139,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -134,8 +149,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.items_incrementation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, operationRemove, itemIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -145,8 +160,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.items_incrementation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, operationAdd, itemIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -156,7 +171,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -166,8 +181,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.bonus_incrementation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, operationRemove, bonusIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -177,8 +192,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.bonus_incrementation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, operationAdd, bonusIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -188,7 +203,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -200,8 +215,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.level_incremetation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, operationRemove, levelIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -211,8 +226,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.level_incremetation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, operationAdd, levelIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -222,7 +237,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -232,8 +247,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.enhancer_incrementation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, operationRemove, enhancerIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -243,8 +258,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.enhancer_incrementation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, operationAdd, enhancerIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -254,7 +269,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -264,8 +279,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, getResources().getString(R.string.operation_remove), getResources().getInteger(R.integer.bonus_incrementation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, operationRemove, bonusIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -275,8 +290,8 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, getResources().getString(R.string.operation_add), getResources().getInteger(R.integer.bonus_incrementation));
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, operationAdd, bonusIncrementation);
+                checkValuesInBrackets(editTextList);
             }
         });
 
@@ -286,7 +301,7 @@ public class KillOMeterActivity extends AppCompatActivity
             @Override
             public void onFocusChange(View v, boolean hasFocus)
             {
-                checkValuesInBrackets(minLevel, minBonus, maxViewValue, editTextList);
+                checkValuesInBrackets(editTextList);
             }
         });
     }
@@ -296,6 +311,7 @@ public class KillOMeterActivity extends AppCompatActivity
     {
         editTextPlayerSummary.setText(String.valueOf(tryParse(editTextPlayerLevel.getText().toString(), maxPlayerLevel) + tryParse(editTextPlayerItems.getText().toString(), maxViewValue) + tryParse(editTextPlayerBonus.getText().toString(), maxViewValue)));
         editTextMonsterSummary.setText(String.valueOf(tryParse(editTextMonsterLevel.getText().toString(), maxViewValue) + tryParse(editTextMonsterEnhancer.getText().toString(), maxViewValue) + tryParse(editTextMonsterBonus.getText().toString(), maxViewValue)));
+        checkWinner(editTextPlayerSummary, editTextMonsterSummary);
     }
 
     //Metoda "Zastosuj podaną operację na liczbach z pola"
@@ -334,25 +350,63 @@ public class KillOMeterActivity extends AppCompatActivity
     }
 
     //Metoda "Sprawdź czy żadne pole nie jest puste"
-    public void checkValuesInBrackets(int minLevelValue, int minBonusValue, int maxValue, ArrayList<EditText> bracketList)
+    public void checkValuesInBrackets(ArrayList<EditText> bracketList)
     {
         for (EditText element:bracketList)
         {
-            if(element == editTextPlayerLevel || element == editTextMonsterLevel)
+            if(element == editTextPlayerLevel)
             {
-                if (element.getText().toString().equals("") || tryParse(element.getText().toString(), maxValue) < minLevelValue)
-                    element.setText(String.valueOf(minLevelValue));
-                else if (tryParse(element.getText().toString(), maxValue) > maxValue)
-                    element.setText(String.valueOf(maxValue));
+                if (element.getText().toString().equals("") || tryParse(element.getText().toString(), maxPlayerLevel) < minLevel)
+                    element.setText(String.valueOf(minLevel));
+                else if (tryParse(element.getText().toString(), maxPlayerLevel) > maxPlayerLevel)
+                    element.setText(String.valueOf(maxPlayerLevel));
+            }
+            else if(element == editTextMonsterLevel)
+            {
+                if (element.getText().toString().equals("") || tryParse(element.getText().toString(), maxViewValue) < minLevel)
+                    element.setText(String.valueOf(minLevel));
+                else if (tryParse(element.getText().toString(), maxViewValue) > maxViewValue)
+                    element.setText(String.valueOf(maxViewValue));
             }
             else
             {
-                if (element.getText().toString().equals("") || tryParse(element.getText().toString(), maxValue) < minBonusValue)
-                    element.setText(String.valueOf(minBonusValue));
-                else if (tryParse(element.getText().toString(), maxValue) > maxValue)
-                    element.setText(String.valueOf(maxValue));
+                if (element.getText().toString().equals("") || tryParse(element.getText().toString(), maxViewValue) < minBonus)
+                    element.setText(String.valueOf(minBonus));
+                else if (tryParse(element.getText().toString(), maxViewValue) > maxViewValue)
+                    element.setText(String.valueOf(maxViewValue));
             }
             updateSummary();
+        }
+    }
+
+    //Metoda "Sprawdź kto wygrywa"
+    public void checkWinner(EditText PlayerSummary, EditText MonsterSummary)
+    {
+        ImageView imageViewWinnerPlayer = findViewById(R.id.imageViewWinnerPlayer);
+        ImageView imageViewWinnerMonster = findViewById(R.id.imageViewWinnerMonster);
+
+        Drawable winnerDrawable = getResources().getDrawable(R.drawable.ic_munchkin_winner_24dp);
+        Drawable loserDrawable = getResources().getDrawable(R.drawable.ic_munchkin_loser_24dp);
+        Drawable tieDrawable = getResources().getDrawable(R.drawable.ic_munchkin_sword_24dp);
+
+        winnerDrawable.setTint(getResources().getColor(R.color.text_color));
+        loserDrawable.setTint(getResources().getColor(R.color.text_color));
+        tieDrawable.setTint(getResources().getColor(R.color.text_color));
+
+        if(tryParse(PlayerSummary.getText().toString(), minLevel) > tryParse(MonsterSummary.getText().toString(), minLevel))
+        {
+            imageViewWinnerPlayer.setImageDrawable(winnerDrawable);
+            imageViewWinnerMonster.setImageDrawable(loserDrawable);
+        }
+        else if(tryParse(PlayerSummary.getText().toString(), minLevel) < tryParse(MonsterSummary.getText().toString(), minLevel))
+        {
+            imageViewWinnerPlayer.setImageDrawable(loserDrawable);
+            imageViewWinnerMonster.setImageDrawable(winnerDrawable);
+        }
+        else
+        {
+            imageViewWinnerPlayer.setImageDrawable(tieDrawable);
+            imageViewWinnerMonster.setImageDrawable(tieDrawable);
         }
     }
 
@@ -373,6 +427,9 @@ public class KillOMeterActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
+        Drawable tieDrawable = getResources().getDrawable(R.drawable.ic_munchkin_sword_24dp);
+        tieDrawable.setTint(Color.BLACK);
+
         playerLevel = tryParse(editTextPlayerLevel.getText().toString(), maxPlayerLevel);
         Intent returnIntent = new Intent();
         returnIntent.putExtra("resultLevel", playerLevel);

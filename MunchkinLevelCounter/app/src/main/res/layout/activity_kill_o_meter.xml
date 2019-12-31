@@ -39,8 +39,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
                         android:text="Gracz"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+                    <ImageView
+                        android:id="@+id/imageViewWinnerPlayer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
 
                 </TableRow>
 
@@ -267,9 +273,15 @@
                         android:id="@+id/textViewMonsterName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|end"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
                         android:text="Potwór"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+                    <ImageView
+                        android:id="@+id/imageViewWinnerMonster"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
                 </TableRow>
 
                 <TableRow
