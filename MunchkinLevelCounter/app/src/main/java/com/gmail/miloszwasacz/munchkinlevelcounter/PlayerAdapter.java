@@ -24,8 +24,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.MyViewHold
 
     // Create new views (invoked by the layout manager)
     @Override
-    public PlayerAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                         int viewType)
+    public PlayerAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         // create a new view
         LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(parent.getContext())
