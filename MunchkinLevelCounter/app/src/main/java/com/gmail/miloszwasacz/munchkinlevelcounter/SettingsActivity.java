@@ -12,6 +12,7 @@ public class SettingsActivity extends AppCompatActivity
     String playerList;
     int maxPlayerLevel;
     int minLevel;
+    boolean editMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -24,6 +25,7 @@ public class SettingsActivity extends AppCompatActivity
         playerList = intent.getStringExtra("EXTRA_LIST");
         maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", getResources().getInteger(R.integer.deafult_rules));
         minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", getResources().getInteger(R.integer.deafult_min_level));
+        editMode = intent.getBooleanExtra("EXTRA_EDIT_MODE", true);
 
         final Switch switchGamemode = findViewById(R.id.switchGamemode);
         final Switch switchDungeon = findViewById(R.id.switchDungeon);
@@ -58,19 +60,15 @@ public class SettingsActivity extends AppCompatActivity
                 if (isChecked)
                 {
                     if(switchDungeon.isChecked())
-                        //maxPlayerLevelValue = 22;
                         maxPlayerLevel = getResources().getInteger(R.integer.epic_dungeon_rules);
                     else
-                        //maxPlayerLevelValue = 20;
                         maxPlayerLevel = getResources().getInteger(R.integer.epic_rules);
                 }
                 else
                 {
                     if(switchDungeon.isChecked())
-                        //maxPlayerLevelValue = 11;
                         maxPlayerLevel = getResources().getInteger(R.integer.dungeon_rules);
                     else
-                        //maxPlayerLevelValue = 10;
                         maxPlayerLevel = getResources().getInteger(R.integer.deafult_rules);
                 }
             }
@@ -81,19 +79,15 @@ public class SettingsActivity extends AppCompatActivity
                 if (isChecked)
                 {
                     if(switchGamemode.isChecked())
-                        //maxPlayerLevelValue = 22;
                         maxPlayerLevel = getResources().getInteger(R.integer.epic_dungeon_rules);
                     else
-                        //maxPlayerLevelValue = 11;
                         maxPlayerLevel = getResources().getInteger(R.integer.dungeon_rules);
                 }
                 else
                 {
                     if(switchGamemode.isChecked())
-                        //maxPlayerLevelValue = 20;
                         maxPlayerLevel = getResources().getInteger(R.integer.epic_rules);
                     else
-                        //maxPlayerLevelValue = 10;
                         maxPlayerLevel = getResources().getInteger(R.integer.deafult_rules);
                 }
             }
@@ -121,6 +115,7 @@ public class SettingsActivity extends AppCompatActivity
         returnIntent.putExtra("resultList", playerList);
         returnIntent.putExtra("resultMaxLevel", maxPlayerLevel);
         returnIntent.putExtra("resultMinLevel", minLevel);
+        returnIntent.putExtra("resultEditMode", editMode);
         setResult(RESULT_OK, returnIntent);
         finish();
     }
