@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity
     String SharedPrefs;
     int MaxPlayerLevel;
     int MinLevel;
+    List<Game> gameList;
+    //String gameIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity
         //Tworzenie domyślnej listy graczy
         if(savedInstanceState == null)
         {
+            //gameIndex = null;
             MaxPlayerLevel = getResources().getInteger(R.integer.deafult_rules);
             MinLevel = getResources().getInteger(R.integer.deafult_min_level);
 
@@ -181,11 +184,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     //Włączanie/wyłączanie trybu edycji
-    public void changeEditMode(int icon, Boolean bool, String title)
+    public void changeEditMode(int icon, Boolean enabled, String title)
     {
         getSupportActionBar().setTitle(title);
         floatingActionButton.setImageResource(icon);
-        adapter.editMode = bool;
+        adapter.editMode = enabled;
         invalidateOptionsMenu();
         adapter.notifyDataSetChanged();
     }
@@ -212,19 +215,19 @@ public class MainActivity extends AppCompatActivity
         MenuItem mSettingsButton = menu.findItem(R.id.navigation_settings);
         if(adapter.editMode)
         {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            mSaveButton.setVisible(true);
-            mLoadButton.setVisible(true);
-            mClearButton.setVisible(true);
-            mSettingsButton.setVisible(false);
-        }
-        else
-        {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             mSaveButton.setVisible(false);
             mLoadButton.setVisible(false);
             mClearButton.setVisible(false);
             mSettingsButton.setVisible(true);
+        }
+        else
+        {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mSaveButton.setVisible(true);
+            mLoadButton.setVisible(true);
+            mClearButton.setVisible(true);
+            mSettingsButton.setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -237,45 +240,139 @@ public class MainActivity extends AppCompatActivity
         {
             //Zapisanie rozgrywki
             case R.id.action_save:
-                Gson gsonSave = new Gson();
-                String jsonSave = gsonSave.toJson(list);
+                final FrameLayout frameLayout = (FrameLayout) getLayoutInflater().inflate(R.layout.player_dialog, null, false);
+                final EditText editText = (EditText) frameLayout.findViewById(R.id.editText);
 
-                SharedPreferences.Editor editor = getSharedPreferences(SharedPrefs, MODE_PRIVATE).edit();
-                editor.putInt("MaksymalnyPoziom", MaxPlayerLevel);
-                editor.putInt("MinimalnyPoziom", MinLevel);
-                editor.putString("ListaGraczyPrefs", jsonSave);
-                editor.commit();
-                changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Zapisz rozgrywkę")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                if(editText.getText().toString().equals(""))
+                                {
+                                    editText.setText("Gra " + (gameList.size() + 1));
+                                }
+                                SharedPreferences prefsSave = getSharedPreferences(SharedPrefs, MODE_PRIVATE);
+                                String listaGier = prefsSave.getString("ListaGierPrefs", null);
+                                if(listaGier == null)
+                                    gameList = new ArrayList<Game>();
+                                else
+                                {
+                                    Type listType = new TypeToken<ArrayList<Game>>(){}.getType();
+                                    gameList = new Gson().fromJson(listaGier, listType);
+                                }
 
-                Toast.makeText(this, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show();
+                                Gson gsonListSave = new Gson();
+                                String jsonListSave = gsonListSave.toJson(list);
+
+                                gameList.add(new Game(editText.getText().toString(), jsonListSave, MaxPlayerLevel, MinLevel));
+                                //gameIndex = String.valueOf(gameList.size() - 1);
+
+                                Gson gsonGameSave = new Gson();
+                                String jsonGameSave = gsonGameSave.toJson(gameList);
+
+                                SharedPreferences.Editor editor = getSharedPreferences(SharedPrefs, MODE_PRIVATE).edit();
+                                editor.putString("ListaGierPrefs", jsonGameSave);
+                                editor.commit();
+                                changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
+
+                                Toast.makeText(MainActivity.this, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton("Anuluj", null)
+                        .setView(frameLayout)
+                        .create()
+                        .show();
+
                 return true;
 
             //Wczytanie ostatniej rozgrywki
             case R.id.action_folder:
-                SharedPreferences prefs = getSharedPreferences(SharedPrefs, MODE_PRIVATE);
-                MaxPlayerLevel = prefs.getInt("MaksymalnyPoziom", getResources().getInteger(R.integer.deafult_rules));
-                MinLevel = prefs.getInt("MinimalnyPoziom", getResources().getInteger(R.integer.deafult_min_level));
-                String listaGraczy = prefs.getString("ListaGraczyPrefs", null);
-                Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
-                list = new Gson().fromJson(listaGraczy, listType);
-                setPlayerAdapter();
-                changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
+                SharedPreferences prefsLoad = getSharedPreferences(SharedPrefs, MODE_PRIVATE);
+                String listaGierWczytaj = prefsLoad.getString("ListaGierPrefs", null);
+                if(listaGierWczytaj == null)
+                    Toast.makeText(MainActivity.this, "Brak zapisanych rozgrywek", Toast.LENGTH_LONG).show();
+                else
+                {
+                    Type listType = new TypeToken<ArrayList<Game>>(){}.getType();
+                    gameList = new Gson().fromJson(listaGierWczytaj, listType);
 
-                Toast.makeText(this, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show();
+                    String[] nameArray = new String[gameList.size()];
+
+                    for (int i = 0; i < gameList.size(); i++)
+                    {
+                        nameArray[i] = gameList.get(i).name;
+                    }
+
+
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Wczytaj rozgrywkę")
+                            .setItems(nameArray, new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    //gameIndex = String.valueOf(which);
+                                    MaxPlayerLevel = gameList.get(which).maxLevel;
+                                    MinLevel = gameList.get(which).minLevel;
+                                    String jsonGame = gameList.get(which).content;
+                                    Type listType = new TypeToken<ArrayList<Player>>(){}.getType();
+                                    list = new Gson().fromJson(jsonGame, listType);
+                                    setPlayerAdapter();
+                                    changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
+
+                                    Toast.makeText(MainActivity.this, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .create()
+                            .show();
+                }
                 return true;
 
             //Przywrócenie stanu domyślnego
             case R.id.action_clear:
-                list = new ArrayList<Player>();
-                list.add(new Player("Gracz 1", MinLevel));
-                list.add(new Player("Gracz 2", MinLevel));
-                list.add(new Player("Gracz 3", MinLevel));
-                setPlayerAdapter();
-                MaxPlayerLevel = getResources().getInteger(R.integer.deafult_rules);
-                MinLevel = getResources().getInteger(R.integer.deafult_min_level);
-                changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
+                SharedPreferences prefsDelete = getSharedPreferences(SharedPrefs, MODE_PRIVATE);
+                String listaGierUsun = prefsDelete.getString("ListaGierPrefs", null);
+                if(listaGierUsun == null)
+                    Toast.makeText(MainActivity.this, "Brak zapisanych rozgrywek", Toast.LENGTH_LONG).show();
+                else
+                {
+                    Type listType = new TypeToken<ArrayList<Game>>(){}.getType();
+                    gameList = new Gson().fromJson(listaGierUsun, listType);
 
-                Toast.makeText(this, "Przywrócono domyśnych graczy", Toast.LENGTH_SHORT).show();
+                    String[] nameArray = new String[gameList.size()];
+
+                    for (int i = 0; i < gameList.size(); i++)
+                    {
+                        nameArray[i] = gameList.get(i).name;
+                    }
+
+
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Usuń rozgrywkę")
+                            .setItems(nameArray, new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    gameList.remove(which);
+                                    Gson gsonGameSave = new Gson();
+                                    String jsonGameSave = gsonGameSave.toJson(gameList);
+
+                                    SharedPreferences.Editor editor = getSharedPreferences(SharedPrefs, MODE_PRIVATE).edit();
+                                    editor.putString("ListaGierPrefs", jsonGameSave);
+                                    editor.commit();
+
+                                    changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik");
+
+                                    Toast.makeText(MainActivity.this, "Usunięto rozgrywkę", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .create()
+                            .show();
+                }
                 return true;
 
             //Otwarcie ustawień

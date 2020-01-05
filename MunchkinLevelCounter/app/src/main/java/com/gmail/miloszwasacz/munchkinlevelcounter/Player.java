@@ -2,7 +2,6 @@ package com.gmail.miloszwasacz.munchkinlevelcounter;
 
 public class Player
 {
-
     public String name;
     public int level;
 
