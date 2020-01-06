@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity
 
         //Tworzenie domyślnej listy graczy
         if(savedInstanceState == null)
-            createDeafultGame(list);
+            createDefaultGame(list);
 
         //Przywracanie stanu poprzedniego listy graczy
         else
@@ -274,8 +274,8 @@ public class MainActivity extends AppCompatActivity
                 if(gameList == null)
                     gameList = new ArrayList<Game>();
                 List<Player> lista = new ArrayList<Player>();
-                createDeafultGame(lista);
-                gameList.add(0, new Game("deafult", serializePlayerList(lista), MaxPlayerLevel, MinLevel));
+                createDefaultGame(lista);
+                gameList.add(0, new Game("default", serializePlayerList(lista), MaxPlayerLevel, MinLevel));
 
                 String[] nameArray = new String[gameList.size()];
                 for (int i = 0; i < gameList.size(); i++)
@@ -425,7 +425,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     //Stwórz domyślną grę
-    public void createDeafultGame(List<Player> list)
+    public void createDefaultGame(List<Player> list)
     {
         list.add(new Player("Gracz 1", MinLevel));
         list.add(new Player("Gracz 2", MinLevel));
