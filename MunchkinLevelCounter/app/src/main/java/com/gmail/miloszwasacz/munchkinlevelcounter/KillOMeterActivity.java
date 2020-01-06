@@ -354,25 +354,27 @@ public class KillOMeterActivity extends AppCompatActivity
     {
         for (EditText element:bracketList)
         {
+            removeLeadingZeros(element);
+
             if(element == editTextPlayerLevel)
             {
                 if (element.getText().toString().equals("") || tryParse(element.getText().toString(), maxPlayerLevel) < minLevel)
                     element.setText(String.valueOf(minLevel));
-                else if (tryParse(element.getText().toString(), maxPlayerLevel) > maxPlayerLevel)
+                else if (tryParse(element.getText().toString(), maxPlayerLevel) >= maxPlayerLevel)
                     element.setText(String.valueOf(maxPlayerLevel));
             }
             else if(element == editTextMonsterLevel)
             {
                 if (element.getText().toString().equals("") || tryParse(element.getText().toString(), maxViewValue) < minLevel)
                     element.setText(String.valueOf(minLevel));
-                else if (tryParse(element.getText().toString(), maxViewValue) > maxViewValue)
+                else if (tryParse(element.getText().toString(), maxViewValue) >= maxViewValue)
                     element.setText(String.valueOf(maxViewValue));
             }
             else
             {
                 if (element.getText().toString().equals("") || tryParse(element.getText().toString(), maxViewValue) < minBonus)
                     element.setText(String.valueOf(minBonus));
-                else if (tryParse(element.getText().toString(), maxViewValue) > maxViewValue)
+                else if (tryParse(element.getText().toString(), maxViewValue) >= maxViewValue)
                     element.setText(String.valueOf(maxViewValue));
             }
             updateSummary();
@@ -449,5 +451,15 @@ public class KillOMeterActivity extends AppCompatActivity
         } catch (NumberFormatException e) {
             return defaultVal;
         }
+    }
+
+    //Usuń zera z przodu
+    public void removeLeadingZeros(EditText bracket)
+    {
+        String value = bracket.getText().toString();
+        while(value.indexOf("0") == 0 && value.length() > 1)
+            value = value.substring(1);
+
+        bracket.setText(value);
     }
 }
