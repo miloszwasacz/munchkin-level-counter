@@ -1,22 +1,22 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import java.util.ArrayList
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_kill_o_meter.*
+import java.util.*
 
 class KillOMeterActivity : AppCompatActivity() {
-    internal var playerLevel: Int = 0
-    internal var playerPosition: Int = 0
-    internal var playerList: String
+    internal var playerLevel = resources.getInteger(R.integer.deafult_min_level)
+    internal var playerPosition = 0
+    internal lateinit var playerList: String
 
+    /*
     internal var editTextPlayerLevel: EditText
     internal var editTextPlayerItems: EditText
     internal var editTextPlayerBonus: EditText
@@ -25,17 +25,17 @@ class KillOMeterActivity : AppCompatActivity() {
     internal var editTextMonsterEnhancer: EditText
     internal var editTextMonsterBonus: EditText
     internal var editTextMonsterSummary: EditText
-    internal var editTextList: ArrayList<EditText>
-    internal var maxPlayerLevel: Int = 0
-    internal var maxViewValue: Int = 0
-    internal var minLevel: Int = 0
-    internal var minBonus: Int = 0
-    internal var operationAdd: String
-    internal var operationRemove: String
-    internal var levelIncrementation: Int = 0
-    internal var itemIncrementation: Int = 0
-    internal var bonusIncrementation: Int = 0
-    internal var enhancerIncrementation: Int = 0
+    internal var editTextList: ArrayList<EditText>*/
+    internal var maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
+    internal var maxViewValue = 999
+    internal var minLevel = resources.getInteger(R.integer.deafult_min_level)
+    internal var minBonus = resources.getInteger(R.integer.deafult_min_bonus)
+    internal var operationAdd = resources.getString(R.string.operation_add)
+    internal var operationRemove = resources.getString(R.string.operation_remove)
+    internal var levelIncrementation = resources.getInteger(R.integer.level_incremetation)
+    internal var itemIncrementation = resources.getInteger(R.integer.items_incrementation)
+    internal var bonusIncrementation = resources.getInteger(R.integer.bonus_incrementation)
+    internal var enhancerIncrementation = resources.getInteger(R.integer.enhancer_incrementation)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,13 +45,14 @@ class KillOMeterActivity : AppCompatActivity() {
         supportActionBar!!.title = "Kill-O-Meter"
 
         //Ustawianie domyślnych wartości
-        val intent = intent
+        //val intent = intent
         val playerName = intent.getStringExtra("EXTRA_NAME")
         playerLevel = intent.getIntExtra("EXTRA_LEVEL", resources.getInteger(R.integer.deafult_min_level))
         playerPosition = intent.getIntExtra("EXTRA_POSITION", 0)
         playerList = intent.getStringExtra("EXTRA_LIST")
         maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.deafult_rules))
         minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.deafult_min_level))
+        /*
         minBonus = resources.getInteger(R.integer.deafult_min_bonus)
         maxViewValue = 999
         operationAdd = resources.getString(R.string.operation_add)
@@ -59,15 +60,16 @@ class KillOMeterActivity : AppCompatActivity() {
         levelIncrementation = resources.getInteger(R.integer.level_incremetation)
         itemIncrementation = resources.getInteger(R.integer.items_incrementation)
         bonusIncrementation = resources.getInteger(R.integer.bonus_incrementation)
-        enhancerIncrementation = resources.getInteger(R.integer.enhancer_incrementation)
+        enhancerIncrementation = resources.getInteger(R.integer.enhancer_incrementation)*/
 
 
         //Ustawianie poziomu i nazwy gracza
-        val textViewPlayerName = findViewById<TextView>(R.id.textViewPlayerName)
+        //val textViewPlayerName = findViewById<TextView>(R.id.textViewPlayerName)
         textViewPlayerName.text = playerName
-        editTextPlayerLevel = findViewById(R.id.editTextPlayerLevel)
+        //editTextPlayerLevel = findViewById(R.id.editTextPlayerLevel)
         editTextPlayerLevel.setText(playerLevel.toString())
 
+        /*
         //Kontrolki gracza
         val imageViewPlayerLevelRemove = findViewById<ImageView>(R.id.imageViewPlayerLevelRemove)
         val imageViewPlayerLevelAdd = findViewById<ImageView>(R.id.imageViewPlayerLevelAdd)
@@ -95,10 +97,10 @@ class KillOMeterActivity : AppCompatActivity() {
         val imageViewMonsterBonusAdd = findViewById<ImageView>(R.id.imageViewMonsterBonusAdd)
         editTextMonsterBonus = findViewById(R.id.editTextMonsterBonus)
 
-        editTextMonsterSummary = findViewById(R.id.editTextMonsterSummary)
+        editTextMonsterSummary = findViewById(R.id.editTextMonsterSummary)*/
 
         //Stwórz listę pól
-        editTextList = ArrayList()
+        val editTextList = ArrayList<EditText>()
         editTextList.add(editTextPlayerLevel)
         editTextList.add(editTextPlayerItems)
         editTextList.add(editTextPlayerBonus)
@@ -219,7 +221,8 @@ class KillOMeterActivity : AppCompatActivity() {
                     bracket.setText(maxValue.toString())
             }
 
-        } else if (operation === resources.getString(R.string.operation_remove)) {
+        }
+        else if (operation === resources.getString(R.string.operation_remove)) {
             if (bracket.text.toString() == "" || tryParse(bracket.text.toString(), maxValue) < minValue)
                 bracket.setText(minValue.toString())
             else {
@@ -262,8 +265,8 @@ class KillOMeterActivity : AppCompatActivity() {
 
     //Metoda "Sprawdź kto wygrywa"
     fun checkWinner(PlayerSummary: EditText, MonsterSummary: EditText) {
-        val imageViewWinnerPlayer = findViewById<ImageView>(R.id.imageViewWinnerPlayer)
-        val imageViewWinnerMonster = findViewById<ImageView>(R.id.imageViewWinnerMonster)
+        //val imageViewWinnerPlayer = findViewById<ImageView>(R.id.imageViewWinnerPlayer)
+        //val imageViewWinnerMonster = findViewById<ImageView>(R.id.imageViewWinnerMonster)
 
         val winnerDrawable = resources.getDrawable(R.drawable.ic_munchkin_winner_24dp)
         val loserDrawable = resources.getDrawable(R.drawable.ic_munchkin_loser_24dp)
@@ -286,13 +289,12 @@ class KillOMeterActivity : AppCompatActivity() {
     }
 
     //Obsługa strzałeczki w tył
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
-        } else
-            return super.onOptionsItemSelected(item)
-    }
+    override fun onOptionsItemSelected(item: MenuItem) =
+            if (item.itemId == android.R.id.home) {
+                onBackPressed()
+                true
+            } else
+                super.onOptionsItemSelected(item)
 
     //Wyjście z Activity
     override fun onBackPressed() {
@@ -311,13 +313,10 @@ class KillOMeterActivity : AppCompatActivity() {
     }
 
     //tryParse int
-    fun tryParse(value: String, defaultVal: Int): Int {
-        try {
-            return Integer.parseInt(value)
-        } catch (e: NumberFormatException) {
-            return defaultVal
-        }
-
+    fun tryParse(value: String, defaultVal: Int) = try {
+        Integer.parseInt(value)
+    } catch (e: NumberFormatException) {
+        defaultVal
     }
 
     //Usuń zera z przodu

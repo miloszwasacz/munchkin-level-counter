@@ -1,16 +1,16 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.CompoundButton
 import android.widget.Switch
+import androidx.appcompat.app.AppCompatActivity
 
 class SettingsActivity : AppCompatActivity() {
-    internal var playerList: String
-    internal var maxPlayerLevel: Int = 0
-    internal var minLevel: Int = 0
+    internal lateinit var playerList: String
+    internal var maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
+    internal var minLevel = resources.getInteger(R.integer.deafult_min_level)
     internal var editMode: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +18,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         supportActionBar!!.title = "Ustawienia"
-        val intent = intent
+        //val intent = intent
         playerList = intent.getStringExtra("EXTRA_LIST")
         maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.deafult_rules))
         minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.deafult_min_level))
