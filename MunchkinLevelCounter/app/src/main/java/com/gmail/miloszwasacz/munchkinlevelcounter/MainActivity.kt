@@ -24,8 +24,8 @@ class MainActivity : AppCompatActivity() {
     internal lateinit var adapter: PlayerAdapter
     internal var list = ArrayList<Player>()
     internal var sharedPrefsName = "com.gmail.miloszwasacz.munchkinlevelcounter.prefs"
-    internal var maxPlayerLevel: Int = R.integer.deafult_rules
-    internal var minLevel: Int = R.integer.deafult_min_level
+    internal var maxPlayerLevel: Int = 10
+    internal var minLevel: Int = 1
     internal var gameList: MutableList<Game>? = null
     internal var editMode: Boolean = false
 
@@ -35,6 +35,8 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         supportActionBar!!.title = "Licznik"
+        maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
+        minLevel = resources.getInteger(R.integer.deafult_min_level)
 
         //list = ArrayList()
 
