@@ -9,8 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 class SettingsActivity : AppCompatActivity() {
     internal lateinit var playerList: String
-    internal var maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
-    internal var minLevel = resources.getInteger(R.integer.deafult_min_level)
+    internal var maxPlayerLevel = 10
+    internal var minLevel = 1
     internal var editMode: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +18,9 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         supportActionBar!!.title = "Ustawienia"
-        //val intent = intent
+        maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
+        minLevel = resources.getInteger(R.integer.deafult_min_level)
+
         playerList = intent.getStringExtra("EXTRA_LIST")
         maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.deafult_rules))
         minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.deafult_min_level))

@@ -24,8 +24,8 @@ class MainActivity : AppCompatActivity() {
     internal lateinit var adapter: PlayerAdapter
     internal var list = ArrayList<Player>()
     internal var sharedPrefsName = "com.gmail.miloszwasacz.munchkinlevelcounter.prefs"
-    internal var maxPlayerLevel: Int = 10
-    internal var minLevel: Int = 1
+    internal var maxPlayerLevel = 10
+    internal var minLevel = 1
     internal var gameList: MutableList<Game>? = null
     internal var editMode: Boolean = false
 

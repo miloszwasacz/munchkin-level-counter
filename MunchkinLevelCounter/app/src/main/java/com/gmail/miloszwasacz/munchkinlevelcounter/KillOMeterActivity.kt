@@ -12,30 +12,19 @@ import kotlinx.android.synthetic.main.activity_kill_o_meter.*
 import java.util.*
 
 class KillOMeterActivity : AppCompatActivity() {
-    internal var playerLevel = resources.getInteger(R.integer.deafult_min_level)
+    internal var playerLevel = 1
     internal var playerPosition = 0
     internal lateinit var playerList: String
-
-    /*
-    internal var editTextPlayerLevel: EditText
-    internal var editTextPlayerItems: EditText
-    internal var editTextPlayerBonus: EditText
-    internal var editTextPlayerSummary: EditText
-    internal var editTextMonsterLevel: EditText
-    internal var editTextMonsterEnhancer: EditText
-    internal var editTextMonsterBonus: EditText
-    internal var editTextMonsterSummary: EditText
-    internal var editTextList: ArrayList<EditText>*/
-    internal var maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
+    internal var maxPlayerLevel = 10
     internal var maxViewValue = 999
-    internal var minLevel = resources.getInteger(R.integer.deafult_min_level)
-    internal var minBonus = resources.getInteger(R.integer.deafult_min_bonus)
-    internal var operationAdd = resources.getString(R.string.operation_add)
-    internal var operationRemove = resources.getString(R.string.operation_remove)
-    internal var levelIncrementation = resources.getInteger(R.integer.level_incremetation)
-    internal var itemIncrementation = resources.getInteger(R.integer.items_incrementation)
-    internal var bonusIncrementation = resources.getInteger(R.integer.bonus_incrementation)
-    internal var enhancerIncrementation = resources.getInteger(R.integer.enhancer_incrementation)
+    internal var minLevel = 1
+    internal var minBonus = 0
+    internal lateinit var operationAdd: String
+    internal lateinit var operationRemove: String
+    internal var levelIncrementation = 1
+    internal var itemIncrementation = 1
+    internal var bonusIncrementation = 1
+    internal var enhancerIncrementation = 5
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,59 +34,29 @@ class KillOMeterActivity : AppCompatActivity() {
         supportActionBar!!.title = "Kill-O-Meter"
 
         //Ustawianie domyślnych wartości
-        //val intent = intent
+        playerLevel = resources.getInteger(R.integer.deafult_min_level)
+        maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
+        minLevel = resources.getInteger(R.integer.deafult_min_level)
+        minBonus = resources.getInteger(R.integer.deafult_min_bonus)
+        operationAdd = resources.getString(R.string.operation_add)
+        operationRemove = resources.getString(R.string.operation_remove)
+        levelIncrementation = resources.getInteger(R.integer.level_incremetation)
+        itemIncrementation = resources.getInteger(R.integer.items_incrementation)
+        bonusIncrementation = resources.getInteger(R.integer.bonus_incrementation)
+        enhancerIncrementation = resources.getInteger(R.integer.enhancer_incrementation)
+
         val playerName = intent.getStringExtra("EXTRA_NAME")
         playerLevel = intent.getIntExtra("EXTRA_LEVEL", resources.getInteger(R.integer.deafult_min_level))
         playerPosition = intent.getIntExtra("EXTRA_POSITION", 0)
         playerList = intent.getStringExtra("EXTRA_LIST")
         maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.deafult_rules))
         minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.deafult_min_level))
-        /*
-        minBonus = resources.getInteger(R.integer.deafult_min_bonus)
-        maxViewValue = 999
-        operationAdd = resources.getString(R.string.operation_add)
-        operationRemove = resources.getString(R.string.operation_remove)
-        levelIncrementation = resources.getInteger(R.integer.level_incremetation)
-        itemIncrementation = resources.getInteger(R.integer.items_incrementation)
-        bonusIncrementation = resources.getInteger(R.integer.bonus_incrementation)
-        enhancerIncrementation = resources.getInteger(R.integer.enhancer_incrementation)*/
+
 
 
         //Ustawianie poziomu i nazwy gracza
-        //val textViewPlayerName = findViewById<TextView>(R.id.textViewPlayerName)
         textViewPlayerName.text = playerName
-        //editTextPlayerLevel = findViewById(R.id.editTextPlayerLevel)
         editTextPlayerLevel.setText(playerLevel.toString())
-
-        /*
-        //Kontrolki gracza
-        val imageViewPlayerLevelRemove = findViewById<ImageView>(R.id.imageViewPlayerLevelRemove)
-        val imageViewPlayerLevelAdd = findViewById<ImageView>(R.id.imageViewPlayerLevelAdd)
-
-        val imageViewPlayerItemsRemove = findViewById<ImageView>(R.id.imageViewPlayerItemsRemove)
-        val imageViewPlayerItemsAdd = findViewById<ImageView>(R.id.imageViewPlayerItemsAdd)
-        editTextPlayerItems = findViewById(R.id.editTextPlayerItems)
-
-        val imageViewPlayerBonusRemove = findViewById<ImageView>(R.id.imageViewPlayerBonusRemove)
-        val imageViewPlayerBonusAdd = findViewById<ImageView>(R.id.imageViewPlayerBonusAdd)
-        editTextPlayerBonus = findViewById(R.id.editTextPlayerBonus)
-
-        editTextPlayerSummary = findViewById(R.id.editTextPlayerSummary)
-
-        //Kontrolki potwora
-        val imageViewMonsterLevelRemove = findViewById<ImageView>(R.id.imageViewMonsterLevelRemove)
-        val imageViewMonsterLevelAdd = findViewById<ImageView>(R.id.imageViewMonsterLevelAdd)
-        editTextMonsterLevel = findViewById(R.id.editTextMonsterLevel)
-
-        val imageViewMonsterEnhancerRemove = findViewById<ImageView>(R.id.imageViewMonsterEnhancerRemove)
-        val imageViewMonsterEnhancerAdd = findViewById<ImageView>(R.id.imageViewMonsterEnhancerAdd)
-        editTextMonsterEnhancer = findViewById(R.id.editTextMonsterEnhancer)
-
-        val imageViewMonsterBonusRemove = findViewById<ImageView>(R.id.imageViewMonsterBonusRemove)
-        val imageViewMonsterBonusAdd = findViewById<ImageView>(R.id.imageViewMonsterBonusAdd)
-        editTextMonsterBonus = findViewById(R.id.editTextMonsterBonus)
-
-        editTextMonsterSummary = findViewById(R.id.editTextMonsterSummary)*/
 
         //Stwórz listę pól
         val editTextList = ArrayList<EditText>()
@@ -265,8 +224,6 @@ class KillOMeterActivity : AppCompatActivity() {
 
     //Metoda "Sprawdź kto wygrywa"
     fun checkWinner(PlayerSummary: EditText, MonsterSummary: EditText) {
-        //val imageViewWinnerPlayer = findViewById<ImageView>(R.id.imageViewWinnerPlayer)
-        //val imageViewWinnerMonster = findViewById<ImageView>(R.id.imageViewWinnerMonster)
 
         val winnerDrawable = resources.getDrawable(R.drawable.ic_munchkin_winner_24dp)
         val loserDrawable = resources.getDrawable(R.drawable.ic_munchkin_loser_24dp)
