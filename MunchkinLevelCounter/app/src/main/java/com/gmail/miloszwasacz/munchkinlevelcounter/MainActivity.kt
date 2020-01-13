@@ -223,96 +223,18 @@ class MainActivity : AppCompatActivity() {
             //Tworzenie nowej rozgrywki
             R.id.action_create_new -> {
                 createNewGame(gameList)
-                /*
-                val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
-                val editText = frameLayout.findViewById<View>(R.id.editText) as EditText
-
-                AlertDialog.Builder(this@MainActivity)
-                        .setTitle("Dodaj grę")
-                        .setPositiveButton("Ok") { dialog, which ->
-                            if (gameList == null)
-                                gameList = ArrayList()
-
-                            if (editText.text.toString() == "")
-                                editText.setText("Gra " + (gameList!!.size + 1))
-
-                            val playerList = ArrayList<Player>()
-                            playerList.add(Player("Gracz 1", resources.getInteger(R.integer.default_min_level)))
-                            playerList.add(Player("Gracz 2", resources.getInteger(R.integer.default_min_level)))
-                            playerList.add(Player("Gracz 3", resources.getInteger(R.integer.default_min_level)))
-                            game = Game(editText.text.toString(), serializePlayerList(playerList), resources.getInteger(R.integer.default_rules), resources.getInteger(R.integer.default_min_level))
-                            gameList!!.add(game)
-                            saveGameListInSharedPreferences(gameList)
-
-                            changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
-                            Toast.makeText(this@MainActivity, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show()
-                        }
-                        .setNegativeButton("Anuluj", null)
-                        .setView(frameLayout)
-                        .create()
-                        .show()*/
-
                 return true
             }
 
             //Wczytanie ostatniej rozgrywki
             R.id.action_folder -> {
                 loadGame(gameList)
-                /*if (gameList == null)
-                    gameList = ArrayList()
-                val lista = ArrayList<Player>()
-                //createDefaultGame(lista)
-                gameList!!.add(0, Game("default", serializePlayerList(lista), maxPlayerLevel, minLevel))
-
-                val nameArray = arrayOfNulls<String>(gameList!!.size)
-                for (i in gameList!!.indices) {
-                    nameArray[i] = gameList!![i].name
-                }
-
-                AlertDialog.Builder(this@MainActivity)
-                        .setTitle("Wczytaj rozgrywkę")
-                        .setItems(nameArray) { dialog, which ->
-                            maxPlayerLevel = gameList!![which].maxLevel
-                            minLevel = gameList!![which].minLevel
-                            val jsonGame = gameList!![which].content
-                            val listType = object : TypeToken<ArrayList<Player>>() {}.type
-                            list = Gson().fromJson<ArrayList<Player>>(jsonGame, listType)
-                            setPlayerAdapter()
-                            changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
-
-                            Toast.makeText(this@MainActivity, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show()
-                        }
-                        .create()
-                        .show()*/
-
                 return true
             }
 
             //Usunięcie gry z listy
             R.id.action_clear -> {
                 deleteGame(gameList)
-                /*
-                if (gameList == null)
-                    Toast.makeText(this@MainActivity, "Brak zapisanych rozgrywek", Toast.LENGTH_SHORT).show()
-                else {
-                    val nameArrayDelete = arrayOfNulls<String>(gameList!!.size)
-
-                    for (i in gameList!!.indices) {
-                        nameArrayDelete[i] = gameList!![i].name
-                    }
-
-                    AlertDialog.Builder(this@MainActivity)
-                            .setTitle("Usuń rozgrywkę")
-                            .setItems(nameArrayDelete) { dialog, which ->
-                                gameList!!.removeAt(which)
-                                saveGameListInSharedPreferences(gameList)
-
-                                changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
-                                Toast.makeText(this@MainActivity, "Usunięto rozgrywkę", Toast.LENGTH_SHORT).show()
-                            }
-                            .create()
-                            .show()
-                }*/
                 return true
             }
 
@@ -321,7 +243,7 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this@MainActivity, SettingsActivity::class.java)
                 intent.putExtra("EXTRA_MAX_LEVEL", game.maxLevel)
                 intent.putExtra("EXTRA_MIN_LEVEL", game.minLevel)
-                intent.putExtra("EXTRA_EDIT_MODE", adapter.editMode)
+                intent.putExtra("EXTRA_GAME_NAME", game.name)
                 startActivityForResult(intent, 2)
                 return true
             }
@@ -363,6 +285,7 @@ class MainActivity : AppCompatActivity() {
         else if (requestCode == 2) {
             game.maxLevel= data!!.getIntExtra("resultMaxLevel", resources.getInteger(R.integer.default_rules))
             game.minLevel = data.getIntExtra("resultMinLevel", resources.getInteger(R.integer.default_min_level))
+            game.name = data.getStringExtra("resultName")
             if (resultCode == Activity.RESULT_OK)
                 setPlayerAdapter(game, visibleEditMode)
         }
