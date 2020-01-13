@@ -8,16 +8,17 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_kill_o_meter.*
-import java.util.*
 
 class KillOMeterActivity : AppCompatActivity() {
-    internal var playerLevel = 1
+    //internal var playerLevel = 1
     internal var playerPosition = 0
-    internal lateinit var playerList: String
-    internal var maxPlayerLevel = 10
+    internal lateinit var playerList: ArrayList<Player>
+    //internal var maxPlayerLevel = 10
     internal var maxViewValue = 999
-    internal var minLevel = 1
+    //internal var minLevel = 1
     internal var minBonus = 0
     internal lateinit var operationAdd: String
     internal lateinit var operationRemove: String
@@ -25,19 +26,20 @@ class KillOMeterActivity : AppCompatActivity() {
     internal var itemIncrementation = 1
     internal var bonusIncrementation = 1
     internal var enhancerIncrementation = 5
-
+    internal lateinit var game: Game
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_kill_o_meter)
 
         supportActionBar!!.title = "Kill-O-Meter"
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         //Ustawianie domyślnych wartości
-        playerLevel = resources.getInteger(R.integer.deafult_min_level)
-        maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
-        minLevel = resources.getInteger(R.integer.deafult_min_level)
-        minBonus = resources.getInteger(R.integer.deafult_min_bonus)
+        //playerLevel = resources.getInteger(R.integer.default_min_level)
+        //maxPlayerLevel = resources.getInteger(R.integer.default_rules)
+        //minLevel = resources.getInteger(R.integer.default_min_level)
+        minBonus = resources.getInteger(R.integer.default_min_bonus)
         operationAdd = resources.getString(R.string.operation_add)
         operationRemove = resources.getString(R.string.operation_remove)
         levelIncrementation = resources.getInteger(R.integer.level_incremetation)
@@ -45,18 +47,23 @@ class KillOMeterActivity : AppCompatActivity() {
         bonusIncrementation = resources.getInteger(R.integer.bonus_incrementation)
         enhancerIncrementation = resources.getInteger(R.integer.enhancer_incrementation)
 
-        val playerName = intent.getStringExtra("EXTRA_NAME")
-        playerLevel = intent.getIntExtra("EXTRA_LEVEL", resources.getInteger(R.integer.deafult_min_level))
+        //val playerName = intent.getStringExtra("EXTRA_NAME")
+        //playerLevel = intent.getIntExtra("EXTRA_LEVEL", resources.getInteger(R.integer.default_min_level))
         playerPosition = intent.getIntExtra("EXTRA_POSITION", 0)
-        playerList = intent.getStringExtra("EXTRA_LIST")
-        maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.deafult_rules))
-        minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.deafult_min_level))
+        val json = intent.getStringExtra("EXTRA_GAME")
+        val gameType = object : TypeToken<Game>() {}.type
+        game = Gson().fromJson<Game>(json, gameType)
+        playerList = MainActivity().extractPlayerListFromGame(game)
+
+        //playerList = intent.getStringExtra("EXTRA_LIST")
+        //maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.default_rules))
+        //minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.default_min_level))
 
 
 
         //Ustawianie poziomu i nazwy gracza
-        textViewPlayerName.text = playerName
-        editTextPlayerLevel.setText(playerLevel.toString())
+        textViewPlayerName.text = playerList[playerPosition].name
+        editTextPlayerLevel.setText(playerList[playerPosition].level.toString())
 
         //Stwórz listę pól
         val editTextList = ArrayList<EditText>()
@@ -71,13 +78,13 @@ class KillOMeterActivity : AppCompatActivity() {
 
         //Odejmij poziom graczowi
         imageViewPlayerLevelRemove.setOnClickListener {
-            editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, operationRemove, levelIncrementation)
+            editValueInBracket(game.minLevel, game.maxLevel, editTextPlayerLevel, operationRemove, levelIncrementation)
             checkValuesInBrackets(editTextList)
         }
 
         //Dodaj poziom graczowi
         imageViewPlayerLevelAdd.setOnClickListener {
-            editValueInBracket(minLevel, maxPlayerLevel, editTextPlayerLevel, operationAdd, levelIncrementation)
+            editValueInBracket(game.minLevel, game.maxLevel, editTextPlayerLevel, operationAdd, levelIncrementation)
             checkValuesInBrackets(editTextList)
         }
 
@@ -117,13 +124,13 @@ class KillOMeterActivity : AppCompatActivity() {
 
         //Odejmij poziom potworowi
         imageViewMonsterLevelRemove.setOnClickListener {
-            editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, operationRemove, levelIncrementation)
+            editValueInBracket(game.minLevel, maxViewValue, editTextMonsterLevel, operationRemove, levelIncrementation)
             checkValuesInBrackets(editTextList)
         }
 
         //Dodaj poziom potworowi
         imageViewMonsterLevelAdd.setOnClickListener {
-            editValueInBracket(minLevel, maxViewValue, editTextMonsterLevel, operationAdd, levelIncrementation)
+            editValueInBracket(game.minLevel, maxViewValue, editTextMonsterLevel, operationAdd, levelIncrementation)
             checkValuesInBrackets(editTextList)
         }
 
@@ -163,7 +170,7 @@ class KillOMeterActivity : AppCompatActivity() {
 
     //Metoda "Zsumuj moc gracza i potwora"
     fun updateSummary() {
-        editTextPlayerSummary.setText((tryParse(editTextPlayerLevel.text.toString(), maxPlayerLevel) + tryParse(editTextPlayerItems.text.toString(), maxViewValue) + tryParse(editTextPlayerBonus.text.toString(), maxViewValue)).toString())
+        editTextPlayerSummary.setText((tryParse(editTextPlayerLevel.text.toString(), game.maxLevel) + tryParse(editTextPlayerItems.text.toString(), maxViewValue) + tryParse(editTextPlayerBonus.text.toString(), maxViewValue)).toString())
         editTextMonsterSummary.setText((tryParse(editTextMonsterLevel.text.toString(), maxViewValue) + tryParse(editTextMonsterEnhancer.text.toString(), maxViewValue) + tryParse(editTextMonsterBonus.text.toString(), maxViewValue)).toString())
         checkWinner(editTextPlayerSummary, editTextMonsterSummary)
     }
@@ -203,13 +210,13 @@ class KillOMeterActivity : AppCompatActivity() {
             removeLeadingZeros(element)
 
             if (element === editTextPlayerLevel) {
-                if (element.text.toString() == "" || tryParse(element.text.toString(), maxPlayerLevel) < minLevel)
-                    element.setText(minLevel.toString())
-                else if (tryParse(element.text.toString(), maxPlayerLevel) >= maxPlayerLevel)
-                    element.setText(maxPlayerLevel.toString())
+                if (element.text.toString() == "" || tryParse(element.text.toString(), game.maxLevel) < game.minLevel)
+                    element.setText(game.minLevel.toString())
+                else if (tryParse(element.text.toString(), game.maxLevel) >= game.maxLevel)
+                    element.setText(game.maxLevel.toString())
             } else if (element === editTextMonsterLevel) {
-                if (element.text.toString() == "" || tryParse(element.text.toString(), maxViewValue) < minLevel)
-                    element.setText(minLevel.toString())
+                if (element.text.toString() == "" || tryParse(element.text.toString(), maxViewValue) < game.minLevel)
+                    element.setText(game.minLevel.toString())
                 else if (tryParse(element.text.toString(), maxViewValue) >= maxViewValue)
                     element.setText(maxViewValue.toString())
             } else {
@@ -233,10 +240,10 @@ class KillOMeterActivity : AppCompatActivity() {
         loserDrawable.setTint(resources.getColor(R.color.text_color))
         tieDrawable.setTint(resources.getColor(R.color.text_color))
 
-        if (tryParse(PlayerSummary.text.toString(), minLevel) > tryParse(MonsterSummary.text.toString(), minLevel)) {
+        if (tryParse(PlayerSummary.text.toString(), game.minLevel) > tryParse(MonsterSummary.text.toString(), game.minLevel)) {
             imageViewWinnerPlayer.setImageDrawable(winnerDrawable)
             imageViewWinnerMonster.setImageDrawable(loserDrawable)
-        } else if (tryParse(PlayerSummary.text.toString(), minLevel) < tryParse(MonsterSummary.text.toString(), minLevel)) {
+        } else if (tryParse(PlayerSummary.text.toString(), game.minLevel) < tryParse(MonsterSummary.text.toString(), game.minLevel)) {
             imageViewWinnerPlayer.setImageDrawable(loserDrawable)
             imageViewWinnerMonster.setImageDrawable(winnerDrawable)
         } else {
@@ -258,13 +265,16 @@ class KillOMeterActivity : AppCompatActivity() {
         val tieDrawable = resources.getDrawable(R.drawable.ic_munchkin_sword_24dp)
         tieDrawable.setTint(Color.BLACK)
 
-        playerLevel = tryParse(editTextPlayerLevel.text.toString(), maxPlayerLevel)
+        playerList[playerPosition].level= tryParse(editTextPlayerLevel.text.toString(), game.maxLevel)
+        MainActivity().insertPlayerListIntoGame(playerList, game)
+        val json = Gson().toJson(game)
         val returnIntent = Intent()
-        returnIntent.putExtra("resultLevel", playerLevel)
-        returnIntent.putExtra("resultPosition", playerPosition)
-        returnIntent.putExtra("resultList", playerList)
-        returnIntent.putExtra("resultMaxLevel", maxPlayerLevel)
-        returnIntent.putExtra("resultMinLevel", minLevel)
+        //returnIntent.putExtra("resultLevel", playerLevel)
+        //returnIntent.putExtra("resultPosition", playerPosition)
+        //returnIntent.putExtra("resultList", playerList)
+        //returnIntent.putExtra("resultMaxLevel", maxPlayerLevel)
+        //returnIntent.putExtra("resultMinLevel", minLevel)
+        returnIntent.putExtra("resultGame", json)
         setResult(Activity.RESULT_OK, returnIntent)
         finish()
     }

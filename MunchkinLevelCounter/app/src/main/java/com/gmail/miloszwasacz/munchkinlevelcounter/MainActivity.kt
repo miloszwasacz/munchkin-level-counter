@@ -16,17 +16,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.player_dialog.*
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     internal lateinit var adapter: PlayerAdapter
-    internal var list = ArrayList<Player>()
+    internal lateinit var game: Game
     internal var sharedPrefsName = "com.gmail.miloszwasacz.munchkinlevelcounter.prefs"
-    internal var maxPlayerLevel = 10
-    internal var minLevel = 1
-    internal var gameList: MutableList<Game>? = null
+    internal lateinit var gameList: ArrayList<Game>
     internal var editMode: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,56 +31,60 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         supportActionBar!!.title = "Licznik"
-        maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
-        minLevel = resources.getInteger(R.integer.deafult_min_level)
 
-        //list = ArrayList()
+        gameList = getGameListFromSharedPreferences() ?: ArrayList<Game>()
 
-        //Tworzenie domyślnej listy graczy
-        if (savedInstanceState == null)
-            createDefaultGame(list)
+
         //Przywracanie stanu poprzedniego listy graczy
+        if(savedInstanceState != null){
+            val json = savedInstanceState.getString("Gra")
+            val gameType = object : TypeToken<Game>() {}.type
+            game = Gson().fromJson<Game>(json, gameType)
+        }
         else {
-            maxPlayerLevel = savedInstanceState.getInt("MaksymalnyPoziom", resources.getInteger(R.integer.deafult_rules))
-            minLevel = savedInstanceState.getInt("MinimalnyPoziom", resources.getInteger(R.integer.deafult_min_level))
-            val json = savedInstanceState.getString("ListaGraczy")
-            val listType = object : TypeToken<ArrayList<Player>>() {}.type
-            list = Gson().fromJson<ArrayList<Player>>(json, listType)
+            if(gameList.isEmpty()) {
+                createNewGame(gameList)
+            }
+            else {
+                loadGame(gameList)
+            }
         }
 
-        setPlayerAdapter()
+        setPlayerAdapter(game)
 
         //Zmiana trybu guzika: edycja/dodawanie graczy
         floatingActionButton.setOnClickListener {
             if (adapter.editMode) {
-                list.add(Player("Nowy gracz", minLevel))
-                adapter.notifyItemInserted(list.size - 1)
+                val list = extractPlayerListFromGame(game)
+                list.add(Player("Nowy gracz", game.minLevel))
+                insertPlayerListIntoGame(list, game)
+                setPlayerAdapter(game)
             } else
                 changeEditMode(R.drawable.ic_baseline_add_white_24dp, true, "Edytuj graczy")
         }
     }
 
     //RecyclerView i PlayerAdapter
-    fun setPlayerAdapter() {
-        //val recyclerView = findViewById<View>(R.id.recycler_view) as RecyclerView
+    fun setPlayerAdapter(game: Game) {
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager = LinearLayoutManager(this)
+        val list: ArrayList<Player> = extractPlayerListFromGame(game)
         adapter = PlayerAdapter(list)
         adapter.editMode = editMode
 
         //Sprawdzenie czy poziomy graczy są w dozwolonym zakresie
         for (element in list) {
-            if (element.level > maxPlayerLevel)
-                element.level = maxPlayerLevel
-            else if (element.level < minLevel)
-                element.level = minLevel
+            if (element.level > game.maxLevel)
+                element.level = game.maxLevel
+            else if (element.level < game.minLevel)
+                element.level = game.minLevel
         }
 
         adapter.setOnItemClickListener(object : PlayerAdapter.OnItemClickListener {
             //Edycja poszczególnego gracza
             override fun onItemClick(position: Int) {
                 val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
-                //val editText = frameLayout.findViewById<View>(R.id.editText) as EditText
+                val editText = frameLayout.findViewById<EditText>(R.id.editText)
                 editText.setText(list[position].name)
 
                 AlertDialog.Builder(this@MainActivity)
@@ -101,35 +101,34 @@ class MainActivity : AppCompatActivity() {
                         .setView(frameLayout)
                         .create()
                         .show()
+
+                insertPlayerListIntoGame(list, game)
             }
 
             //Zwiększenie poziomu gracza
             override fun onAddClick(position: Int) {
-                if (list[position].level < maxPlayerLevel) {
+                if (list[position].level < game.maxLevel) {
                     list[position].level++
                     adapter.notifyItemChanged(position)
+                    insertPlayerListIntoGame(list, game)
                 }
             }
 
             //Zmniejszenie poziomu gracza
             override fun onRemoveClick(position: Int) {
-                if (list[position].level > minLevel) {
+                if (list[position].level > game.minLevel) {
                     list[position].level--
                     adapter.notifyItemChanged(position)
+                    insertPlayerListIntoGame(list, game)
                 }
             }
 
             //Wejście w tryb Kill-O-Meter
             override fun onFightClick(position: Int) {
+                insertPlayerListIntoGame(list, game)
                 val intent = Intent(this@MainActivity, KillOMeterActivity::class.java)
-                val playerLevel = list[position].level
-                val playerName = list[position].name
-                intent.putExtra("EXTRA_LEVEL", playerLevel)
-                intent.putExtra("EXTRA_NAME", playerName)
                 intent.putExtra("EXTRA_POSITION", position)
-                intent.putExtra("EXTRA_LIST", serializePlayerList(list))
-                intent.putExtra("EXTRA_MAX_LEVEL", maxPlayerLevel)
-                intent.putExtra("EXTRA_MIN_LEVEL", minLevel)
+                intent.putExtra("EXTRA_GAME", Gson().toJson(game))
                 startActivityForResult(intent, 1)
             }
         })
@@ -180,21 +179,19 @@ class MainActivity : AppCompatActivity() {
 
     //Obsługa guzików na app barze
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val prefs = getSharedPreferences(sharedPrefsName, Context.MODE_PRIVATE)
-        val listaGier = prefs.getString("ListaGierPrefs", null)
-        val listType = object : TypeToken<ArrayList<Game>>() {}.type
-        gameList = Gson().fromJson<MutableList<Game>>(listaGier, listType)
-        if (gameList!!.isEmpty())
-            gameList = null
+        gameList = getGameListFromSharedPreferences() ?: ArrayList<Game>()
 
         when (item.itemId) {
-            //Zapisanie rozgrywki
+            //Tworzenie nowej rozgrywki
             R.id.action_save -> {
+
+
+                /*
                 val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
                 val editText = frameLayout.findViewById<View>(R.id.editText) as EditText
 
                 AlertDialog.Builder(this@MainActivity)
-                        .setTitle("Zapisz rozgrywkę")
+                        .setTitle("Dodaj grę")
                         .setPositiveButton("Ok") { dialog, which ->
                             if (gameList == null)
                                 gameList = ArrayList()
@@ -202,7 +199,12 @@ class MainActivity : AppCompatActivity() {
                             if (editText.text.toString() == "")
                                 editText.setText("Gra " + (gameList!!.size + 1))
 
-                            gameList!!.add(Game(editText.text.toString(), serializePlayerList(list), maxPlayerLevel, minLevel))
+                            val playerList = ArrayList<Player>()
+                            playerList.add(Player("Gracz 1", resources.getInteger(R.integer.default_min_level)))
+                            playerList.add(Player("Gracz 2", resources.getInteger(R.integer.default_min_level)))
+                            playerList.add(Player("Gracz 3", resources.getInteger(R.integer.default_min_level)))
+                            game = Game(editText.text.toString(), serializePlayerList(playerList), resources.getInteger(R.integer.default_rules), resources.getInteger(R.integer.default_min_level))
+                            gameList!!.add(game)
                             saveGameListInSharedPreferences(gameList)
 
                             changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
@@ -211,17 +213,17 @@ class MainActivity : AppCompatActivity() {
                         .setNegativeButton("Anuluj", null)
                         .setView(frameLayout)
                         .create()
-                        .show()
+                        .show()*/
 
                 return true
             }
 
             //Wczytanie ostatniej rozgrywki
             R.id.action_folder -> {
-                if (gameList == null)
+                /*if (gameList == null)
                     gameList = ArrayList()
                 val lista = ArrayList<Player>()
-                createDefaultGame(lista)
+                //createDefaultGame(lista)
                 gameList!!.add(0, Game("default", serializePlayerList(lista), maxPlayerLevel, minLevel))
 
                 val nameArray = arrayOfNulls<String>(gameList!!.size)
@@ -243,7 +245,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.makeText(this@MainActivity, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show()
                         }
                         .create()
-                        .show()
+                        .show()*/
 
                 return true
             }
@@ -277,9 +279,8 @@ class MainActivity : AppCompatActivity() {
             //Otwarcie ustawień
             R.id.navigation_settings -> {
                 val intent = Intent(this@MainActivity, SettingsActivity::class.java)
-                intent.putExtra("EXTRA_LIST", serializePlayerList(list))
-                intent.putExtra("EXTRA_MAX_LEVEL", maxPlayerLevel)
-                intent.putExtra("EXTRA_MIN_LEVEL", minLevel)
+                intent.putExtra("EXTRA_MAX_LEVEL", game.maxLevel)
+                intent.putExtra("EXTRA_MIN_LEVEL", game.minLevel)
                 intent.putExtra("EXTRA_EDIT_MODE", adapter.editMode)
                 startActivityForResult(intent, 2)
                 return true
@@ -298,62 +299,122 @@ class MainActivity : AppCompatActivity() {
     //Zapisywanie stanu listy graczy
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
-        val json = Gson().toJson(list)
-
-        savedInstanceState.putString("ListaGraczy", json)
-        savedInstanceState.putInt("MaksymalnyPoziom", maxPlayerLevel)
-        savedInstanceState.putInt("MinimalnyPoziom", minLevel)
+        val json = Gson().toJson(game)
+        savedInstanceState.putString("Gra", json)
     }
 
     //Odebranie danych z innych Activity
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         //Aktualizacja poziomu z Kill-O-Meter'a
         if (requestCode == 1) {
-            maxPlayerLevel = data!!.getIntExtra("resultMaxLevel", resources.getInteger(R.integer.deafult_rules))
-            minLevel = data.getIntExtra("resultMinLevel", resources.getInteger(R.integer.deafult_min_level))
-            val resultPosition = data.getIntExtra("resultPosition", 0)
-            val resultLevel = data.getIntExtra("resultLevel", minLevel)
-            val json = data.getStringExtra("resultList")
-            val listType = object : TypeToken<ArrayList<Player>>() {}.type
-            list = Gson().fromJson<ArrayList<Player>>(json, listType)
+            val json = data!!.getStringExtra("resultGame")
+            val listType = object : TypeToken<Game>() {}.type
+            game = Gson().fromJson<Game>(json, listType)
             if (resultCode == Activity.RESULT_OK) {
-                list[resultPosition].level = resultLevel
-                setPlayerAdapter()
+                setPlayerAdapter(game)
             }
         }
         //Sprawdzenie poziomów po aktualizacji maksymalnego poziomu
         else if (requestCode == 2) {
             editMode = data!!.getBooleanExtra("resultEditMode", true)
-            maxPlayerLevel = data.getIntExtra("resultMaxLevel", resources.getInteger(R.integer.deafult_rules))
-            minLevel = data.getIntExtra("resultMinLevel", resources.getInteger(R.integer.deafult_min_level))
-            val json = data.getStringExtra("resultList")
-            val listType = object : TypeToken<ArrayList<Player>>() {}.type
-            list = Gson().fromJson<ArrayList<Player>>(json, listType)
+            game.maxLevel= data.getIntExtra("resultMaxLevel", resources.getInteger(R.integer.default_rules))
+            game.minLevel = data.getIntExtra("resultMinLevel", resources.getInteger(R.integer.default_min_level))
             if (resultCode == Activity.RESULT_OK)
-                setPlayerAdapter()
+                setPlayerAdapter(game)
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
     //Zapisywanie listy gier do SharedPreferences
-    fun saveGameListInSharedPreferences(list: List<Game>?) {
-        //val gsonGame = Gson()
+    fun saveGameListInSharedPreferences(list: ArrayList<Game>) {
         val jsonGame = Gson().toJson(list)
         val editor = getSharedPreferences(sharedPrefsName, Context.MODE_PRIVATE).edit()
         editor.putString("ListaGierPrefs", jsonGame)
         editor.commit()
     }
 
+    fun getGameListFromSharedPreferences(): ArrayList<Game>? {
+        val prefs = getSharedPreferences(sharedPrefsName, Context.MODE_PRIVATE)
+        val listaGier: String? = prefs.getString("ListaGierPrefs", null)
+        val listType = object : TypeToken<ArrayList<Game>>() {}.type
+        return when(listaGier) {
+            null -> null
+            else -> Gson().fromJson<ArrayList<Game>>(listaGier, listType)
+        }
+    }
+
     //Zserializuj listę graczy do jsona
-    fun serializePlayerList(list: List<Player>) = Gson().toJson(list)
+    fun serializePlayerList(list: List<Player>): String = Gson().toJson(list)
 
     //Stwórz domyślną grę
-    fun createDefaultGame(list: MutableList<Player>) {
-        list += Player("Gracz 1", minLevel)
-        list += Player("Gracz 2", minLevel)
-        list += Player("Gracz 3", minLevel)
+    fun createDefaultGame(name: String): Game {
+        val playerList = ArrayList<Player>()
+        playerList.add(Player("Gracz 1", resources.getInteger(R.integer.default_min_level)))
+        playerList.add(Player("Gracz 2", resources.getInteger(R.integer.default_min_level)))
+        playerList.add(Player("Gracz 3", resources.getInteger(R.integer.default_min_level)))
+        return Game(name, serializePlayerList(playerList))
+    }
 
-        maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
-        minLevel = resources.getInteger(R.integer.deafult_min_level)
+    fun extractPlayerListFromGame(game: Game): ArrayList<Player> {
+        val json = game.content
+        val listType = object : TypeToken<ArrayList<Player>>() {}.type
+        return Gson().fromJson<ArrayList<Player>>(json, listType)
+    }
+
+    fun insertPlayerListIntoGame(list: ArrayList<Player>, game: Game) {
+        val json = serializePlayerList(list)
+        game.content = json
+    }
+
+    fun createNewGame(gameList: ArrayList<Game>) {
+        /*
+        var gameList = when(inputGameList) {
+            null -> ArrayList<Game>()
+            else -> inputGameList
+        }*/
+        val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
+        val editText = frameLayout.findViewById<View>(R.id.editText) as EditText
+        AlertDialog.Builder(this@MainActivity)
+                .setTitle("Stwórz grę")
+                .setPositiveButton("Ok") { dialog, which ->
+                    if (editText.text.toString() == "")
+                        editText.setText("Gra " + (gameList.size + 1))
+
+                    game = createDefaultGame(editText.text.toString())
+                    gameList.add(game)
+
+                    changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
+                    //Toast.makeText(this@MainActivity, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("Anuluj", null)
+                .setView(frameLayout)
+                .create()
+                .show()
+        saveGameListInSharedPreferences(gameList)
+    }
+
+    fun loadGame(inputGameList: ArrayList<Game>) {
+        var gameList: ArrayList<Game> = inputGameList
+
+        val nameArray = arrayOfNulls<String>(gameList.size)
+        for (i in gameList.indices) {
+            nameArray[i] = gameList[i].name
+        }
+        game = gameList[0]
+
+        AlertDialog.Builder(this@MainActivity)
+                .setTitle("Wczytaj rozgrywkę")
+                .setItems(nameArray) { dialog, which ->
+                    game = gameList[which]
+                    changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
+                    Toast.makeText(this@MainActivity, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show()
+                }
+                .create()
+                .show()
+        setPlayerAdapter(game)
+    }
+
+    fun deleteGame(gameList: ArrayList<Game>?) {
+
     }
 }
