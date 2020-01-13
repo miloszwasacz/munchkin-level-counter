@@ -4,42 +4,39 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : AppCompatActivity() {
-    internal lateinit var playerList: String
-    internal var maxPlayerLevel = 10
+    internal var maxLevel = 10
     internal var minLevel = 1
-    internal var editMode: Boolean = false
+    internal lateinit var name: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
         supportActionBar!!.title = "Ustawienia"
-        maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
-        minLevel = resources.getInteger(R.integer.deafult_min_level)
+        maxLevel = resources.getInteger(R.integer.default_rules)
+        minLevel = resources.getInteger(R.integer.default_min_level)
 
-        playerList = intent.getStringExtra("EXTRA_LIST")
-        maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.deafult_rules))
-        minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.deafult_min_level))
-        editMode = intent.getBooleanExtra("EXTRA_EDIT_MODE", true)
-
-        val switchGamemode = findViewById<Switch>(R.id.switchGamemode)
-        val switchDungeon = findViewById<Switch>(R.id.switchDungeon)
+        //Weź wartości z poprzedniego activity
+        maxLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.default_rules))
+        minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.default_min_level))
+        name = intent.getStringExtra("EXTRA_GAME_NAME")
+        editTextName.setText(name)
 
         //Zaktualizuj pozycje switch'y
-        if (maxPlayerLevel == resources.getInteger(R.integer.deafult_rules)) {
+        if (maxLevel == resources.getInteger(R.integer.default_rules)) {
             switchGamemode.isChecked = false
             switchDungeon.isChecked = false
-        } else if (maxPlayerLevel == resources.getInteger(R.integer.dungeon_rules)) {
+        } else if (maxLevel == resources.getInteger(R.integer.dungeon_rules)) {
             switchGamemode.isChecked = false
             switchDungeon.isChecked = true
-        } else if (maxPlayerLevel == resources.getInteger(R.integer.epic_rules)) {
+        } else if (maxLevel == resources.getInteger(R.integer.epic_rules)) {
             switchGamemode.isChecked = true
             switchDungeon.isChecked = false
-        } else if (maxPlayerLevel == resources.getInteger(R.integer.epic_dungeon_rules)) {
+        } else if (maxLevel == resources.getInteger(R.integer.epic_dungeon_rules)) {
             switchGamemode.isChecked = true
             switchDungeon.isChecked = true
         }
@@ -48,28 +45,29 @@ class SettingsActivity : AppCompatActivity() {
         switchGamemode.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 if (switchDungeon.isChecked)
-                    maxPlayerLevel = resources.getInteger(R.integer.epic_dungeon_rules)
+                    maxLevel = resources.getInteger(R.integer.epic_dungeon_rules)
                 else
-                    maxPlayerLevel = resources.getInteger(R.integer.epic_rules)
+                    maxLevel = resources.getInteger(R.integer.epic_rules)
             } else {
                 if (switchDungeon.isChecked)
-                    maxPlayerLevel = resources.getInteger(R.integer.dungeon_rules)
+                    maxLevel = resources.getInteger(R.integer.dungeon_rules)
                 else
-                    maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
+                    maxLevel = resources.getInteger(R.integer.default_rules)
             }
         }
+
         //Ustaw maksymalny poziom gracza
         switchDungeon.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 if (switchGamemode.isChecked)
-                    maxPlayerLevel = resources.getInteger(R.integer.epic_dungeon_rules)
+                    maxLevel = resources.getInteger(R.integer.epic_dungeon_rules)
                 else
-                    maxPlayerLevel = resources.getInteger(R.integer.dungeon_rules)
+                    maxLevel = resources.getInteger(R.integer.dungeon_rules)
             } else {
                 if (switchGamemode.isChecked)
-                    maxPlayerLevel = resources.getInteger(R.integer.epic_rules)
+                    maxLevel = resources.getInteger(R.integer.epic_rules)
                 else
-                    maxPlayerLevel = resources.getInteger(R.integer.deafult_rules)
+                    maxLevel = resources.getInteger(R.integer.default_rules)
             }
         }
     }
@@ -85,11 +83,12 @@ class SettingsActivity : AppCompatActivity() {
 
     //Wyjście z Activity
     override fun onBackPressed() {
+        if (editTextName.text.toString() != "")
+            name = editTextName.text.toString()
         val returnIntent = Intent()
-        returnIntent.putExtra("resultList", playerList)
-        returnIntent.putExtra("resultMaxLevel", maxPlayerLevel)
+        returnIntent.putExtra("resultMaxLevel", maxLevel)
         returnIntent.putExtra("resultMinLevel", minLevel)
-        returnIntent.putExtra("resultEditMode", editMode)
+        returnIntent.putExtra("resultName", name)
         setResult(Activity.RESULT_OK, returnIntent)
         finish()
     }
