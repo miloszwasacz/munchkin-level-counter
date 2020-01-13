@@ -3,9 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/action_save"
-        android:icon="@drawable/ic_save_white_24dp"
-        android:title="@string/title_save"
+        android:id="@+id/action_create_new"
+        android:icon="@drawable/ic_note_add_24dp"
+        android:title="@string/title_create_new"
         app:showAsAction="always" />
 
     <item
