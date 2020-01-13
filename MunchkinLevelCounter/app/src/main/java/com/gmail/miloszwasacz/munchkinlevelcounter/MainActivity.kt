@@ -192,19 +192,20 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.clear()
         menuInflater.inflate(R.menu.toolbar_menu, menu)
-        val mSaveButton = menu.findItem(R.id.action_save)
+        val mCreateNewButton = menu.findItem(R.id.action_create_new)
         val mLoadButton = menu.findItem(R.id.action_folder)
         val mClearButton = menu.findItem(R.id.action_clear)
         val mSettingsButton = menu.findItem(R.id.navigation_settings)
         if (adapter.editMode) {
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-            mSaveButton.isVisible = false
+            mCreateNewButton.isVisible = false
             mLoadButton.isVisible = false
             mClearButton.isVisible = false
             mSettingsButton.isVisible = true
-        } else {
+        }
+        else {
             supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-            mSaveButton.isVisible = true
+            mCreateNewButton.isVisible = true
             mLoadButton.isVisible = true
             mClearButton.isVisible = true
             mSettingsButton.isVisible = false
@@ -220,7 +221,7 @@ class MainActivity : AppCompatActivity() {
 
         when (item.itemId) {
             //Tworzenie nowej rozgrywki
-            R.id.action_save -> {
+            R.id.action_create_new -> {
                 createNewGame(gameList)
                 /*
                 val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
