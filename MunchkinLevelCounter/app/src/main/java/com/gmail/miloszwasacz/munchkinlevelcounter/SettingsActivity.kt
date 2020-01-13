@@ -8,25 +8,19 @@ import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
 
 class SettingsActivity : AppCompatActivity() {
-    //internal lateinit var playerList: String
     internal var maxPlayerLevel = 10
     internal var minLevel = 1
-    //internal lateinit var game: Game
-    internal var editMode: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
         supportActionBar!!.title = "Ustawienia"
-        //maxPlayerLevel = resources.getInteger(R.integer.default_rules)
-        //minLevel = resources.getInteger(R.integer.default_min_level)
+        maxPlayerLevel = resources.getInteger(R.integer.default_rules)
+        minLevel = resources.getInteger(R.integer.default_min_level)
 
-        //playerList = intent.getStringExtra("EXTRA_LIST")
         maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.default_rules))
         minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.default_min_level))
-        //val json = intent.getStringExtra("EXTRA_GAME")
-        editMode = intent.getBooleanExtra("EXTRA_EDIT_MODE", true)
 
         val switchGamemode = findViewById<Switch>(R.id.switchGamemode)
         val switchDungeon = findViewById<Switch>(R.id.switchDungeon)
@@ -88,10 +82,8 @@ class SettingsActivity : AppCompatActivity() {
     //Wyjście z Activity
     override fun onBackPressed() {
         val returnIntent = Intent()
-        //returnIntent.putExtra("resultList", playerList)
         returnIntent.putExtra("resultMaxLevel", maxPlayerLevel)
         returnIntent.putExtra("resultMinLevel", minLevel)
-        returnIntent.putExtra("resultEditMode", editMode)
         setResult(Activity.RESULT_OK, returnIntent)
         finish()
     }

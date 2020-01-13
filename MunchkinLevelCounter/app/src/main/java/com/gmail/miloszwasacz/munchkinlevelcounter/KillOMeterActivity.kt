@@ -13,12 +13,9 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_kill_o_meter.*
 
 class KillOMeterActivity : AppCompatActivity() {
-    //internal var playerLevel = 1
     internal var playerPosition = 0
     internal lateinit var playerList: ArrayList<Player>
-    //internal var maxPlayerLevel = 10
     internal var maxViewValue = 999
-    //internal var minLevel = 1
     internal var minBonus = 0
     internal lateinit var operationAdd: String
     internal lateinit var operationRemove: String
@@ -36,9 +33,6 @@ class KillOMeterActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         //Ustawianie domyślnych wartości
-        //playerLevel = resources.getInteger(R.integer.default_min_level)
-        //maxPlayerLevel = resources.getInteger(R.integer.default_rules)
-        //minLevel = resources.getInteger(R.integer.default_min_level)
         minBonus = resources.getInteger(R.integer.default_min_bonus)
         operationAdd = resources.getString(R.string.operation_add)
         operationRemove = resources.getString(R.string.operation_remove)
@@ -46,26 +40,17 @@ class KillOMeterActivity : AppCompatActivity() {
         itemIncrementation = resources.getInteger(R.integer.items_incrementation)
         bonusIncrementation = resources.getInteger(R.integer.bonus_incrementation)
         enhancerIncrementation = resources.getInteger(R.integer.enhancer_incrementation)
-
-        //val playerName = intent.getStringExtra("EXTRA_NAME")
-        //playerLevel = intent.getIntExtra("EXTRA_LEVEL", resources.getInteger(R.integer.default_min_level))
         playerPosition = intent.getIntExtra("EXTRA_POSITION", 0)
         val json = intent.getStringExtra("EXTRA_GAME")
         val gameType = object : TypeToken<Game>() {}.type
         game = Gson().fromJson<Game>(json, gameType)
         playerList = MainActivity().extractPlayerListFromGame(game)
 
-        //playerList = intent.getStringExtra("EXTRA_LIST")
-        //maxPlayerLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.default_rules))
-        //minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.default_min_level))
-
-
-
         //Ustawianie poziomu i nazwy gracza
         textViewPlayerName.text = playerList[playerPosition].name
         editTextPlayerLevel.setText(playerList[playerPosition].level.toString())
 
-        //Stwórz listę pól
+        //Stworzenie listy pól
         val editTextList = ArrayList<EditText>()
         editTextList.add(editTextPlayerLevel)
         editTextList.add(editTextPlayerItems)
@@ -269,11 +254,6 @@ class KillOMeterActivity : AppCompatActivity() {
         MainActivity().insertPlayerListIntoGame(playerList, game)
         val json = Gson().toJson(game)
         val returnIntent = Intent()
-        //returnIntent.putExtra("resultLevel", playerLevel)
-        //returnIntent.putExtra("resultPosition", playerPosition)
-        //returnIntent.putExtra("resultList", playerList)
-        //returnIntent.putExtra("resultMaxLevel", maxPlayerLevel)
-        //returnIntent.putExtra("resultMinLevel", minLevel)
         returnIntent.putExtra("resultGame", json)
         setResult(Activity.RESULT_OK, returnIntent)
         finish()

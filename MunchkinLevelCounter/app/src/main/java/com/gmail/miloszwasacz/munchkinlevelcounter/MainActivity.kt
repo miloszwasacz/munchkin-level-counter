@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     internal var sharedPrefsName = "com.gmail.miloszwasacz.munchkinlevelcounter.prefs"
     internal lateinit var gameList: ArrayList<Game>
     internal var editMode: Boolean = false
+    internal var visibleEditMode: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +50,9 @@ class MainActivity : AppCompatActivity() {
             val jsonIndex = savedInstanceState.getString("Index")
             val indexType = object : TypeToken<Int>() {}.type
             gameIndex = Gson().fromJson<Int>(jsonIndex, indexType)
+
+            editMode = savedInstanceState.getBoolean("EditMode")
+            visibleEditMode = savedInstanceState.getBoolean("VisibleEditMode")
         }
         else {
             if(gameList.isEmpty()) {
@@ -58,27 +62,33 @@ class MainActivity : AppCompatActivity() {
                 loadGame(gameList)
             }
         }
-        setPlayerAdapter(game)
+        setPlayerAdapter(game, visibleEditMode)
 
         //Zmiana trybu guzika: edycja/dodawanie graczy
         floatingActionButton.setOnClickListener {
+            visibleEditMode = true
             if (adapter.editMode) {
                 val list = extractPlayerListFromGame(game)
                 list.add(Player("Nowy gracz", game.minLevel))
                 insertPlayerListIntoGame(list, game)
-                setPlayerAdapter(game)
-            } else
-                changeEditMode(R.drawable.ic_baseline_add_white_24dp, true, "Edytuj graczy")
+                setPlayerAdapter(game, visibleEditMode)
+            }
+            else
+                changeEditMode(true, visibleEditMode)
         }
     }
 
     //RecyclerView i PlayerAdapter
-    fun setPlayerAdapter(game: Game) {
+    fun setPlayerAdapter(game: Game, visibleEditMode: Boolean) {
+
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager = LinearLayoutManager(this)
         val list: ArrayList<Player> = extractPlayerListFromGame(game)
         adapter = PlayerAdapter(list)
-        adapter.editMode = editMode
+        //adapter.editMode = editMode
+
+        //Wyświetlenie nazwy gry
+        changeEditMode(editMode, visibleEditMode)
 
         //Sprawdzenie czy poziomy graczy są w dozwolonym zakresie
         for (element in list) {
@@ -142,22 +152,30 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        /*
-        //Wyświetlenie nazwy gry
-        if(game.name == "")
-            supportActionBar!!.title = "Licznik"
-        else
-            supportActionBar!!.title = game.name*/
-
         recycler_view.adapter = adapter
     }
 
     //Włączanie/wyłączanie trybu edycji
-    fun changeEditMode(icon: Int, enabled: Boolean?, title: String) {
-        supportActionBar!!.title = title
-        floatingActionButton.setImageResource(icon)
-        editMode = enabled!!
+    fun changeEditMode(enabled: Boolean, visible: Boolean) {
+        editMode = enabled
         adapter.editMode = enabled
+
+        if(!visible) {
+            supportActionBar!!.title = "Licznik"
+            floatingActionButton.hide()
+        }
+        else {
+            floatingActionButton.show()
+            if (adapter.editMode) {
+                supportActionBar!!.title = "Edytuj gracza"
+                floatingActionButton.setImageResource(R.drawable.ic_baseline_add_white_24dp)
+            }
+            else {
+                supportActionBar!!.title = game.name
+                floatingActionButton.setImageResource(R.drawable.ic_baseline_edit_white_24dp)
+            }
+        }
+
         invalidateOptionsMenu()
         adapter.notifyDataSetChanged()
     }
@@ -165,7 +183,7 @@ class MainActivity : AppCompatActivity() {
     //Strzałeczka w tył (tryb edycji)
     override fun onBackPressed() {
         if (adapter.editMode)
-            changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
+            changeEditMode(false, true)
         else
             super.onBackPressed()
     }
@@ -317,7 +335,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //Zapisywanie stanu listy graczy
+    //Zapisywanie stanu gry
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
         val game = Gson().toJson(game)
@@ -326,6 +344,8 @@ class MainActivity : AppCompatActivity() {
         savedInstanceState.putString("Gra", game)
         savedInstanceState.putString("ListaGier", gameList)
         savedInstanceState.putString("Index", index)
+        savedInstanceState.putBoolean("EditMode", editMode)
+        savedInstanceState.putBoolean("VisibleEditMode", visibleEditMode)
     }
 
     //Odebranie danych z innych Activity
@@ -335,17 +355,15 @@ class MainActivity : AppCompatActivity() {
             val json = data!!.getStringExtra("resultGame")
             val listType = object : TypeToken<Game>() {}.type
             game = Gson().fromJson<Game>(json, listType)
-            if (resultCode == Activity.RESULT_OK) {
-                setPlayerAdapter(game)
-            }
+            if (resultCode == Activity.RESULT_OK)
+                setPlayerAdapter(game, visibleEditMode)
         }
         //Sprawdzenie poziomów po aktualizacji maksymalnego poziomu
         else if (requestCode == 2) {
-            editMode = data!!.getBooleanExtra("resultEditMode", true)
-            game.maxLevel= data.getIntExtra("resultMaxLevel", resources.getInteger(R.integer.default_rules))
+            game.maxLevel= data!!.getIntExtra("resultMaxLevel", resources.getInteger(R.integer.default_rules))
             game.minLevel = data.getIntExtra("resultMinLevel", resources.getInteger(R.integer.default_min_level))
             if (resultCode == Activity.RESULT_OK)
-                setPlayerAdapter(game)
+                setPlayerAdapter(game, visibleEditMode)
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -408,11 +426,10 @@ class MainActivity : AppCompatActivity() {
                     game = createDefaultGame(editText.text.toString())
                     list.add(game)
                     gameIndex = (list.size - 1)
-                    setPlayerAdapter(game)
+                    visibleEditMode = true
+                    setPlayerAdapter(game, visibleEditMode)
                     gameList = list
                     saveGame(game, gameList)
-
-                    changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
                 }
                 .setNegativeButton("Anuluj", null)
                 .setView(frameLayout)
@@ -427,16 +444,13 @@ class MainActivity : AppCompatActivity() {
             for (i in list.indices)
                 nameArray[i] = list[i].name
 
-            //game = list[0]
-            //gameIndex = 0
-
             AlertDialog.Builder(this@MainActivity)
                     .setTitle("Wczytaj rozgrywkę")
                     .setItems(nameArray) { dialog, which ->
                         game = list[which]
                         gameIndex = which
-                        setPlayerAdapter(game)
-                        changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
+                        visibleEditMode = true
+                        setPlayerAdapter(game, visibleEditMode)
                         Toast.makeText(this@MainActivity, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show()
                         gameList = list
                         saveGame(game, gameList)
@@ -457,7 +471,9 @@ class MainActivity : AppCompatActivity() {
                     .setPositiveButton("Tak") { dialog, which ->
                         gameList.removeAt(gameIndex!!)
                         saveGameListInSharedPreferences(gameList)
-                        setPlayerAdapter(Game("", serializePlayerList(ArrayList<Player>())))
+                        game = Game("", serializePlayerList(ArrayList<Player>()))
+                        visibleEditMode = false
+                        setPlayerAdapter(game, visibleEditMode)
                         gameIndex = null
                         if (gameList.isEmpty())
                             createNewGame(gameList)
@@ -480,9 +496,10 @@ class MainActivity : AppCompatActivity() {
 
     //Zapisywanie gry podczas wyjścia z aplikacji
     override fun onPause() {
-        if(gameIndex != null)
+        if(gameIndex != null) {
             saveGame(game, gameList)
-        Toast.makeText(this@MainActivity, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@MainActivity, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show()
+        }
         super.onPause()
     }
 }
