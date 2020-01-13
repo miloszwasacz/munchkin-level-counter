@@ -49,7 +49,6 @@ class MainActivity : AppCompatActivity() {
                 loadGame(gameList)
             }
         }
-
         setPlayerAdapter(game)
 
         //Zmiana trybu guzika: edycja/dodawanie graczy
@@ -179,13 +178,14 @@ class MainActivity : AppCompatActivity() {
 
     //Obsługa guzików na app barze
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        saveGame(game, gameList)
         gameList = getGameListFromSharedPreferences() ?: ArrayList<Game>()
 
         when (item.itemId) {
             //Tworzenie nowej rozgrywki
             R.id.action_save -> {
-
-
+                createNewGame(gameList)
+                //saveGame(game, gameList)
                 /*
                 val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
                 val editText = frameLayout.findViewById<View>(R.id.editText) as EditText
@@ -220,6 +220,8 @@ class MainActivity : AppCompatActivity() {
 
             //Wczytanie ostatniej rozgrywki
             R.id.action_folder -> {
+                loadGame(gameList)
+                //saveGame(game, gameList)
                 /*if (gameList == null)
                     gameList = ArrayList()
                 val lista = ArrayList<Player>()
@@ -252,6 +254,9 @@ class MainActivity : AppCompatActivity() {
 
             //Usunięcie gry z listy
             R.id.action_clear -> {
+                deleteGame(gameList)
+                //saveGame(game, gameList)
+                /*
                 if (gameList == null)
                     Toast.makeText(this@MainActivity, "Brak zapisanych rozgrywek", Toast.LENGTH_SHORT).show()
                 else {
@@ -272,7 +277,7 @@ class MainActivity : AppCompatActivity() {
                             }
                             .create()
                             .show()
-                }
+                }*/
                 return true
             }
 
@@ -344,15 +349,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     //Zserializuj listę graczy do jsona
-    fun serializePlayerList(list: List<Player>): String = Gson().toJson(list)
+    fun serializePlayerList(list: ArrayList<Player>): String = Gson().toJson(list)
 
     //Stwórz domyślną grę
-    fun createDefaultGame(name: String): Game {
+    fun createDefaultGame(name: String, index: Int): Game {
         val playerList = ArrayList<Player>()
         playerList.add(Player("Gracz 1", resources.getInteger(R.integer.default_min_level)))
         playerList.add(Player("Gracz 2", resources.getInteger(R.integer.default_min_level)))
         playerList.add(Player("Gracz 3", resources.getInteger(R.integer.default_min_level)))
-        return Game(name, serializePlayerList(playerList))
+        return Game(name, serializePlayerList(playerList), index = index)
     }
 
     fun extractPlayerListFromGame(game: Game): ArrayList<Player> {
@@ -366,22 +371,31 @@ class MainActivity : AppCompatActivity() {
         game.content = json
     }
 
-    fun createNewGame(gameList: ArrayList<Game>) {
+    fun createNewGame(inputList: ArrayList<Game>) {
         /*
         var gameList = when(inputGameList) {
             null -> ArrayList<Game>()
             else -> inputGameList
         }*/
+        val list = ArrayList<Game>()
+        list.addAll(inputList)
         val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
         val editText = frameLayout.findViewById<View>(R.id.editText) as EditText
+        game = createDefaultGame(editText.text.toString(), list.size)
+        list.add(game)
         AlertDialog.Builder(this@MainActivity)
                 .setTitle("Stwórz grę")
                 .setPositiveButton("Ok") { dialog, which ->
+                    /*
                     if (editText.text.toString() == "")
-                        editText.setText("Gra " + (gameList.size + 1))
-
-                    game = createDefaultGame(editText.text.toString())
-                    gameList.add(game)
+                        editText.setText("Gra " + (list.size + 1))*/
+                    if(game.name == "")
+                        game.name = ("Gra " + (list.size + 1))
+                    //game = createDefaultGame(editText.text.toString(), list.size)
+                    //list.add(game)
+                    setPlayerAdapter(game)
+                    gameList = list
+                    saveGame(game, gameList)
 
                     changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
                     //Toast.makeText(this@MainActivity, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show()
@@ -390,31 +404,59 @@ class MainActivity : AppCompatActivity() {
                 .setView(frameLayout)
                 .create()
                 .show()
-        saveGameListInSharedPreferences(gameList)
+        //saveGameListInSharedPreferences(gameList)
     }
 
-    fun loadGame(inputGameList: ArrayList<Game>) {
-        var gameList: ArrayList<Game> = inputGameList
+    fun loadGame(list: ArrayList<Game>) {
+        //var gameList: ArrayList<Game> = inputGameList
 
-        val nameArray = arrayOfNulls<String>(gameList.size)
-        for (i in gameList.indices) {
-            nameArray[i] = gameList[i].name
-        }
-        game = gameList[0]
+        val nameArray = arrayOfNulls<String>(list.size)
+        for (i in list.indices)
+            nameArray[i] = list[i].name
+
+        game = list[0]
+        game.index = 0
 
         AlertDialog.Builder(this@MainActivity)
                 .setTitle("Wczytaj rozgrywkę")
                 .setItems(nameArray) { dialog, which ->
-                    game = gameList[which]
+                    game = list[which]
+                    game.index = which
+                    setPlayerAdapter(game)
                     changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
                     Toast.makeText(this@MainActivity, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show()
+                    gameList = list
+                    saveGame(game, gameList)
                 }
                 .create()
                 .show()
-        setPlayerAdapter(game)
+        //setPlayerAdapter(game)
     }
 
-    fun deleteGame(gameList: ArrayList<Game>?) {
+    fun deleteGame(gameList: ArrayList<Game>) {
+        AlertDialog.Builder(this@MainActivity)
+                .setTitle("Usuń grę")
+                .setPositiveButton("Tak") { dialog, which ->
+                    gameList.removeAt(game.index)
+                    if(gameList.isEmpty())
+                        createNewGame(gameList)
+                    else
+                        loadGame(gameList)
 
+                    setPlayerAdapter(game)
+                }
+                .setNeutralButton("Nie", null)
+                .create()
+                .show()
     }
+
+    fun saveGame(game: Game, gameList: ArrayList<Game>) {
+        gameList[game.index] = game
+        saveGameListInSharedPreferences(gameList)
+    }
+
+    /*fun indexGamesInList(gameList: ArrayList<Game>) {
+        for(i in gameList.indices)
+            gameList[i].index = i
+    }*/
 }
