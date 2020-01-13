@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     internal lateinit var adapter: PlayerAdapter
     internal lateinit var game: Game
+    internal var gameIndex: Int? = null
     internal var sharedPrefsName = "com.gmail.miloszwasacz.munchkinlevelcounter.prefs"
     internal lateinit var gameList: ArrayList<Game>
     internal var editMode: Boolean = false
@@ -33,13 +34,21 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.title = "Licznik"
 
         gameList = getGameListFromSharedPreferences() ?: ArrayList<Game>()
-
+        game = Game("", serializePlayerList(ArrayList<Player>()))
 
         //Przywracanie stanu poprzedniego listy graczy
         if(savedInstanceState != null){
-            val json = savedInstanceState.getString("Gra")
+            val jsonGame = savedInstanceState.getString("Gra")
             val gameType = object : TypeToken<Game>() {}.type
-            game = Gson().fromJson<Game>(json, gameType)
+            game = Gson().fromJson<Game>(jsonGame, gameType)
+
+            val jsonGameList = savedInstanceState.getString("ListaGier")
+            val gameListType = object : TypeToken<ArrayList<Game>>() {}.type
+            gameList = Gson().fromJson<ArrayList<Game>>(jsonGameList, gameListType)
+
+            val jsonIndex = savedInstanceState.getString("Index")
+            val indexType = object : TypeToken<Int>() {}.type
+            gameIndex = Gson().fromJson<Int>(jsonIndex, indexType)
         }
         else {
             if(gameList.isEmpty()) {
@@ -79,6 +88,7 @@ class MainActivity : AppCompatActivity() {
                 element.level = game.minLevel
         }
 
+        //Obsługa kontrolek
         adapter.setOnItemClickListener(object : PlayerAdapter.OnItemClickListener {
             //Edycja poszczególnego gracza
             override fun onItemClick(position: Int) {
@@ -131,6 +141,14 @@ class MainActivity : AppCompatActivity() {
                 startActivityForResult(intent, 1)
             }
         })
+
+        /*
+        //Wyświetlenie nazwy gry
+        if(game.name == "")
+            supportActionBar!!.title = "Licznik"
+        else
+            supportActionBar!!.title = game.name*/
+
         recycler_view.adapter = adapter
     }
 
@@ -178,14 +196,14 @@ class MainActivity : AppCompatActivity() {
 
     //Obsługa guzików na app barze
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        saveGame(game, gameList)
+        if(gameIndex != null)
+            saveGame(game, gameList)
         gameList = getGameListFromSharedPreferences() ?: ArrayList<Game>()
 
         when (item.itemId) {
             //Tworzenie nowej rozgrywki
             R.id.action_save -> {
                 createNewGame(gameList)
-                //saveGame(game, gameList)
                 /*
                 val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
                 val editText = frameLayout.findViewById<View>(R.id.editText) as EditText
@@ -221,7 +239,6 @@ class MainActivity : AppCompatActivity() {
             //Wczytanie ostatniej rozgrywki
             R.id.action_folder -> {
                 loadGame(gameList)
-                //saveGame(game, gameList)
                 /*if (gameList == null)
                     gameList = ArrayList()
                 val lista = ArrayList<Player>()
@@ -255,7 +272,6 @@ class MainActivity : AppCompatActivity() {
             //Usunięcie gry z listy
             R.id.action_clear -> {
                 deleteGame(gameList)
-                //saveGame(game, gameList)
                 /*
                 if (gameList == null)
                     Toast.makeText(this@MainActivity, "Brak zapisanych rozgrywek", Toast.LENGTH_SHORT).show()
@@ -304,8 +320,12 @@ class MainActivity : AppCompatActivity() {
     //Zapisywanie stanu listy graczy
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
-        val json = Gson().toJson(game)
-        savedInstanceState.putString("Gra", json)
+        val game = Gson().toJson(game)
+        val gameList = Gson().toJson(gameList)
+        val index = Gson().toJson(gameIndex)
+        savedInstanceState.putString("Gra", game)
+        savedInstanceState.putString("ListaGier", gameList)
+        savedInstanceState.putString("Index", index)
     }
 
     //Odebranie danych z innych Activity
@@ -338,6 +358,7 @@ class MainActivity : AppCompatActivity() {
         editor.commit()
     }
 
+    //Wczytanie listy gier z SharedPreferences
     fun getGameListFromSharedPreferences(): ArrayList<Game>? {
         val prefs = getSharedPreferences(sharedPrefsName, Context.MODE_PRIVATE)
         val listaGier: String? = prefs.getString("ListaGierPrefs", null)
@@ -348,115 +369,120 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //Zserializuj listę graczy do jsona
+    //Serializowanie listy graczy do jsona
     fun serializePlayerList(list: ArrayList<Player>): String = Gson().toJson(list)
 
-    //Stwórz domyślną grę
-    fun createDefaultGame(name: String, index: Int): Game {
+    //Tworzenie domyślnej gry
+    fun createDefaultGame(name: String): Game {
         val playerList = ArrayList<Player>()
         playerList.add(Player("Gracz 1", resources.getInteger(R.integer.default_min_level)))
         playerList.add(Player("Gracz 2", resources.getInteger(R.integer.default_min_level)))
         playerList.add(Player("Gracz 3", resources.getInteger(R.integer.default_min_level)))
-        return Game(name, serializePlayerList(playerList), index = index)
+        return Game(name, serializePlayerList(playerList))
     }
 
+    //Wczytanie listy graczy z gry
     fun extractPlayerListFromGame(game: Game): ArrayList<Player> {
         val json = game.content
         val listType = object : TypeToken<ArrayList<Player>>() {}.type
         return Gson().fromJson<ArrayList<Player>>(json, listType)
     }
 
+    //Zapisywanie listy graczy w grze
     fun insertPlayerListIntoGame(list: ArrayList<Player>, game: Game) {
         val json = serializePlayerList(list)
         game.content = json
     }
 
+    //Tworzenie nowej gry
     fun createNewGame(inputList: ArrayList<Game>) {
-        /*
-        var gameList = when(inputGameList) {
-            null -> ArrayList<Game>()
-            else -> inputGameList
-        }*/
         val list = ArrayList<Game>()
         list.addAll(inputList)
         val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
         val editText = frameLayout.findViewById<View>(R.id.editText) as EditText
-        game = createDefaultGame(editText.text.toString(), list.size)
-        list.add(game)
         AlertDialog.Builder(this@MainActivity)
                 .setTitle("Stwórz grę")
                 .setPositiveButton("Ok") { dialog, which ->
-                    /*
                     if (editText.text.toString() == "")
-                        editText.setText("Gra " + (list.size + 1))*/
-                    if(game.name == "")
-                        game.name = ("Gra " + (list.size + 1))
-                    //game = createDefaultGame(editText.text.toString(), list.size)
-                    //list.add(game)
+                        editText.setText("Gra " + (list.size + 1))
+                    game = createDefaultGame(editText.text.toString())
+                    list.add(game)
+                    gameIndex = (list.size - 1)
                     setPlayerAdapter(game)
                     gameList = list
                     saveGame(game, gameList)
 
                     changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
-                    //Toast.makeText(this@MainActivity, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton("Anuluj", null)
                 .setView(frameLayout)
                 .create()
                 .show()
-        //saveGameListInSharedPreferences(gameList)
     }
 
+    //Wczytanie gry z listy
     fun loadGame(list: ArrayList<Game>) {
-        //var gameList: ArrayList<Game> = inputGameList
+        if(list.isNotEmpty()) {
+            val nameArray = arrayOfNulls<String>(list.size)
+            for (i in list.indices)
+                nameArray[i] = list[i].name
 
-        val nameArray = arrayOfNulls<String>(list.size)
-        for (i in list.indices)
-            nameArray[i] = list[i].name
+            //game = list[0]
+            //gameIndex = 0
 
-        game = list[0]
-        game.index = 0
-
-        AlertDialog.Builder(this@MainActivity)
-                .setTitle("Wczytaj rozgrywkę")
-                .setItems(nameArray) { dialog, which ->
-                    game = list[which]
-                    game.index = which
-                    setPlayerAdapter(game)
-                    changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
-                    Toast.makeText(this@MainActivity, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show()
-                    gameList = list
-                    saveGame(game, gameList)
-                }
-                .create()
-                .show()
-        //setPlayerAdapter(game)
+            AlertDialog.Builder(this@MainActivity)
+                    .setTitle("Wczytaj rozgrywkę")
+                    .setItems(nameArray) { dialog, which ->
+                        game = list[which]
+                        gameIndex = which
+                        setPlayerAdapter(game)
+                        changeEditMode(R.drawable.ic_baseline_edit_white_24dp, false, "Licznik")
+                        Toast.makeText(this@MainActivity, "Wczytano rozgrywkę", Toast.LENGTH_SHORT).show()
+                        gameList = list
+                        saveGame(game, gameList)
+                    }
+                    .create()
+                    .show()
+        }
+        else
+            Toast.makeText(this@MainActivity, "Brak zapisanych rozgrywek", Toast.LENGTH_SHORT).show()
     }
 
+    //Usuwanie aktywnej gry
     fun deleteGame(gameList: ArrayList<Game>) {
-        AlertDialog.Builder(this@MainActivity)
-                .setTitle("Usuń grę")
-                .setPositiveButton("Tak") { dialog, which ->
-                    gameList.removeAt(game.index)
-                    if(gameList.isEmpty())
-                        createNewGame(gameList)
-                    else
-                        loadGame(gameList)
-
-                    setPlayerAdapter(game)
-                }
-                .setNeutralButton("Nie", null)
-                .create()
-                .show()
+        if(gameIndex != null /*&& game.name != ""*/)
+        {
+            AlertDialog.Builder(this@MainActivity)
+                    .setTitle("Usuń grę")
+                    .setPositiveButton("Tak") { dialog, which ->
+                        gameList.removeAt(gameIndex!!)
+                        saveGameListInSharedPreferences(gameList)
+                        setPlayerAdapter(Game("", serializePlayerList(ArrayList<Player>())))
+                        gameIndex = null
+                        if (gameList.isEmpty())
+                            createNewGame(gameList)
+                        else
+                            loadGame(gameList)
+                    }
+                    .setNeutralButton("Nie", null)
+                    .create()
+                    .show()
+        }
+        else
+            Toast.makeText(this@MainActivity, "Brak aktywnej rozgrywki", Toast.LENGTH_SHORT).show()
     }
 
+    //Zapisywanie aktywnej gry i listy gier
     fun saveGame(game: Game, gameList: ArrayList<Game>) {
-        gameList[game.index] = game
+        gameList[gameIndex!!] = game
         saveGameListInSharedPreferences(gameList)
     }
 
-    /*fun indexGamesInList(gameList: ArrayList<Game>) {
-        for(i in gameList.indices)
-            gameList[i].index = i
-    }*/
+    //Zapisywanie gry podczas wyjścia z aplikacji
+    override fun onPause() {
+        if(gameIndex != null)
+            saveGame(game, gameList)
+        Toast.makeText(this@MainActivity, "Zapisano rozgrywkę", Toast.LENGTH_SHORT).show()
+        super.onPause()
+    }
 }
