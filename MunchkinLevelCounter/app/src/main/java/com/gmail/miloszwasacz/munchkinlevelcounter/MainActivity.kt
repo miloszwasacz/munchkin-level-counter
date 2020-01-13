@@ -388,7 +388,7 @@ class MainActivity : AppCompatActivity() {
 
     //Usuwanie aktywnej gry
     fun deleteGame(gameList: ArrayList<Game>) {
-        if(gameIndex != null /*&& game.name != ""*/)
+        if(gameIndex != null)
         {
             AlertDialog.Builder(this@MainActivity)
                     .setTitle("Usuń grę")
