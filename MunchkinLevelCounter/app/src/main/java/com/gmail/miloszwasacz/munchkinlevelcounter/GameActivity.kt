@@ -100,7 +100,7 @@ class GameActivity : AppCompatActivity() {
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager = LinearLayoutManager(this)
         val list: ArrayList<Player> = extractPlayerListFromGame(game)
-        adapter = PlayerAdapter(list)
+        adapter = PlayerAdapter(game)
 
         //Sprawdzenie czy poziomy graczy są w dozwolonym zakresie
         for (element in list) {
@@ -141,8 +141,8 @@ class GameActivity : AppCompatActivity() {
             override fun onAddClick(position: Int) {
                 if (list[position].level < game.maxLevel) {
                     list[position].level++
-                    adapter.notifyItemChanged(position)
                     insertPlayerListIntoGame(list, game)
+                    adapter.notifyItemChanged(position)
                 }
             }
 
@@ -150,8 +150,8 @@ class GameActivity : AppCompatActivity() {
             override fun onRemoveClick(position: Int) {
                 if (list[position].level > game.minLevel) {
                     list[position].level--
-                    adapter.notifyItemChanged(position)
                     insertPlayerListIntoGame(list, game)
+                    adapter.notifyItemChanged(position)
                 }
             }
 

@@ -246,9 +246,6 @@ class KillOMeterActivity : AppCompatActivity() {
 
     //Wyjście z Activity
     override fun onBackPressed() {
-        //val tieDrawable = resources.getDrawable(R.drawable.ic_munchkin_sword_24dp)
-        //tieDrawable.setTint(Color.BLACK)
-
         playerList[playerPosition].level= tryParse(editTextPlayerLevel.text.toString(), game.maxLevel)
         GameActivity().insertPlayerListIntoGame(playerList, game)
         val json = Gson().toJson(game)
