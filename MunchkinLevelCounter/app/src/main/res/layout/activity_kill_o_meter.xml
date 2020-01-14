@@ -53,7 +53,6 @@
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp">
 
                     <TextView
@@ -74,7 +73,7 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_remove_24dp" />
+                        app:srcCompat="@drawable/ic_remove_brown_24dp" />
 
                     <EditText
                         android:id="@+id/editTextPlayerLevel"
@@ -86,7 +85,7 @@
                         android:inputType="number"
                         android:maxEms="2"
                         android:text="1"
-                        android:textAlignment="center"
+                        android:textAlignment="viewEnd"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textColor="@color/text_color" />
 
@@ -96,13 +95,12 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_add_24dp" />
+                        app:srcCompat="@drawable/ic_add_brown_24dp" />
                 </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp">
 
                     <TextView
@@ -123,7 +121,7 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_remove_24dp" />
+                        app:srcCompat="@drawable/ic_remove_brown_24dp" />
 
                     <EditText
                         android:id="@+id/editTextPlayerItems"
@@ -135,7 +133,7 @@
                         android:inputType="number"
                         android:maxEms="2"
                         android:text="0"
-                        android:textAlignment="center"
+                        android:textAlignment="viewEnd"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textColor="@color/text_color" />
 
@@ -145,13 +143,12 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_add_24dp" />
+                        app:srcCompat="@drawable/ic_add_brown_24dp" />
                 </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp">
 
                     <TextView
@@ -172,7 +169,7 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_remove_24dp" />
+                        app:srcCompat="@drawable/ic_remove_brown_24dp" />
 
                     <EditText
                         android:id="@+id/editTextPlayerBonus"
@@ -184,7 +181,7 @@
                         android:inputType="number"
                         android:maxEms="2"
                         android:text="0"
-                        android:textAlignment="center"
+                        android:textAlignment="viewEnd"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textColor="@color/text_color" />
 
@@ -194,13 +191,12 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_add_24dp" />
+                        app:srcCompat="@drawable/ic_add_brown_24dp" />
                 </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp">
 
                     <TextView
@@ -233,7 +229,7 @@
                         android:focusable="false"
                         android:inputType="number"
                         android:maxEms="2"
-                        android:textAlignment="center"
+                        android:textAlignment="viewEnd"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textColor="@color/text_color" />
 
@@ -287,7 +283,6 @@
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp">
 
                     <TextView
@@ -309,7 +304,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_weight="0"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_remove_24dp" />
+                        app:srcCompat="@drawable/ic_remove_brown_24dp" />
 
                     <EditText
                         android:id="@+id/editTextMonsterLevel"
@@ -321,7 +316,7 @@
                         android:inputType="number"
                         android:maxEms="2"
                         android:text="1"
-                        android:textAlignment="center"
+                        android:textAlignment="viewEnd"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textColor="@color/text_color" />
 
@@ -332,14 +327,13 @@
                         android:layout_gravity="center_vertical"
                         android:layout_weight="0"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_add_24dp" />
+                        app:srcCompat="@drawable/ic_add_brown_24dp" />
 
                 </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp">
 
                     <TextView
@@ -360,7 +354,7 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_remove_24dp" />
+                        app:srcCompat="@drawable/ic_remove_brown_24dp" />
 
                     <EditText
                         android:id="@+id/editTextMonsterEnhancer"
@@ -372,7 +366,7 @@
                         android:inputType="number"
                         android:maxEms="2"
                         android:text="0"
-                        android:textAlignment="center"
+                        android:textAlignment="viewEnd"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textColor="@color/text_color" />
 
@@ -382,13 +376,12 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_add_24dp" />
+                        app:srcCompat="@drawable/ic_add_brown_24dp" />
                 </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp">
 
                     <TextView
@@ -409,7 +402,7 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_remove_24dp" />
+                        app:srcCompat="@drawable/ic_remove_brown_24dp" />
 
                     <EditText
                         android:id="@+id/editTextMonsterBonus"
@@ -421,7 +414,7 @@
                         android:inputType="number"
                         android:maxEms="2"
                         android:text="0"
-                        android:textAlignment="center"
+                        android:textAlignment="viewEnd"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textColor="@color/text_color" />
 
@@ -431,13 +424,12 @@
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:scaleType="center"
-                        app:srcCompat="@drawable/ic_baseline_add_24dp" />
+                        app:srcCompat="@drawable/ic_add_brown_24dp" />
                 </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp">
 
                     <TextView
@@ -470,7 +462,7 @@
                         android:focusable="false"
                         android:inputType="number"
                         android:maxEms="2"
-                        android:textAlignment="center"
+                        android:textAlignment="viewEnd"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                         android:textColor="@color/text_color" />
 

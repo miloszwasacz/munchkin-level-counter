@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">Munchkin Level Counter</string>
-    <string name="title_counter">Licznik</string>
+    <string name="title_game_list">Lista Gier</string>
     <string name="title_kill_o_meter">Kill-O-Meter</string>
     <string name="title_settings">Ustawienia</string>
-    <string name="title_create_new">Zapisz</string>
-    <string name="title_load">Wczytaj</string>
-    <string name="title_clear">Wyczysc</string>
+    <string name="title_confirm">Potwierdz</string>
+    <string name="title_new_game">Nowa Gra</string>
     <string name="operation_add">Add</string>
     <string name="operation_remove">Remove</string>
 </resources>

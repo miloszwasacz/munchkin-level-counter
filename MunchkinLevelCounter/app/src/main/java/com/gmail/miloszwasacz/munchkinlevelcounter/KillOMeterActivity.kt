@@ -2,7 +2,6 @@ package com.gmail.miloszwasacz.munchkinlevelcounter
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -44,7 +43,7 @@ class KillOMeterActivity : AppCompatActivity() {
         val json = intent.getStringExtra("EXTRA_GAME")
         val gameType = object : TypeToken<Game>() {}.type
         game = Gson().fromJson<Game>(json, gameType)
-        playerList = MainActivity().extractPlayerListFromGame(game)
+        playerList = GameActivity().extractPlayerListFromGame(game)
 
         //Ustawianie poziomu i nazwy gracza
         textViewPlayerName.text = playerList[playerPosition].name
@@ -247,11 +246,11 @@ class KillOMeterActivity : AppCompatActivity() {
 
     //Wyjście z Activity
     override fun onBackPressed() {
-        val tieDrawable = resources.getDrawable(R.drawable.ic_munchkin_sword_24dp)
-        tieDrawable.setTint(Color.BLACK)
+        //val tieDrawable = resources.getDrawable(R.drawable.ic_munchkin_sword_24dp)
+        //tieDrawable.setTint(Color.BLACK)
 
         playerList[playerPosition].level= tryParse(editTextPlayerLevel.text.toString(), game.maxLevel)
-        MainActivity().insertPlayerListIntoGame(playerList, game)
+        GameActivity().insertPlayerListIntoGame(playerList, game)
         val json = Gson().toJson(game)
         val returnIntent = Intent()
         returnIntent.putExtra("resultGame", json)

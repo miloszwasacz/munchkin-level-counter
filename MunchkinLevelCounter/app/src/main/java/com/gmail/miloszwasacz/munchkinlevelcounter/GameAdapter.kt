@@ -8,21 +8,19 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class PlayerAdapter// Provide a suitable constructor (depends on the kind of dataset)
-(var playerList: List<Player>) : RecyclerView.Adapter<PlayerAdapter.MyViewHolder>() {
+class GameAdapter
+(var gameList: ArrayList<Game>) : RecyclerView.Adapter<GameAdapter.MyViewHolder>() {
     private var listener: OnItemClickListener? = null
 
     // Create new views (invoked by the layout manager)
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerAdapter.MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         // create a new view
         val linearLayout = LayoutInflater.from(parent.context)
-                .inflate(R.layout.player_item, parent, false) as LinearLayout
+                .inflate(R.layout.game_item, parent, false) as LinearLayout
         return MyViewHolder(linearLayout,
-                linearLayout.findViewById<View>(R.id.imageViewFight) as ImageView,
                 linearLayout.findViewById<View>(R.id.textViewName) as TextView,
-                linearLayout.findViewById<View>(R.id.imageViewAdd) as ImageView,
-                linearLayout.findViewById<View>(R.id.textViewLevel) as TextView,
-                linearLayout.findViewById<View>(R.id.imageViewRemove) as ImageView)
+                linearLayout.findViewById<View>(R.id.imageViewSettings) as ImageView,
+                linearLayout.findViewById<View>(R.id.imageViewDelete) as ImageView)
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -30,36 +28,29 @@ class PlayerAdapter// Provide a suitable constructor (depends on the kind of dat
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        holder.textViewPlayerName.setOnClickListener {
+        holder.linearLayout.setOnClickListener {
             if (listener != null) {
                 listener!!.onItemClick(holder.adapterPosition)
             }
         }
 
-        holder.textViewPlayerName.text = playerList[holder.adapterPosition].name
-        holder.textViewPlayerLevel.text = Integer.toString(playerList[holder.adapterPosition].level)
+        holder.textViewGameName.text = gameList[holder.adapterPosition].name
 
-        holder.imageViewAdd.setOnClickListener {
+        holder.imageViewSettings.setOnClickListener {
             if (listener != null) {
-                listener!!.onAddClick(holder.adapterPosition)
+                listener!!.onSettingsClick(holder.adapterPosition)
             }
         }
-        holder.imageViewRemove.setOnClickListener {
+        holder.imageViewDelete.setOnClickListener {
             if (listener != null) {
-                listener!!.onRemoveClick(holder.adapterPosition)
-            }
-        }
-
-        holder.imageViewFight.setOnClickListener {
-            if (listener != null) {
-                listener!!.onFightClick(holder.adapterPosition)
+                listener!!.onDeleteClick(holder.adapterPosition)
             }
         }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount(): Int {
-        return playerList.size
+        return gameList.size
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
@@ -70,13 +61,11 @@ class PlayerAdapter// Provide a suitable constructor (depends on the kind of dat
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     class MyViewHolder(// each data item is just a string in this case
-            var linearLayout: LinearLayout, var imageViewFight: ImageView, var textViewPlayerName: TextView, var imageViewAdd: ImageView, var textViewPlayerLevel: TextView, var imageViewRemove: ImageView) : RecyclerView.ViewHolder(linearLayout)
+            var linearLayout: LinearLayout, var textViewGameName: TextView, var imageViewSettings: ImageView, var imageViewDelete: ImageView) : RecyclerView.ViewHolder(linearLayout)
 
     interface OnItemClickListener {
         fun onItemClick(position: Int)
-        fun onAddClick(position: Int)
-        fun onRemoveClick(position: Int)
-        fun onFightClick(position: Int)
+        fun onSettingsClick(position: Int)
+        fun onDeleteClick(position: Int)
     }
 }
-
