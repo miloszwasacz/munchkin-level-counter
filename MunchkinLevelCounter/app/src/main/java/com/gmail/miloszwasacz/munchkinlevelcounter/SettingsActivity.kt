@@ -8,10 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : AppCompatActivity() {
-    internal var maxLevel = 10
-    internal var minLevel = 1
+    private var maxLevel = 10
+    private var minLevel = 1
     internal lateinit var name: String
-    internal var position = 0
+    private var position = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,14 +77,11 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    //Obsługa strzałeczki w tył
-    override fun onOptionsItemSelected(item: MenuItem): Boolean =
-            if (item.itemId == android.R.id.home) {
+    //Strzałeczka "back"
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = if (item.itemId == android.R.id.home) {
                 onBackPressed()
                 true
-            }
-            else
-                super.onOptionsItemSelected(item)
+            } else super.onOptionsItemSelected(item)
 
     //Wyjście z Activity
     override fun onBackPressed() {

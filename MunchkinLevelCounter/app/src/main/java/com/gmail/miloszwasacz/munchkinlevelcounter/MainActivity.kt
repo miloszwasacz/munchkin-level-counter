@@ -14,9 +14,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    internal lateinit var gameList: ArrayList<Game>
+    private lateinit var gameList: ArrayList<Game>
     internal lateinit var adapter: GameAdapter
-    internal var sharedPrefsName = "com.gmail.miloszwasacz.munchkinlevelcounter.prefs"
+    private var sharedPrefsName = "com.gmail.miloszwasacz.munchkinlevelcounter.prefs"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
     //RecyclerView i GameAdapter
     fun setGameAdapter(gameList: ArrayList<Game>) {
 

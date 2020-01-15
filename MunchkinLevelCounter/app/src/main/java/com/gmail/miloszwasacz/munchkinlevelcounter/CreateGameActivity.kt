@@ -10,10 +10,10 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_settings.*
 
 class CreateGameActivity : AppCompatActivity() {
-    internal var maxLevel = 10
-    internal var minLevel = 1
+    private var maxLevel = 10
+    private var minLevel = 1
     internal lateinit var name: String
-    internal var gameListSize = 0
+    private var gameListSize = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +76,15 @@ class CreateGameActivity : AppCompatActivity() {
         }
     }
 
+    //Tworzenie domyślnej listy graczy
+    fun createDefaultPlayerList(): String {
+        val playerList = ArrayList<Player>()
+        playerList.add(Player("Gracz 1", resources.getInteger(R.integer.default_min_level)))
+        playerList.add(Player("Gracz 2", resources.getInteger(R.integer.default_min_level)))
+        playerList.add(Player("Gracz 3", resources.getInteger(R.integer.default_min_level)))
+        return Gson().toJson(playerList)
+    }
+
     //Tworzenie guzików na app barze
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.clear()
@@ -86,20 +95,18 @@ class CreateGameActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    //Obsługa guzików na app barze
+    //Guziki na app barze
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         //Potwierdzenie
         R.id.action_confirm -> {
             onBackPressed(Activity.RESULT_OK)
             true
         }
-
         //Strzałeczka "back"
         android.R.id.home -> {
             onBackPressed(Activity.RESULT_CANCELED)
             true
         }
-
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -112,14 +119,5 @@ class CreateGameActivity : AppCompatActivity() {
         returnIntent.putExtra("resultGame", Gson().toJson(Game(name, createDefaultPlayerList(), maxLevel, minLevel)))
         setResult(result, returnIntent)
         finish()
-    }
-
-    //Tworzenie domyślnej listy graczy
-    fun createDefaultPlayerList(): String {
-        val playerList = ArrayList<Player>()
-        playerList.add(Player("Gracz 1", resources.getInteger(R.integer.default_min_level)))
-        playerList.add(Player("Gracz 2", resources.getInteger(R.integer.default_min_level)))
-        playerList.add(Player("Gracz 3", resources.getInteger(R.integer.default_min_level)))
-        return Gson().toJson(playerList)
     }
 }
