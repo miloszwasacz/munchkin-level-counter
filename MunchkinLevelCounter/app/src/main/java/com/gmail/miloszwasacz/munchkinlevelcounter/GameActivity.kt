@@ -130,7 +130,7 @@ class GameActivity : AppCompatActivity() {
                         .setNeutralButton("Usuń") { dialog, which ->
                             list.removeAt(position)
                             insertPlayerListIntoGame(list, game)
-                            adapter.notifyItemRemoved(position)
+                            setPlayerAdapter(game)
                         }
                         .setView(frameLayout)
                         .create()
