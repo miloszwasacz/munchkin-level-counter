@@ -434,7 +434,7 @@ class KillOMeterActivity : AppCompatActivity() {
     fun checkWinner(playerSummary: Int, monsterSummary: Int) {
         val winnerDrawable = resources.getDrawable(R.drawable.ic_munchkin_winner_24dp)
         val loserDrawable = resources.getDrawable(R.drawable.ic_munchkin_loser_24dp)
-        val tieDrawable = resources.getDrawable(R.drawable.ic_munchkin_sword_24dp)
+        val tieDrawable = resources.getDrawable(R.drawable.ic_munchkin_tie_24dp)
 
         winnerDrawable.setTint(resources.getColor(R.color.text_color))
         loserDrawable.setTint(resources.getColor(R.color.text_color))
