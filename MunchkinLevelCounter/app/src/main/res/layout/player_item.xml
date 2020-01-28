@@ -23,6 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
+        android:ellipsize="end"
+        android:lines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textColor="@color/text_color" />
 
