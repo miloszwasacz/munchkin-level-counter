@@ -4,4 +4,6 @@
     <string name="title_kill_o_meter">Kill-O-Meter</string>
     <string name="title_settings">Ustawienia</string>
     <string name="title_confirm">Potwierdz</string>
+    <string name="operation_add">Add</string>
+    <string name="operation_remove">Remove</string>
 </resources>
