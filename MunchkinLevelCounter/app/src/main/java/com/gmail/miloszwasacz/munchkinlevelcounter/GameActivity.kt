@@ -86,6 +86,7 @@ class GameActivity : AppCompatActivity() {
             else if (element.level < game.minLevel)
                 element.level = game.minLevel
         }
+        insertPlayerListIntoGame(list, game)
 
         //Obsługa kontrolek
         adapter.setOnItemClickListener(object : PlayerAdapter.OnItemClickListener {

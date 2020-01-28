@@ -16,19 +16,19 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_kill_o_meter.*
 
 class KillOMeterActivity : AppCompatActivity() {
-    internal var playerPosition = 0
-    internal lateinit var playerList: ArrayList<Player>
-    internal var maxViewValue = 999
-    internal var minBonus = 0
-    internal lateinit var operationAdd: String
-    internal lateinit var operationRemove: String
-    internal var levelIncrementation = 1
-    internal var itemIncrementation = 1
-    internal var bonusIncrementation = 1
-    internal var enhancerIncrementation = 5
-    internal lateinit var game: Game
-    internal var gameIndex = 0
-    internal var bracketList = ArrayList<Bracket>()
+    private lateinit var game: Game
+    private var gameIndex = 0
+    private lateinit var playerList: ArrayList<Player>
+    private var playerPosition = 0
+    private var bracketList = ArrayList<Bracket>()
+    private lateinit var operationAdd: String
+    private lateinit var operationRemove: String
+    private var maxViewValue = 999
+    private var minBonus = 0
+    private var levelIncrementation = 1
+    private var itemIncrementation = 1
+    private var bonusIncrementation = 1
+    private var enhancerIncrementation = 5
     private var sharedPrefsName = "com.gmail.miloszwasacz.munchkinlevelcounter.prefs"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -344,7 +344,7 @@ class KillOMeterActivity : AppCompatActivity() {
                         //
                         // Hide keyboard
                         //
-                        val imm: InputMethodManager = v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        val imm: InputMethodManager = v!!.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         imm.hideSoftInputFromWindow(v.windowToken, 0)
                     }
                 }
