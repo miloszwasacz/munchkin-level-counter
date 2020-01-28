@@ -57,6 +57,7 @@ class GameActivity : AppCompatActivity() {
                     .setPositiveButton("Ok") { dialog, which ->
                         val list = extractPlayerListFromGame(game)
 
+                        editTextName.setText(editTextName.text.toString().trim())
                         if (editTextName.text.toString() == "")
                             editTextName.setText("Gracz " + (list.size + 1))
 

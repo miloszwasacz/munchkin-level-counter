@@ -85,6 +85,7 @@ class SettingsActivity : AppCompatActivity() {
 
     //Wyjście z Activity
     override fun onBackPressed() {
+        editTextName.setText(editTextName.text.trim())
         if (editTextName.text.toString() != "")
             name = editTextName.text.toString()
         val returnIntent = Intent()

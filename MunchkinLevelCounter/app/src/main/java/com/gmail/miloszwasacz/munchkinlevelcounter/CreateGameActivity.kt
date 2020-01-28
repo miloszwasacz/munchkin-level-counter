@@ -112,6 +112,7 @@ class CreateGameActivity : AppCompatActivity() {
 
     //Wyjście z Activity
     fun onBackPressed(result: Int) {
+        editTextName.setText(editTextName.text.trim())
         if (editTextName.text.toString() == "")
             editTextName.setText("Gra " + (gameListSize + 1))
         name = editTextName.text.toString()
