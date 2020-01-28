@@ -47,7 +47,7 @@ class KillOMeterActivity : AppCompatActivity() {
         bonusIncrementation = resources.getInteger(R.integer.bonus_incrementation)
         enhancerIncrementation = resources.getInteger(R.integer.enhancer_incrementation)
         gameIndex = intent.getIntExtra("EXTRA_GAME_INDEX", 0)
-        playerPosition = intent.getIntExtra("EXTRA_POSITION", 0)
+        playerPosition = intent.getIntExtra("EXTRA_PLAYER_POSITION", 0)
         val json = intent.getStringExtra("EXTRA_GAME")
         val gameType = object: TypeToken<Game>() {}.type
         game = Gson().fromJson<Game>(json, gameType)
@@ -221,23 +221,6 @@ class KillOMeterActivity : AppCompatActivity() {
 
             var maxValue: Int
             var minValue: Int
-            /*
-            if (element === editTextPlayerLevel) {
-                if (element.text.toString() == "" || tryParse(element.text.toString(), game.maxLevel) < game.minLevel)
-                    element.setText(game.minLevel.toString())
-                else if (tryParse(element.text.toString(), game.maxLevel) >= game.maxLevel)
-                    element.setText(game.maxLevel.toString())
-            } else if (element === editTextMonsterLevel) {
-                if (element.text.toString() == "" || tryParse(element.text.toString(), maxViewValue) < game.minLevel)
-                    element.setText(game.minLevel.toString())
-                else if (tryParse(element.text.toString(), maxViewValue) >= maxViewValue)
-                    element.setText(maxViewValue.toString())
-            } else {
-                if (element.text.toString() == "" || tryParse(element.text.toString(), maxViewValue) < minBonus)
-                    element.setText(minBonus.toString())
-                else if (tryParse(element.text.toString(), maxViewValue) >= maxViewValue)
-                    element.setText(maxViewValue.toString())
-            }*/
             when {
                 element.editText === editTextPlayerLevel -> {
                     maxValue = game.maxLevel
