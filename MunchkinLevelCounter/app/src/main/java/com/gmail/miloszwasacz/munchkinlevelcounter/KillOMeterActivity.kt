@@ -260,9 +260,9 @@ class KillOMeterActivity : AppCompatActivity() {
         val loserDrawable = resources.getDrawable(R.drawable.ic_munchkin_loser_24dp)
         val tieDrawable = resources.getDrawable(R.drawable.ic_munchkin_tie_24dp)
 
-        winnerDrawable.setTint(resources.getColor(R.color.text_color))
-        loserDrawable.setTint(resources.getColor(R.color.text_color))
-        tieDrawable.setTint(resources.getColor(R.color.text_color))
+        //winnerDrawable.setTint(resources.getColor(R.color.text_color))
+        //loserDrawable.setTint(resources.getColor(R.color.text_color))
+        //tieDrawable.setTint(resources.getColor(R.color.text_color))
 
         when {
             tryParse(PlayerSummary.text.toString(), game.minLevel) > tryParse(MonsterSummary.text.toString(), game.minLevel) -> {

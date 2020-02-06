@@ -4,37 +4,35 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?attr/listPreferredItemHeight"
-    android:orientation="horizontal"
-    android:paddingLeft="?attr/listPreferredItemPaddingLeft"
-    android:paddingRight="?attr/listPreferredItemPaddingRight">
+    android:minHeight="?attr/listPreferredItemHeightSmall"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/imageViewFight"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:scaleType="center"
-        app:srcCompat="@drawable/ic_munchkin_sword_brown_24dp" />
+        android:layout_gravity="center_vertical"
+        app:srcCompat="@drawable/ic_munchkin_sword_24dp" />
 
     <TextView
         android:id="@+id/textViewName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
         android:layout_weight="1"
         android:ellipsize="end"
         android:lines="1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textColor="@color/text_color" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
     <ImageView
         android:id="@+id/imageViewRemove"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:scaleType="center"
-        app:srcCompat="@drawable/ic_remove_brown_24dp" />
+        android:layout_gravity="center_vertical"
+        app:srcCompat="@drawable/ic_remove_24dp" />
 
     <TextView
         android:id="@+id/textViewLevel"
@@ -45,15 +43,14 @@
         android:gravity="center_horizontal"
         android:minWidth="40dp"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:textColor="@color/text_color" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
 
     <ImageView
         android:id="@+id/imageViewAdd"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:scaleType="center"
+        android:layout_gravity="center_vertical"
         app:srcCompat="@drawable/ic_add_brown_24dp" />
 
 </LinearLayout>
