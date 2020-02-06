@@ -1,9 +1,13 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_settings.*
 
@@ -95,5 +99,25 @@ class SettingsActivity : AppCompatActivity() {
         returnIntent.putExtra("resultPosition", position)
         setResult(Activity.RESULT_OK, returnIntent)
         finish()
+    }
+
+    //Strać focus podczas przewijania
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if(event.action == MotionEvent.ACTION_DOWN) {
+            val v = currentFocus
+            if(editTextName.isFocused) {
+                val outRect = Rect()
+                editTextName.getGlobalVisibleRect(outRect)
+                if(!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    editTextName.clearFocus()
+                    //
+                    // Hide keyboard
+                    //
+                    val imm: InputMethodManager = v!!.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.windowToken, 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
     }
 }
