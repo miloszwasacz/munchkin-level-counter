@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/monsterKillOMeterLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".KillOMeterActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playerRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:id="@+id/textViewPlayerName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:text="Gracz"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                        android:textColor="?android:textColorPrimary" />
+
+                    <ImageView
+                        android:id="@+id/imageViewWinnerPlayer"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textViewPlayerLevelName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:text="Poziom:"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+                    <ImageView
+                        android:id="@+id/imageViewPlayerLevelRemove"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center"
+                        app:srcCompat="@drawable/ic_remove_24dp" />
+
+                    <EditText
+                        android:id="@+id/editTextPlayerLevel"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0"
+                        android:background="@null"
+                        android:gravity="center_horizontal"
+                        android:inputType="number"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+                    <ImageView
+                        android:id="@+id/imageViewPlayerLevelAdd"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center"
+                        app:srcCompat="@drawable/ic_add_24dp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textViewPlayerItemBonusName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:text="Przedmioty:"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+                    <ImageView
+                        android:id="@+id/imageViewPlayerItemsRemove"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center"
+                        app:srcCompat="@drawable/ic_remove_24dp" />
+
+                    <EditText
+                        android:id="@+id/editTextPlayerItems"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0"
+                        android:background="@null"
+                        android:gravity="center_horizontal"
+                        android:inputType="number"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+                    <ImageView
+                        android:id="@+id/imageViewPlayerItemsAdd"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center"
+                        app:srcCompat="@drawable/ic_add_24dp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textViewPlayerBonusName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:text="Jednorazowego użytku:"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+                    <ImageView
+                        android:id="@+id/imageViewPlayerBonusRemove"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center"
+                        app:srcCompat="@drawable/ic_remove_24dp" />
+
+                    <EditText
+                        android:id="@+id/editTextPlayerBonus"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0"
+                        android:background="@null"
+                        android:gravity="center_horizontal"
+                        android:inputType="number"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+                    <ImageView
+                        android:id="@+id/imageViewPlayerBonusAdd"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center"
+                        app:srcCompat="@drawable/ic_add_24dp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textViewPlayerSummaryName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:lines="1"
+                        android:text="Suma:"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+                    <ImageView
+                        android:id="@+id/imageViewPlayerDummyLeft"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center" />
+
+                    <EditText
+                        android:id="@+id/editTextPlayerSummary"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0"
+                        android:background="@null"
+                        android:enabled="false"
+                        android:focusable="false"
+                        android:gravity="center_horizontal"
+                        android:inputType="number"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+                    <ImageView
+                        android:id="@+id/imageViewPlayerDummyRight"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center_vertical"
+                        android:scaleType="center" />
+
+                </TableRow>
+
+            </TableLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

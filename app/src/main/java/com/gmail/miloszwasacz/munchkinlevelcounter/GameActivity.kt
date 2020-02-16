@@ -82,17 +82,17 @@ class GameActivity : AppCompatActivity() {
 
         //Sprawdzenie czy poziomy graczy są w dozwolonym zakresie
         for (element in list) {
-            if (element.level > game.maxLevel)
-                element.level = game.maxLevel
-            else if (element.level < game.minLevel)
-                element.level = game.minLevel
+            if (element.value > game.maxLevel)
+                element.value = game.maxLevel
+            else if (element.value < game.minLevel)
+                element.value = game.minLevel
         }
         insertPlayerListIntoGame(list, game)
 
         //Obsługa kontrolek
         adapter.setOnItemClickListener(object : PlayerAdapter.OnItemClickListener {
             //Edycja poszczególnego gracza
-            override fun onItemClick(position: Int) {
+            override fun onEditClick(position: Int) {
                 val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
                 val editTextName = frameLayout.findViewById<EditText>(R.id.editText)
                 editTextName.setText(list[position].name)
@@ -118,8 +118,8 @@ class GameActivity : AppCompatActivity() {
 
             //Zwiększenie poziomu gracza
             override fun onAddClick(position: Int) {
-                if (list[position].level < game.maxLevel) {
-                    list[position].level++
+                if (list[position].value < game.maxLevel) {
+                    list[position].value++
                     insertPlayerListIntoGame(list, game)
                     adapter.notifyItemChanged(position)
                 }
@@ -127,8 +127,8 @@ class GameActivity : AppCompatActivity() {
 
             //Zmniejszenie poziomu gracza
             override fun onRemoveClick(position: Int) {
-                if (list[position].level > game.minLevel) {
-                    list[position].level--
+                if (list[position].value > game.minLevel) {
+                    list[position].value--
                     insertPlayerListIntoGame(list, game)
                     adapter.notifyItemChanged(position)
                 }
@@ -179,7 +179,7 @@ class GameActivity : AppCompatActivity() {
         val jsonGame = Gson().toJson(gameList)
         val editor = getSharedPreferences(sharedPrefsName, Context.MODE_PRIVATE).edit()
         editor.putString("ListaGierPrefs", jsonGame)
-        editor.commit()
+        editor.apply()
     }
 
     //Wczytanie listy gier z SharedPreferences

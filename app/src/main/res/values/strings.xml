@@ -6,4 +6,6 @@
     <string name="title_confirm">Potwierdz</string>
     <string name="operation_add">Add</string>
     <string name="operation_remove">Remove</string>
+    <string name="category_players">Gracze</string>
+    <string name="category_monsters">Potwory</string>
 </resources>

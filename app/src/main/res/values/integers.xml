@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="TYPE_PLAYER">0</integer>
+    <integer name="TYPE_MONSTER">1</integer>
+    <integer name="TYPE_BONUS">2</integer>
+</resources>
