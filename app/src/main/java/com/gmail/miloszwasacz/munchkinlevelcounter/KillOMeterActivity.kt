@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_kill_o_meter.*
 
@@ -22,8 +21,8 @@ class KillOMeterActivity : AppCompatActivity() {
     private var gameIndex = 0
     private lateinit var playerList: ArrayList<Player>
     private var playerPosition = 0
-    private lateinit var playerFieldList: ArrayList<BaseItem>
-    private lateinit var monsterFieldList: ArrayList<BaseItem>
+    private var playerFieldList = ArrayList<BaseItem>()
+    private var monsterFieldList = ArrayList<BaseItem>()
     private lateinit var playerAdapter: KillOMeterAdapter
     private lateinit var monsterAdapter: KillOMeterAdapter
     private lateinit var pagerAdapter: KillOMeterPagerAdapter
@@ -58,22 +57,35 @@ class KillOMeterActivity : AppCompatActivity() {
             game = Gson().fromJson<Game>(jsonGame, gameType)
             playerPosition = savedInstanceState.getInt("Pozycja")
             gameIndex = savedInstanceState.getInt("IndexGry")
+
             val jsonPlayerFieldList = savedInstanceState.getString("ListaPolGraczy")
-            val baseItemListType = object: TypeToken<ArrayList<BaseItem>>() {}.type
-            val gb = GsonBuilder()
-            gb.registerTypeAdapter(baseItemListType, CustomDeserializer())
-            //gb.registerTypeAdapter(baseItemListType, CustomSerializer())
-            playerFieldList = gb.create().fromJson(jsonPlayerFieldList, baseItemListType)
-            //playerFieldList = Gson().fromJson<ArrayList<BaseItem>>(jsonPlayerFieldList, baseItemListType)
+            val playerItemListType = object: TypeToken<ArrayList<PlayerItem>>() {}.type
+            val itemList = Gson().fromJson<ArrayList<PlayerItem>>(jsonPlayerFieldList, playerItemListType)
+            playerList = GameActivity().extractPlayerListFromGame(game)
+            for(item in itemList) {
+                for(player in playerList) {
+                    if(item.playerIndex == playerList.indexOf(player)) {
+                        playerFieldList.add(player)
+                        for(bonus in item.bonusList)
+                            playerFieldList.add(bonus)
+                    }
+                }
+            }
+
             val jsonMonsterFieldList = savedInstanceState.getString("ListaPolPotworow")
-            monsterFieldList = Gson().fromJson<ArrayList<BaseItem>>(jsonMonsterFieldList, baseItemListType)
+            val monsterItemListType = object: TypeToken<ArrayList<MonsterItem>>() {}.type
+            val monsterItemList = Gson().fromJson<ArrayList<MonsterItem>>(jsonMonsterFieldList, monsterItemListType)
+            for(item in monsterItemList) {
+                monsterFieldList.add(item.monster)
+                for(bonus in item.bonusList)
+                    monsterFieldList.add(bonus)
+            }
         }
-        playerList = GameActivity().extractPlayerListFromGame(game)
-        if(savedInstanceState == null) {
-            playerFieldList = ArrayList()
-            monsterFieldList = ArrayList()
+        else {
+            playerList = GameActivity().extractPlayerListFromGame(game)
             playerFieldList.add(playerList[playerPosition])
         }
+
         //Atualizacja podsumowania
         var playerSummary = 0
         for(item in playerFieldList) {
@@ -84,7 +96,7 @@ class KillOMeterActivity : AppCompatActivity() {
             monsterSummary += item.value
         }
 
-        //Ustawianie adapterów dla pagera i recyclerView
+        //Ustawianie adapterów dla pagera
         val playerRecyclerView = layoutInflater.inflate(R.layout.player_kill_o_meter, pager, false) as RecyclerView
         val monsterRecyclerView = layoutInflater.inflate(R.layout.monster_kill_o_meter, pager, false) as RecyclerView
 
@@ -99,9 +111,9 @@ class KillOMeterActivity : AppCompatActivity() {
         pager.adapter = pagerAdapter
         tabLayout.setupWithViewPager(pager)
 
+        //Ustawianie adapterów dla recyclerView
         setPlayerAdapter(playerFieldList, playerRecyclerView, game)
         setMonsterAdapter(monsterFieldList, monsterRecyclerView, game)
-
 
         //Dodawanie nowych graczy/potworów
         floatingActionButton.setOnClickListener {
@@ -307,28 +319,6 @@ class KillOMeterActivity : AppCompatActivity() {
                 }
                 titleList[0] = "Gracze: $playerSummary"
                 pagerAdapter.notifyDataSetChanged()
-
-                /*val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
-                val editTextName = frameLayout.findViewById<EditText>(R.id.editText)
-                editTextName.setText(list[position].name)
-
-                AlertDialog.Builder(this@GameActivity)
-                        .setTitle("Edytuj gracza")
-                        .setPositiveButton("Ok") { dialog, which ->
-                            if (editTextName.text.toString() != "")
-                                list[position].name = editTextName.text.toString()
-                            insertPlayerListIntoGame(list, game)
-                            adapter.notifyItemChanged(position)
-                        }
-                        .setNegativeButton("Anuluj", null)
-                        .setNeutralButton("Usuń") { dialog, which ->
-                            list.removeAt(position)
-                            insertPlayerListIntoGame(list, game)
-                            setPlayerAdapter(game)
-                        }
-                        .setView(frameLayout)
-                        .create()
-                        .show()*/
             }
         })
 
@@ -467,32 +457,99 @@ class KillOMeterActivity : AppCompatActivity() {
     //Zapisywanie stanu Kill-O-Metera
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
+        //Gra, indeks gry, pozycja gracza
+        GameActivity().insertPlayerListIntoGame(playerList, game)
         savedInstanceState.putString("Gra", Gson().toJson(game))
-        savedInstanceState.putInt("Pozycja", playerPosition)
         savedInstanceState.putInt("IndexGry", gameIndex)
+        savedInstanceState.putInt("Pozycja", playerPosition)
 
         /*
-        val runtimeTypeAdapterFactory: RuntimeTypeAdapterFactory<BaseItem> = RuntimeTypeAdapterFactory.of(BaseItem::class.java, "type").registerSubtype(Player::class.java, "player")
-        val gson = GsonBuilder().registerTypeAdapterFactory(runtimeTypeAdapterFactory).create()
-        val json = gson.toJson(animals)*/
-        /*
-        val src = playerFieldList
-        Json(context = geometricsModule)
-                .apply {
-                    val json = stringify(src)
-                    assert(json == "[{\"type\":\"Rect\",\"width\":100,\"height\":50},{\"type\":\"Circle\",\"radius\":154.0}]")
-                    val polyList = parseList<BaseGeometric>(json)
-                    assert(polyList == src)
-                }*/
-        val baseItemListType = object: TypeToken<ArrayList<BaseItem>>() {}.type
-        val gb = GsonBuilder()
-        //gb.registerTypeAdapter(baseItemListType, CustomDeserializer())
-        gb.registerTypeAdapter(baseItemListType, CustomSerializer())
-        val json = CustomSerializer().serialize(playerFieldList, baseItemListType,)
-        //TODO Zrobić tą cholerną serializację - "isA" nie jest zapisywane przy serializacji Player'a
+        val itemList = ArrayList<PlayerItem>()
+        for(field in playerFieldList) {
+            if(field is Player) {
+                val fieldIndex = playerFieldList.indexOf(field)
+                val indexes = ArrayList<Int>()
+                for(element in playerFieldList) {
+                    if(element is Player && playerFieldList.indexOf(element) > fieldIndex)
+                        indexes.add(playerFieldList.indexOf(element))
+                }
+                val minIndex = indexes.min()
+                if(minIndex != null) {
+                    val bonusList = ArrayList<BaseItem>()
+                    for(i in (minIndex - 1) downTo (fieldIndex + 1))
+                        bonusList.add(playerFieldList[i])
+                    itemList.add(PlayerItem(field, bonusList))
+                }
+                else {
+                    val bonusList = ArrayList<BaseItem>()
+                    for(i in (playerFieldList.size - 1) downTo (fieldIndex + 1))
+                        bonusList.add(playerFieldList[i])
+                    itemList.add(PlayerItem(field, bonusList))
+                }
+            }
+        }*/
+        //Lista graczy z bonusami
+        val playerItemList = ArrayList<PlayerItem>()
+        for(field in playerFieldList){
+            if(field is Player) {
+                val fieldIndex = playerFieldList.indexOf(field)
+                var playerIndex = 0
+                for(player in playerList) {
+                    if(player == field)
+                        playerIndex = playerList.indexOf(player)
+                }
+                val indexes = ArrayList<Int>()
+                for(element in playerFieldList) {
+                    if(element is Player && playerFieldList.indexOf(element) > fieldIndex)
+                        indexes.add(playerFieldList.indexOf(element))
+                }
+                val minIndex = indexes.min()
+                if(minIndex != null) {
+                    val bonusList = ArrayList<BaseItem>()
+                    for(i in (minIndex - 1) downTo (fieldIndex + 1))
+                        bonusList.add(playerFieldList[i])
+                    bonusList.reverse()
+                    playerItemList.add(PlayerItem(playerIndex, bonusList))
+                }
+                else {
+                    val bonusList = ArrayList<BaseItem>()
+                    for(i in (playerFieldList.size - 1) downTo (fieldIndex + 1))
+                        bonusList.add(playerFieldList[i])
+                    bonusList.reverse()
+                    playerItemList.add(PlayerItem(playerIndex, bonusList))
+                }
+            }
+        }
+        savedInstanceState.putString("ListaPolGraczy", Gson().toJson(playerItemList))
 
-        savedInstanceState.putString("ListaPolGraczy", json)
-        savedInstanceState.putString("ListaPolPotworow", Gson().toJson(monsterFieldList))
+        //Lista potworów z bonusami
+        val monsterItemList = ArrayList<MonsterItem>()
+        for(field in monsterFieldList) {
+            if(field is Monster) {
+                val fieldIndex = monsterFieldList.indexOf(field)
+                val indexes = ArrayList<Int>()
+                for(element in monsterFieldList) {
+                    if(element is Monster && monsterFieldList.indexOf(element) > fieldIndex)
+                        indexes.add(monsterFieldList.indexOf(element))
+                }
+                val minIndex = indexes.min()
+                if(minIndex != null) {
+                    val bonusList = ArrayList<BaseItem>()
+                    for(i in (minIndex - 1) downTo (fieldIndex + 1))
+                        bonusList.add(monsterFieldList[i])
+                    bonusList.reverse()
+                    monsterItemList.add(MonsterItem(field, bonusList))
+                }
+                else {
+                    val bonusList = ArrayList<BaseItem>()
+                    for(i in (monsterFieldList.size - 1) downTo (fieldIndex + 1))
+                        bonusList.add(monsterFieldList[i])
+                    bonusList.reverse()
+                    monsterItemList.add(MonsterItem(field, bonusList))
+                }
+            }
+        }
+        savedInstanceState.putString("ListaPolPotworow", Gson().toJson(monsterItemList))
     }
 
     //Zapisywanie gry podczas wyjścia z aplikacji
