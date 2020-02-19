@@ -27,24 +27,19 @@ class KillOMeterActivity : AppCompatActivity() {
     private lateinit var monsterAdapter: KillOMeterAdapter
     private lateinit var pagerAdapter: KillOMeterPagerAdapter
     private val titleList = ArrayList<String>()
-    //private lateinit var operationAdd: String
-    //private lateinit var operationRemove: String
-    private var maxViewValue = 999
-    //private var minBonus = 0
-    //private var levelIncrementation = 1
-    //private var itemIncrementation = 1
-    //private var bonusIncrementation = 1
-    //private var enhancerIncrementation = 5
+    private var maxViewValue = 99
     private var sharedPrefsName = "com.gmail.miloszwasacz.munchkinlevelcounter.prefs"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_kill_o_meter)
 
-        //supportActionBar!!.title = "Kill-O-Meter"
-        //supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.title = "Kill-O-Meter"
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
 
+        maxViewValue = resources.getInteger(R.integer.max_view_value)
         val gameType = object: TypeToken<Game>() {}.type
         val json = intent.getStringExtra("EXTRA_GAME")
         game = Gson().fromJson<Game>(json, gameType)
@@ -176,7 +171,9 @@ class KillOMeterActivity : AppCompatActivity() {
                                 editTextName.setText("Potwór")
                             if(editTextLevel.text.toString() == "")
                                 editTextLevel.setText("1")
-                            val level = tryParse(editTextLevel.text.toString(), maxViewValue)
+                            var level = tryParse(editTextLevel.text.toString(), maxViewValue)
+                            if(level > maxViewValue)
+                                level = maxViewValue
                             monsterFieldList.add(Monster(editTextName.text.toString(), level))
                             monsterAdapter.notifyItemInserted(monsterFieldList.size - 1)
 
@@ -463,31 +460,6 @@ class KillOMeterActivity : AppCompatActivity() {
         savedInstanceState.putInt("IndexGry", gameIndex)
         savedInstanceState.putInt("Pozycja", playerPosition)
 
-        /*
-        val itemList = ArrayList<PlayerItem>()
-        for(field in playerFieldList) {
-            if(field is Player) {
-                val fieldIndex = playerFieldList.indexOf(field)
-                val indexes = ArrayList<Int>()
-                for(element in playerFieldList) {
-                    if(element is Player && playerFieldList.indexOf(element) > fieldIndex)
-                        indexes.add(playerFieldList.indexOf(element))
-                }
-                val minIndex = indexes.min()
-                if(minIndex != null) {
-                    val bonusList = ArrayList<BaseItem>()
-                    for(i in (minIndex - 1) downTo (fieldIndex + 1))
-                        bonusList.add(playerFieldList[i])
-                    itemList.add(PlayerItem(field, bonusList))
-                }
-                else {
-                    val bonusList = ArrayList<BaseItem>()
-                    for(i in (playerFieldList.size - 1) downTo (fieldIndex + 1))
-                        bonusList.add(playerFieldList[i])
-                    itemList.add(PlayerItem(field, bonusList))
-                }
-            }
-        }*/
         //Lista graczy z bonusami
         val playerItemList = ArrayList<PlayerItem>()
         for(field in playerFieldList){
@@ -560,271 +532,4 @@ class KillOMeterActivity : AppCompatActivity() {
         saveGameListInSharedPreferences(gameList)
         super.onPause()
     }
-
-    /*
-    //Ustawianie domyślnych wartości
-    minBonus = resources.getInteger(R.integer.default_min_bonus)
-    operationAdd = resources.getString(R.string.operation_add)
-    operationRemove = resources.getString(R.string.operation_remove)
-    levelIncrementation = resources.getInteger(R.integer.level_incremetation)
-    itemIncrementation = resources.getInteger(R.integer.items_incrementation)
-    bonusIncrementation = resources.getInteger(R.integer.bonus_incrementation)
-    enhancerIncrementation = resources.getInteger(R.integer.enhancer_incrementation)
-    gameIndex = intent.getIntExtra("EXTRA_GAME_INDEX", 0)
-    playerPosition = intent.getIntExtra("EXTRA_PLAYER_POSITION", 0)
-    val json = intent.getStringExtra("EXTRA_GAME")
-    val gameType = object: TypeToken<Game>() {}.type
-    game = Gson().fromJson<Game>(json, gameType)
-
-    //Stworzenie listy pól
-    bracketList.add(Bracket(editTextPlayerLevel, imageViewPlayerLevelAdd, imageViewPlayerLevelRemove))
-    bracketList.add(Bracket(editTextPlayerItems, imageViewPlayerItemsAdd, imageViewPlayerItemsRemove))
-    bracketList.add(Bracket(editTextPlayerBonus, imageViewPlayerBonusAdd, imageViewPlayerBonusRemove))
-    bracketList.add(Bracket(editTextMonsterLevel, imageViewMonsterLevelAdd, imageViewMonsterLevelRemove))
-    bracketList.add(Bracket(editTextMonsterEnhancer, imageViewMonsterEnhancerAdd, imageViewMonsterEnhancerRemove))
-    bracketList.add(Bracket(editTextMonsterBonus, imageViewMonsterBonusAdd, imageViewMonsterBonusRemove))
-
-    //Przywracanie stanu poprzedniego wartości
-    if(savedInstanceState != null) {
-        val jsonGame = savedInstanceState.getString("Gra")
-        val gameType = object: TypeToken<Game>() {}.type
-        game = Gson().fromJson<Game>(jsonGame, gameType)
-        playerPosition = savedInstanceState.getInt("Pozycja")
-        gameIndex = savedInstanceState.getInt("IndexGry")
-
-        val values: ArrayList<String>
-        val jsonValues = savedInstanceState.getString("ListaWartosci")
-        val valuesListType = object: TypeToken<ArrayList<String>>() {}.type
-        values = Gson().fromJson<ArrayList<String>>(jsonValues, valuesListType)
-        for(i in bracketList.indices)
-            bracketList[i].editText.setText(values[i])
-    }
-    playerList = GameActivity().extractPlayerListFromGame(game)
-
-    //Ustawianie poziomu i nazwy gracza
-    textViewPlayerName.text = playerList[playerPosition].name
-    editTextPlayerLevel.setText(playerList[playerPosition].level.toString())
-
-    checkValuesInBrackets(bracketList)
-    updateSummary()
-    */
-    /*
-        //Odejmij poziom graczowi
-        imageViewPlayerLevelRemove.setOnClickListener {
-            editValueInBracket(game.minLevel, game.maxLevel, editTextPlayerLevel, operationRemove, levelIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Dodaj poziom graczowi
-        imageViewPlayerLevelAdd.setOnClickListener {
-            editValueInBracket(game.minLevel, game.maxLevel, editTextPlayerLevel, operationAdd, levelIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Sprawdź czy poziom gracza jest w zakrasie poziomów
-        editTextPlayerLevel.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> checkValuesInBrackets(bracketList) }
-
-        //Odejmij bonus z przedmiotów gracza
-        imageViewPlayerItemsRemove.setOnClickListener {
-            editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, operationRemove, itemIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Dodaj bonus z przedmiotów gracza
-        imageViewPlayerItemsAdd.setOnClickListener {
-            editValueInBracket(minBonus, maxViewValue, editTextPlayerItems, operationAdd, itemIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Sprawdź czy bonus z przedmiotów gracza nie jest pusty
-        editTextPlayerItems.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> checkValuesInBrackets(bracketList) }
-
-        //Odejmij bonus z jednorazowego użytku graczowi
-        imageViewPlayerBonusRemove.setOnClickListener {
-            editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, operationRemove, bonusIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Dodaj bonus z jednorazowego użytku graczowi
-        imageViewPlayerBonusAdd.setOnClickListener {
-            editValueInBracket(minBonus, maxViewValue, editTextPlayerBonus, operationAdd, bonusIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Sprawdź czy bonus z przedmiotów gracza nie jest pusty
-        editTextPlayerBonus.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> checkValuesInBrackets(bracketList) }
-
-
-        //Odejmij poziom potworowi
-        imageViewMonsterLevelRemove.setOnClickListener {
-            editValueInBracket(game.minLevel, maxViewValue, editTextMonsterLevel, operationRemove, levelIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Dodaj poziom potworowi
-        imageViewMonsterLevelAdd.setOnClickListener {
-            editValueInBracket(game.minLevel, maxViewValue, editTextMonsterLevel, operationAdd, levelIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Sprawdź czy poziom potwora jest większy od 0 i nie jest pusty
-        editTextMonsterLevel.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> checkValuesInBrackets(bracketList) }
-
-        //Odejmij wzmacniacz potwora
-        imageViewMonsterEnhancerRemove.setOnClickListener {
-            editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, operationRemove, enhancerIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Dodaj wzmacniacz potwora
-        imageViewMonsterEnhancerAdd.setOnClickListener {
-            editValueInBracket(minBonus, maxViewValue, editTextMonsterEnhancer, operationAdd, enhancerIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Sprawdź czy wzmacniacz potwora nie jest pusty
-        editTextMonsterEnhancer.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> checkValuesInBrackets(bracketList) }
-
-        //Odejmij bonus z jednorazowego użytku potworowi
-        imageViewMonsterBonusRemove.setOnClickListener {
-            editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, operationRemove, bonusIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Dodaj bonus z jednorazowego użytku potworowi
-        imageViewMonsterBonusAdd.setOnClickListener {
-            editValueInBracket(minBonus, maxViewValue, editTextMonsterBonus, operationAdd, bonusIncrementation)
-            checkValuesInBrackets(bracketList)
-        }
-
-        //Sprawdź czy bonus z jednorazowego użytku potwora nie jest pusty
-        editTextMonsterBonus.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> checkValuesInBrackets(bracketList) }
-    }*/
-    /*
-    //Metoda "Zsumuj moc gracza i potwora"
-    fun updateSummary() {
-        editTextPlayerSummary.setText((tryParse(editTextPlayerLevel.text.toString(), game.maxLevel) + tryParse(editTextPlayerItems.text.toString(), maxViewValue) + tryParse(editTextPlayerBonus.text.toString(), maxViewValue)).toString())
-        editTextMonsterSummary.setText((tryParse(editTextMonsterLevel.text.toString(), maxViewValue) + tryParse(editTextMonsterEnhancer.text.toString(), maxViewValue) + tryParse(editTextMonsterBonus.text.toString(), maxViewValue)).toString())
-        checkWinner(editTextPlayerSummary, editTextMonsterSummary)
-    }
-
-    //Metoda "Zastosuj podaną operację na liczbach z pola"
-    fun editValueInBracket(minValue: Int, maxValue: Int, bracket: EditText, operation: String, incrementationValue: Int) {
-        //Dodawanie
-        if (operation === resources.getString(R.string.operation_add)) {
-            if (bracket.text.toString() == "" || tryParse(bracket.text.toString(), maxValue) < minValue)
-                bracket.setText(minValue.toString())
-            else {
-                if (tryParse(bracket.text.toString(), maxValue) < maxValue)
-                    bracket.setText((tryParse(bracket.text.toString(), maxValue) / incrementationValue * incrementationValue + incrementationValue).toString())
-                else
-                    bracket.setText(maxValue.toString())
-            }
-
-        }
-        //Odejmowanie
-        else if (operation === resources.getString(R.string.operation_remove)) {
-            if (bracket.text.toString() == "" || tryParse(bracket.text.toString(), maxValue) < minValue)
-                bracket.setText(minValue.toString())
-            else {
-                if (tryParse(bracket.text.toString(), maxValue) < incrementationValue)
-                    bracket.setText(minValue.toString())
-                else {
-                    if (tryParse(bracket.text.toString(), maxValue) % incrementationValue != 0)
-                        bracket.setText((tryParse(bracket.text.toString(), maxValue) / incrementationValue * incrementationValue).toString())
-                    else
-                        bracket.setText((tryParse(bracket.text.toString(), maxValue) - incrementationValue).toString())
-                }
-            }
-        }
-    }
-
-    //Metoda "Sprawdź czy żadne pole nie jest puste"
-    fun checkValuesInBrackets(bracketList: ArrayList<Bracket>) {
-        for (element in bracketList) {
-            removeLeadingZeros(element.editText)
-
-            var maxValue: Int
-            var minValue: Int
-            when {
-                element.editText === editTextPlayerLevel -> {
-                    maxValue = game.maxLevel
-                    minValue = game.minLevel
-                }
-                element.editText === editTextMonsterLevel -> {
-                    maxValue = maxViewValue
-                    minValue = game.minLevel
-                }
-                else -> {
-                    maxValue = maxViewValue
-                    minValue = minBonus
-                }
-            }
-
-            if (element.editText.text.toString() == "" || tryParse(element.editText.text.toString(), maxValue) < minValue)
-                element.editText.setText(minValue.toString())
-            else if (tryParse(element.editText.text.toString(), maxValue) >= maxValue)
-                element.editText.setText(maxValue.toString())
-
-            if(element.editText.text.toString().toInt() == maxValue)
-                element.buttonAdd.visibility = View.INVISIBLE
-            else if(element.editText.text.toString().toInt() < maxValue)
-                element.buttonAdd.visibility = View.VISIBLE
-            if(element.editText.text.toString().toInt() == minValue)
-                element.buttonRemove.visibility = View.INVISIBLE
-            else if(element.editText.text.toString().toInt() > minValue)
-                element.buttonRemove.visibility = View.VISIBLE
-        }
-        updateSummary()
-    }
-
-    //Metoda "Sprawdź kto wygrywa"
-    fun checkWinner(PlayerSummary: EditText, MonsterSummary: EditText) {
-
-        val winnerDrawable = resources.getDrawable(R.drawable.ic_munchkin_winner_24dp)
-        val loserDrawable = resources.getDrawable(R.drawable.ic_munchkin_loser_24dp)
-        val tieDrawable = resources.getDrawable(R.drawable.ic_munchkin_tie_24dp)
-
-        //winnerDrawable.setTint(resources.getColor(R.color.text_color))
-        //loserDrawable.setTint(resources.getColor(R.color.text_color))
-        //tieDrawable.setTint(resources.getColor(R.color.text_color))
-
-        when {
-            tryParse(PlayerSummary.text.toString(), game.minLevel) > tryParse(MonsterSummary.text.toString(), game.minLevel) -> {
-                imageViewWinnerPlayer.setImageDrawable(winnerDrawable)
-                imageViewWinnerMonster.setImageDrawable(loserDrawable)
-            }
-            tryParse(PlayerSummary.text.toString(), game.minLevel) < tryParse(MonsterSummary.text.toString(), game.minLevel) -> {
-                imageViewWinnerPlayer.setImageDrawable(loserDrawable)
-                imageViewWinnerMonster.setImageDrawable(winnerDrawable)
-            }
-            else -> {
-                imageViewWinnerPlayer.setImageDrawable(tieDrawable)
-                imageViewWinnerMonster.setImageDrawable(tieDrawable)
-            }
-        }
-    }
-
-    //Strać focus podczas przewijania
-    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        for(bracket in bracketList) {
-            if(event.action == MotionEvent.ACTION_DOWN) {
-                val v = currentFocus
-                if(bracket.editText.isFocused) {
-                    val outRect = Rect()
-                    bracket.editText.getGlobalVisibleRect(outRect)
-                    if(!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
-                        bracket.editText.clearFocus()
-                        //
-                        // Hide keyboard
-                        //
-                        val imm: InputMethodManager = v!!.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.hideSoftInputFromWindow(v.windowToken, 0)
-                    }
-                }
-            }
-        }
-        return super.dispatchTouchEvent(event)
-    }
-*/
 }

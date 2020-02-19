@@ -26,7 +26,9 @@ class CreateGameActivity : AppCompatActivity() {
         maxLevel = resources.getInteger(R.integer.default_rules)
         minLevel = resources.getInteger(R.integer.default_min_level)
         gameListSize = intent.getIntExtra("EXTRA_SIZE", 0)
+        setSupportActionBar(toolbar)
         supportActionBar!!.title = "Nowa Gra"
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         //Zaktualizuj pozycje switch'y
         when (maxLevel) {

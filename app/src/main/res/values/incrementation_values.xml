@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <integer name="level_incremetation">1</integer>
-    <integer name="items_incrementation">1</integer>
-    <integer name="bonus_incrementation">1</integer>
-    <integer name="enhancer_incrementation">5</integer>
-</resources>

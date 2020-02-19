@@ -27,8 +27,9 @@
         android:layout_weight="0"
         android:gravity="center_horizontal"
         android:layout_marginRight="48dp"
-        android:ellipsize="end"
         android:textAlignment="center"
+        android:ellipsize="end"
+        android:lines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textSize="24sp"/>
 

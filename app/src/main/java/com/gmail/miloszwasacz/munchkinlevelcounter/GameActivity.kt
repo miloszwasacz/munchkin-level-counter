@@ -35,12 +35,12 @@ class GameActivity : AppCompatActivity() {
         //Przywracanie stanu poprzedniego listy graczy
         if(savedInstanceState != null){
             val jsonGame = savedInstanceState.getString("Gra")
-            val gameType = object : TypeToken<Game>() {}.type
             game = Gson().fromJson<Game>(jsonGame, gameType)
 
             gameIndex = savedInstanceState.getInt("Index")
         }
 
+        setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.title = game.name
 

@@ -30,9 +30,9 @@ class SettingsActivity : AppCompatActivity() {
         name = intent.getStringExtra("EXTRA_GAME_NAME")
         position = intent.getIntExtra("EXTRA_POSITION", 0)
 
-
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        setSupportActionBar(toolbar)
         supportActionBar!!.title = "Ustawienia - $name"
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         editTextName.setText(name)
 
         //Zaktualizuj pozycje switch'y
