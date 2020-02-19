@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             val position = data!!.getIntExtra("resultPosition", 0)
             if (resultCode == Activity.RESULT_OK) {
                 gameList[position].maxLevel = data.getIntExtra("resultMaxLevel", resources.getInteger(R.integer.default_rules))
-                gameList[position].minLevel = data.getIntExtra("resultMinLevel", resources.getInteger(R.integer.default_min_level))
+                gameList[position].minLevel = data.getIntExtra("resultMinLevel", resources.getInteger(R.integer.min_level))
                 gameList[position].name = data.getStringExtra("resultName")
                 setGameAdapter(gameList)
             }

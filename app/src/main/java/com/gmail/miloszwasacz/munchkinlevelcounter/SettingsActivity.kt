@@ -22,11 +22,11 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         maxLevel = resources.getInteger(R.integer.default_rules)
-        minLevel = resources.getInteger(R.integer.default_min_level)
+        minLevel = resources.getInteger(R.integer.min_level)
 
         //Weź wartości z poprzedniego activity
         maxLevel = intent.getIntExtra("EXTRA_MAX_LEVEL", resources.getInteger(R.integer.default_rules))
-        minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.default_min_level))
+        minLevel = intent.getIntExtra("EXTRA_MIN_LEVEL", resources.getInteger(R.integer.min_level))
         name = intent.getStringExtra("EXTRA_GAME_NAME")
         position = intent.getIntExtra("EXTRA_POSITION", 0)
 
