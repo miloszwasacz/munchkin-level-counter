@@ -8,8 +8,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +16,6 @@ import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_kill_o_meter.*
-import kotlin.math.abs
 
 
 class KillOMeterActivity : AppCompatActivity() {
@@ -248,30 +245,17 @@ class KillOMeterActivity : AppCompatActivity() {
 
             //Dodanie nowego bonusu
             override fun onAddBonusClick(position: Int) {
-                val builder = AlertDialog.Builder(this@KillOMeterActivity)
-                val linearLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as LinearLayout
-                val textView1 = linearLayout.findViewById<TextView>(R.id.textView1)
-                val textView2 = linearLayout.findViewById<TextView>(R.id.textView2)
-                val textView3 = linearLayout.findViewById<TextView>(R.id.textView3)
-                val textView4 = linearLayout.findViewById<TextView>(R.id.textView4)
-                val textView5 = linearLayout.findViewById<TextView>(R.id.textView5)
-                val textView6 = linearLayout.findViewById<TextView>(R.id.textView6)
-                val editTextValue = linearLayout.findViewById<EditText>(R.id.editTextValue)
-                textView1.text = "1"
-                textView2.text = "2"
-                textView3.text = "3"
-                textView4.text = "4"
-                textView5.text = "5"
-                textView6.text = "6"
+                val frameLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as FrameLayout
+                val editTextValue = frameLayout.findViewById<EditText>(R.id.editText)
 
-                builder.setTitle("Dodaj bonus")
-                        .setView(linearLayout)
+                AlertDialog.Builder(this@KillOMeterActivity)
+                        .setTitle("Dodaj bonus")
                         .setPositiveButton("Ok") { dialog, which ->
                             removeLeadingZeros(editTextValue)
-                            if (editTextValue.text.toString() != "") {
-                                if(editTextValue.text.toString().toInt() > maxViewValue)
+                            if(editTextValue.text.toString() != "") {
+                                if(tryParse(editTextValue.text.toString(), maxViewValue) >= maxViewValue)
                                     editTextValue.setText(maxViewValue.toString())
-                                if(editTextValue.text.toString().toInt() < minViewValue)
+                                if(tryParse(editTextValue.text.toString(), minViewValue) <= minViewValue)
                                     editTextValue.setText(minViewValue.toString())
                                 fieldList.add(position + 1, BaseItem(editTextValue.text.toString().toInt()))
                                 playerAdapter.notifyItemInserted(position + 1)
@@ -282,71 +266,9 @@ class KillOMeterActivity : AppCompatActivity() {
                             }
                         }
                         .setNegativeButton("Anuluj", null)
-
-                val alertDialog = builder.create()
-
-                textView1.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textView1.text.toString().toInt()))
-                    playerAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-                textView2.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textView2.text.toString().toInt()))
-                    playerAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-                textView3.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textView3.text.toString().toInt()))
-                    playerAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-                textView4.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textView4.text.toString().toInt()))
-                    playerAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-                textView5.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textView5.text.toString().toInt()))
-                    playerAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-                textView6.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textView6.text.toString().toInt()))
-                    playerAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-
-                alertDialog.show()
+                        .setView(frameLayout)
+                        .create()
+                        .show()
             }
 
             //Usunięcie gracza/bonusu
@@ -415,30 +337,17 @@ class KillOMeterActivity : AppCompatActivity() {
 
             //Dodanie nowego bonusu
             override fun onAddBonusClick(position: Int) {
-                val builder = AlertDialog.Builder(this@KillOMeterActivity)
-                val linearLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as LinearLayout
-                val textView2 = linearLayout.findViewById<TextView>(R.id.textView1)
-                val textView3 = linearLayout.findViewById<TextView>(R.id.textView2)
-                val textView5 = linearLayout.findViewById<TextView>(R.id.textView3)
-                val textView10 = linearLayout.findViewById<TextView>(R.id.textView4)
-                val textViewMinus5 = linearLayout.findViewById<TextView>(R.id.textView5)
-                val textViewMinus10 = linearLayout.findViewById<TextView>(R.id.textView6)
-                val editTextValue = linearLayout.findViewById<EditText>(R.id.editTextValue)
-                textView2.text = "2"
-                textView3.text = "3"
-                textView5.text = "5"
-                textView10.text = "10"
-                textViewMinus5.text = "-5"
-                textViewMinus10.text = "-10"
+                val frameLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as FrameLayout
+                val editTextValue = frameLayout.findViewById<EditText>(R.id.editText)
 
-                builder.setTitle("Dodaj bonus")
-                        .setView(linearLayout)
+                AlertDialog.Builder(this@KillOMeterActivity)
+                        .setTitle("Dodaj bonus")
                         .setPositiveButton("Ok") { dialog, which ->
                             removeLeadingZeros(editTextValue)
-                            if (editTextValue.text.toString() != "") {
-                                if(editTextValue.text.toString().toInt() > maxViewValue)
+                            if(editTextValue.text.toString() != "") {
+                                if(tryParse(editTextValue.text.toString(), maxViewValue) >= maxViewValue)
                                     editTextValue.setText(maxViewValue.toString())
-                                if(editTextValue.text.toString().toInt() < minViewValue)
+                                if(tryParse(editTextValue.text.toString(), minViewValue) <= minViewValue)
                                     editTextValue.setText(minViewValue.toString())
                                 fieldList.add(position + 1, BaseItem(editTextValue.text.toString().toInt()))
                                 monsterAdapter.notifyItemInserted(position + 1)
@@ -449,71 +358,9 @@ class KillOMeterActivity : AppCompatActivity() {
                             }
                         }
                         .setNegativeButton("Anuluj", null)
-
-                val alertDialog = builder.create()
-
-                textView2.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textView2.text.toString().toInt()))
-                    monsterAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-                textView3.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textView3.text.toString().toInt()))
-                    monsterAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-                textView5.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textView5.text.toString().toInt()))
-                    monsterAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-                textView10.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textView10.text.toString().toInt()))
-                    monsterAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-                textViewMinus5.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textViewMinus5.text.toString().toInt()))
-                    monsterAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-                textViewMinus10.setOnClickListener {
-                    fieldList.add(position + 1, BaseItem(textViewMinus10.text.toString().toInt()))
-                    monsterAdapter.notifyItemInserted(position + 1)
-
-                    //Atualizacja podsumowania
-                    titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
-
-                    alertDialog.dismiss()
-                }
-
-                alertDialog.show()
+                        .setView(frameLayout)
+                        .create()
+                        .show()
             }
 
             //Usunięcie potwora/bonusu
@@ -567,13 +414,13 @@ class KillOMeterActivity : AppCompatActivity() {
         var value = field.text.toString()
         var isNegative = false
         if(value.indexOf("-") == 0) {
-            value = abs(value.toInt()).toString()
+            value = value.substring(1)
             isNegative = true
         }
         while (value.indexOf("0") == 0 && value.isNotEmpty())
             value = value.substring(1)
         if(isNegative && value.isNotEmpty()) {
-            val int = value.toInt()
+            val int = tryParse(value, Int.MAX_VALUE)
             value = (-int).toString()
         }
 
