@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
 
     //RecyclerView i GameAdapter
     private fun setGameAdapter(gameList: ArrayList<Game>) {
-
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager = LinearLayoutManager(this)
         adapter = GameAdapter(gameList)
@@ -49,33 +48,37 @@ class MainActivity : AppCompatActivity() {
         adapter.setOnItemClickListener(object : GameAdapter.OnItemClickListener {
             //Uruchomienie poszczególnej gry
             override fun onItemClick(position: Int) {
-                val intent = Intent(this@MainActivity, GameActivity::class.java)
-                intent.putExtra("EXTRA_GAME", Gson().toJson(gameList[position]))
-                intent.putExtra("EXTRA_POSITION", position)
-                startActivityForResult(intent, 1)
+                try {
+                    val intent = Intent(this@MainActivity, GameActivity::class.java)
+                    intent.putExtra("EXTRA_GAME", Gson().toJson(gameList[position]))
+                    intent.putExtra("EXTRA_POSITION", position)
+                    startActivityForResult(intent, 1)
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
 
             //Wejście w ustawienia gry
             override fun onSettingsClick(position: Int) {
-                val intent = Intent(this@MainActivity, SettingsActivity::class.java)
-                intent.putExtra("EXTRA_GAME_NAME", gameList[position].name)
-                intent.putExtra("EXTRA_MAX_LEVEL", gameList[position].maxLevel)
-                intent.putExtra("EXTRA_MIN_LEVEL", gameList[position].minLevel)
-                intent.putExtra("EXTRA_POSITION", position)
-                startActivityForResult(intent, 2)
+                try {
+                    val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+                    intent.putExtra("EXTRA_GAME_NAME", gameList[position].name)
+                    intent.putExtra("EXTRA_MAX_LEVEL", gameList[position].maxLevel)
+                    intent.putExtra("EXTRA_MIN_LEVEL", gameList[position].minLevel)
+                    intent.putExtra("EXTRA_POSITION", position)
+                    startActivityForResult(intent, 2)
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
 
             //Usunięcie gry
             override fun onDeleteClick(position: Int) {
-                AlertDialog.Builder(this@MainActivity)
-                        .setTitle("Usunąć grę?")
-                        .setPositiveButton("Tak") { dialog, which ->
-                            gameList.removeAt(position)
-                            adapter.notifyItemRemoved(position)
-                        }
-                        .setNegativeButton("Nie", null)
-                        .create()
-                        .show()
+                try {
+                    AlertDialog.Builder(this@MainActivity).setTitle("Usunąć grę?").setPositiveButton("Tak") { dialog, which ->
+                                gameList.removeAt(position)
+                                adapter.notifyItemRemoved(position)
+                            }.setNegativeButton("Nie", null).create().show()
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
         })
 

@@ -37,6 +37,7 @@ class KillOMeterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_kill_o_meter)
 
+        //Ustawianie toolbara
         setSupportActionBar(toolbar)
         supportActionBar!!.title = "Kill-O-Meter"
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -87,7 +88,6 @@ class KillOMeterActivity : AppCompatActivity() {
         //Ustawianie adapterów dla pagera
         val playerRecyclerView = layoutInflater.inflate(R.layout.player_kill_o_meter, pager, false) as RecyclerView
         val monsterRecyclerView = layoutInflater.inflate(R.layout.monster_kill_o_meter, pager, false) as RecyclerView
-
         val viewList = ArrayList<View>()
         viewList.add(playerRecyclerView)
         viewList.add(monsterRecyclerView)
@@ -221,103 +221,107 @@ class KillOMeterActivity : AppCompatActivity() {
         playerAdapter.setOnItemClickListener(object : KillOMeterAdapter.OnItemClickListener {
             //Zwiększenie poziomu gracza
             override fun onAddClick(position: Int) {
-                if (fieldList[position].value < game.maxLevel) {
-                    fieldList[position].value++
-                    playerAdapter.notifyItemChanged(position)
+                try {
+                    if(fieldList[position].value < game.maxLevel) {
+                        fieldList[position].value++
+                        playerAdapter.notifyItemChanged(position)
 
-                    //Atualizacja podsumowania
-                    titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
-                    pagerAdapter.notifyDataSetChanged()
+                        //Atualizacja podsumowania
+                        titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
+                        pagerAdapter.notifyDataSetChanged()
+                    }
                 }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
 
             //Zmniejszenie poziomu gracza
             override fun onRemoveClick(position: Int) {
-                if (fieldList[position].value > game.minLevel) {
-                    fieldList[position].value--
-                    playerAdapter.notifyItemChanged(position)
+                try {
+                    if(fieldList[position].value > game.minLevel) {
+                        fieldList[position].value--
+                        playerAdapter.notifyItemChanged(position)
+
+                        //Atualizacja podsumowania
+                        titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
+                        pagerAdapter.notifyDataSetChanged()
+                    }
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
+            }
+
+            //Dodanie nowego bonusu
+            override fun onAddBonusClick(position: Int) {
+                try {
+                    val frameLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as FrameLayout
+                    val editTextValue = frameLayout.findViewById<EditText>(R.id.editText)
+
+                    AlertDialog.Builder(this@KillOMeterActivity).setTitle("Dodaj bonus").setPositiveButton("Ok") { dialog, which ->
+                                removeLeadingZeros(editTextValue)
+                                if(editTextValue.text.toString() != "") {
+                                    if(tryParse(editTextValue.text.toString(), maxViewValue) >= maxViewValue) editTextValue.setText(maxViewValue.toString())
+                                    if(tryParse(editTextValue.text.toString(), minViewValue) <= minViewValue) editTextValue.setText(minViewValue.toString())
+                                    fieldList.add(position + 1, BaseItem(editTextValue.text.toString().toInt()))
+                                    playerAdapter.notifyItemInserted(position + 1)
+
+                                    //Atualizacja podsumowania
+                                    titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
+                                    pagerAdapter.notifyDataSetChanged()
+                                }
+                            }.setNegativeButton("Anuluj", null).setView(frameLayout).create().show()
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
+            }
+
+            //Usunięcie gracza/bonusu
+            override fun onDeleteClick(position: Int) {
+                try {
+                    //Usuwanie gracza
+                    if(fieldList[position] is Player) {
+                        val playerFieldsIndexes = ArrayList<Int>()
+
+                        for(element in fieldList) {
+                            if(element is Player && fieldList.indexOf(element) > position)
+                                playerFieldsIndexes.add(fieldList.indexOf(element))
+                        }
+                        val minPlayerIndex = playerFieldsIndexes.min()
+                        if(minPlayerIndex != null){
+                            for(i in (minPlayerIndex - 1)  downTo position){
+                                fieldList.removeAt(i)
+                                playerAdapter.notifyItemRemoved(i)
+                            }
+                        }
+                        else {
+                            for(i in (fieldList.size - 1) downTo position) {
+                                fieldList.removeAt(i)
+                                playerAdapter.notifyItemRemoved(i)
+                            }
+                        }
+
+                        //Sprawdzanie czy można dodać jeszcze jakiś graczy
+                        val tempPlayers = ArrayList<Player>()
+                        for(player in playerList) {
+                            tempPlayers.add(player)
+                        }
+                        for(element in playerFieldList) {
+                            if(element is Player) {
+                                //tempPlayers.add(element)
+                                tempPlayers.remove(element)
+                            }
+                        }
+                        if(tempPlayers.isNotEmpty())
+                            floatingActionButton.show()
+                    }
+                    //Usuwanie bonusu
+                    else {
+                        fieldList.removeAt(position)
+                        playerAdapter.notifyItemRemoved(position)
+                    }
 
                     //Atualizacja podsumowania
                     titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
                     pagerAdapter.notifyDataSetChanged()
                 }
-            }
-
-            //Dodanie nowego bonusu
-            override fun onAddBonusClick(position: Int) {
-                val frameLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as FrameLayout
-                val editTextValue = frameLayout.findViewById<EditText>(R.id.editText)
-
-                AlertDialog.Builder(this@KillOMeterActivity)
-                        .setTitle("Dodaj bonus")
-                        .setPositiveButton("Ok") { dialog, which ->
-                            removeLeadingZeros(editTextValue)
-                            if(editTextValue.text.toString() != "") {
-                                if(tryParse(editTextValue.text.toString(), maxViewValue) >= maxViewValue)
-                                    editTextValue.setText(maxViewValue.toString())
-                                if(tryParse(editTextValue.text.toString(), minViewValue) <= minViewValue)
-                                    editTextValue.setText(minViewValue.toString())
-                                fieldList.add(position + 1, BaseItem(editTextValue.text.toString().toInt()))
-                                playerAdapter.notifyItemInserted(position + 1)
-
-                                //Atualizacja podsumowania
-                                titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
-                                pagerAdapter.notifyDataSetChanged()
-                            }
-                        }
-                        .setNegativeButton("Anuluj", null)
-                        .setView(frameLayout)
-                        .create()
-                        .show()
-            }
-
-            //Usunięcie gracza/bonusu
-            override fun onDeleteClick(position: Int) {
-                //Usuwanie gracza
-                if(fieldList[position] is Player) {
-                    val playerFieldsIndexes = ArrayList<Int>()
-
-                    for(element in fieldList) {
-                        if(element is Player && fieldList.indexOf(element) > position)
-                            playerFieldsIndexes.add(fieldList.indexOf(element))
-                    }
-                    val minPlayerIndex = playerFieldsIndexes.min()
-                    if(minPlayerIndex != null){
-                        for(i in (minPlayerIndex - 1)  downTo position){
-                            fieldList.removeAt(i)
-                            playerAdapter.notifyItemRemoved(i)
-                        }
-                    }
-                    else {
-                        for(i in (fieldList.size - 1) downTo position) {
-                            fieldList.removeAt(i)
-                            playerAdapter.notifyItemRemoved(i)
-                        }
-                    }
-
-                    //Sprawdzanie czy można dodać jeszcze jakiś graczy
-                    val tempPlayers = ArrayList<Player>()
-                    for(player in playerList) {
-                        tempPlayers.add(player)
-                    }
-                    for(element in playerFieldList) {
-                        if(element is Player) {
-                            //tempPlayers.add(element)
-                            tempPlayers.remove(element)
-                        }
-                    }
-                    if(tempPlayers.isNotEmpty())
-                        floatingActionButton.show()
-                }
-                //Usuwanie bonusu
-                else {
-                    fieldList.removeAt(position)
-                    playerAdapter.notifyItemRemoved(position)
-                }
-
-                //Atualizacja podsumowania
-                titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
-                pagerAdapter.notifyDataSetChanged()
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
         })
 
@@ -337,65 +341,62 @@ class KillOMeterActivity : AppCompatActivity() {
 
             //Dodanie nowego bonusu
             override fun onAddBonusClick(position: Int) {
-                val frameLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as FrameLayout
-                val editTextValue = frameLayout.findViewById<EditText>(R.id.editText)
+                try {
+                    val frameLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as FrameLayout
+                    val editTextValue = frameLayout.findViewById<EditText>(R.id.editText)
 
-                AlertDialog.Builder(this@KillOMeterActivity)
-                        .setTitle("Dodaj bonus")
-                        .setPositiveButton("Ok") { dialog, which ->
-                            removeLeadingZeros(editTextValue)
-                            if(editTextValue.text.toString() != "") {
-                                if(tryParse(editTextValue.text.toString(), maxViewValue) >= maxViewValue)
-                                    editTextValue.setText(maxViewValue.toString())
-                                if(tryParse(editTextValue.text.toString(), minViewValue) <= minViewValue)
-                                    editTextValue.setText(minViewValue.toString())
-                                fieldList.add(position + 1, BaseItem(editTextValue.text.toString().toInt()))
-                                monsterAdapter.notifyItemInserted(position + 1)
+                    AlertDialog.Builder(this@KillOMeterActivity).setTitle("Dodaj bonus").setPositiveButton("Ok") { dialog, which ->
+                                removeLeadingZeros(editTextValue)
+                                if(editTextValue.text.toString() != "") {
+                                    if(tryParse(editTextValue.text.toString(), maxViewValue) >= maxViewValue) editTextValue.setText(maxViewValue.toString())
+                                    if(tryParse(editTextValue.text.toString(), minViewValue) <= minViewValue) editTextValue.setText(minViewValue.toString())
+                                    fieldList.add(position + 1, BaseItem(editTextValue.text.toString().toInt()))
+                                    monsterAdapter.notifyItemInserted(position + 1)
 
-                                //Atualizacja podsumowania
-                                titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
-                                pagerAdapter.notifyDataSetChanged()
-                            }
-                        }
-                        .setNegativeButton("Anuluj", null)
-                        .setView(frameLayout)
-                        .create()
-                        .show()
+                                    //Atualizacja podsumowania
+                                    titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
+                                    pagerAdapter.notifyDataSetChanged()
+                                }
+                            }.setNegativeButton("Anuluj", null).setView(frameLayout).create().show()
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
 
             //Usunięcie potwora/bonusu
             override fun onDeleteClick(position: Int) {
-                //Usuwanie potwora
-                if(fieldList[position] is Monster) {
-                    val monsterFieldsIndexes = ArrayList<Int>()
+                try {
+                    //Usuwanie potwora
+                    if(fieldList[position] is Monster) {
+                        val monsterFieldsIndexes = ArrayList<Int>()
 
-                    for(element in fieldList) {
-                        if(element is Monster && fieldList.indexOf(element) > position)
-                            monsterFieldsIndexes.add(fieldList.indexOf(element))
-                    }
-                    val minMonsterIndex = monsterFieldsIndexes.min()
-                    if(minMonsterIndex != null){
-                        for(i in (minMonsterIndex - 1)  downTo position){
-                            fieldList.removeAt(i)
-                            monsterAdapter.notifyItemRemoved(i)
+                        for(element in fieldList) {
+                            if(element is Monster && fieldList.indexOf(element) > position) monsterFieldsIndexes.add(fieldList.indexOf(element))
+                        }
+                        val minMonsterIndex = monsterFieldsIndexes.min()
+                        if(minMonsterIndex != null) {
+                            for(i in (minMonsterIndex - 1) downTo position) {
+                                fieldList.removeAt(i)
+                                monsterAdapter.notifyItemRemoved(i)
+                            }
+                        }
+                        else {
+                            for(i in (fieldList.size - 1) downTo position) {
+                                fieldList.removeAt(i)
+                                monsterAdapter.notifyItemRemoved(i)
+                            }
                         }
                     }
+                    //Usuwanie bonusu
                     else {
-                        for(i in (fieldList.size - 1) downTo position) {
-                            fieldList.removeAt(i)
-                            monsterAdapter.notifyItemRemoved(i)
-                        }
+                        fieldList.removeAt(position)
+                        monsterAdapter.notifyItemRemoved(position)
                     }
-                }
-                //Usuwanie bonusu
-                else {
-                    fieldList.removeAt(position)
-                    monsterAdapter.notifyItemRemoved(position)
-                }
 
-                //Atualizacja podsumowania
-                titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
-                pagerAdapter.notifyDataSetChanged()
+                    //Atualizacja podsumowania
+                    titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
+                    pagerAdapter.notifyDataSetChanged()
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
         })
 
