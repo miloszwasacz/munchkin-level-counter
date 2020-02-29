@@ -13,7 +13,7 @@
         android:layout_height="48dp"
         android:scaleType="center"
         android:layout_gravity="center_vertical"
-        app:srcCompat="@drawable/ic_munchkin_sword_24dp" />
+        app:srcCompat="@drawable/ic_card_add_24dp" />
 
     <TextView
         android:id="@+id/textViewName"

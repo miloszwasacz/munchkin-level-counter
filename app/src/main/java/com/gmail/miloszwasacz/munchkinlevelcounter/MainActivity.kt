@@ -73,10 +73,10 @@ class MainActivity : AppCompatActivity() {
             //Usunięcie gry
             override fun onDeleteClick(position: Int) {
                 try {
-                    AlertDialog.Builder(this@MainActivity).setTitle("Usunąć grę?").setPositiveButton("Tak") { dialog, which ->
+                    AlertDialog.Builder(this@MainActivity).setTitle("Usunąć grę?").setPositiveButton("Usuń") { dialog, which ->
                                 gameList.removeAt(position)
                                 adapter.notifyItemRemoved(position)
-                            }.setNegativeButton("Nie", null).create().show()
+                            }.setNegativeButton("Anuluj", null).create().show()
                 }
                 catch(e: ArrayIndexOutOfBoundsException) {}
             }

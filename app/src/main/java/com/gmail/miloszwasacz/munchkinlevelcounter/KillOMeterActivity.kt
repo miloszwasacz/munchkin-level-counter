@@ -151,7 +151,7 @@ class KillOMeterActivity : AppCompatActivity() {
 
                 AlertDialog.Builder(this@KillOMeterActivity)
                         .setTitle("Dodaj potwora")
-                        .setPositiveButton("Ok") { dialog, which ->
+                        .setPositiveButton("Dodaj") { dialog, which ->
                             editTextName.text.trim()
                             removeLeadingZeros(editTextLevel)
                             if(editTextName.text.toString() == "")
@@ -255,7 +255,7 @@ class KillOMeterActivity : AppCompatActivity() {
                     val frameLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as FrameLayout
                     val editTextValue = frameLayout.findViewById<EditText>(R.id.editText)
 
-                    AlertDialog.Builder(this@KillOMeterActivity).setTitle("Dodaj bonus").setPositiveButton("Ok") { dialog, which ->
+                    AlertDialog.Builder(this@KillOMeterActivity).setTitle("Dodaj bonus").setPositiveButton("Dodaj") { dialog, which ->
                                 removeLeadingZeros(editTextValue)
                                 if(editTextValue.text.toString() != "") {
                                     if(tryParse(editTextValue.text.toString(), maxViewValue) >= maxViewValue) editTextValue.setText(maxViewValue.toString())
@@ -345,7 +345,7 @@ class KillOMeterActivity : AppCompatActivity() {
                     val frameLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as FrameLayout
                     val editTextValue = frameLayout.findViewById<EditText>(R.id.editText)
 
-                    AlertDialog.Builder(this@KillOMeterActivity).setTitle("Dodaj bonus").setPositiveButton("Ok") { dialog, which ->
+                    AlertDialog.Builder(this@KillOMeterActivity).setTitle("Dodaj bonus").setPositiveButton("Dodaj") { dialog, which ->
                                 removeLeadingZeros(editTextValue)
                                 if(editTextValue.text.toString() != "") {
                                     if(tryParse(editTextValue.text.toString(), maxViewValue) >= maxViewValue) editTextValue.setText(maxViewValue.toString())

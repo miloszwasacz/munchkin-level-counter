@@ -53,8 +53,8 @@ class GameActivity : AppCompatActivity() {
             editTextName.hint = "Nazwa gracza"
 
             AlertDialog.Builder(this@GameActivity)
-                    .setTitle("Nowy gracz")
-                    .setPositiveButton("Ok") { dialog, which ->
+                    .setTitle("Dodaj nowego gracza")
+                    .setPositiveButton("Dodaj") { dialog, which ->
                         val list = extractPlayerListFromGame(game)
 
                         editTextName.setText(editTextName.text.toString().trim())
