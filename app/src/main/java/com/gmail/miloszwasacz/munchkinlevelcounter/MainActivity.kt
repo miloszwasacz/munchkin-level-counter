@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,25 +21,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        setSupportActionBar(toolbar)
         supportActionBar!!.title = resources.getString(R.string.title_game_list)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
-        gameList = getGameListFromSharedPreferences() ?: ArrayList<Game>()
+        gameList = getGameListFromSharedPreferences() ?: ArrayList()
         setGameAdapter(gameList)
 
         //Dodanie nowej gry
-        floatingActionButton.setOnClickListener(View.OnClickListener {
+        floatingActionButton.setOnClickListener {
             val intent = Intent(this@MainActivity, CreateGameActivity::class.java)
             intent.putExtra("EXTRA_SIZE", gameList.size)
             startActivityForResult(intent, 3)
-        })
+        }
 
 
     }
 
     //RecyclerView i GameAdapter
-    fun setGameAdapter(gameList: ArrayList<Game>) {
-
+    private fun setGameAdapter(gameList: ArrayList<Game>) {
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager = LinearLayoutManager(this)
         adapter = GameAdapter(gameList)
@@ -49,33 +48,37 @@ class MainActivity : AppCompatActivity() {
         adapter.setOnItemClickListener(object : GameAdapter.OnItemClickListener {
             //Uruchomienie poszczególnej gry
             override fun onItemClick(position: Int) {
-                val intent = Intent(this@MainActivity, GameActivity::class.java)
-                intent.putExtra("EXTRA_GAME", Gson().toJson(gameList[position]))
-                intent.putExtra("EXTRA_POSITION", position)
-                startActivityForResult(intent, 1)
+                try {
+                    val intent = Intent(this@MainActivity, GameActivity::class.java)
+                    intent.putExtra("EXTRA_GAME", Gson().toJson(gameList[position]))
+                    intent.putExtra("EXTRA_POSITION", position)
+                    startActivityForResult(intent, 1)
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
 
             //Wejście w ustawienia gry
             override fun onSettingsClick(position: Int) {
-                val intent = Intent(this@MainActivity, SettingsActivity::class.java)
-                intent.putExtra("EXTRA_GAME_NAME", gameList[position].name)
-                intent.putExtra("EXTRA_MAX_LEVEL", gameList[position].maxLevel)
-                intent.putExtra("EXTRA_MIN_LEVEL", gameList[position].minLevel)
-                intent.putExtra("EXTRA_POSITION", position)
-                startActivityForResult(intent, 2)
+                try {
+                    val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+                    intent.putExtra("EXTRA_GAME_NAME", gameList[position].name)
+                    intent.putExtra("EXTRA_MAX_LEVEL", gameList[position].maxLevel)
+                    intent.putExtra("EXTRA_MIN_LEVEL", gameList[position].minLevel)
+                    intent.putExtra("EXTRA_POSITION", position)
+                    startActivityForResult(intent, 2)
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
 
             //Usunięcie gry
             override fun onDeleteClick(position: Int) {
-                AlertDialog.Builder(this@MainActivity)
-                        .setTitle("Usunąć grę?")
-                        .setPositiveButton("Tak") { dialog, which ->
-                            gameList.removeAt(position)
-                            adapter.notifyItemRemoved(position)
-                        }
-                        .setNegativeButton("Nie", null)
-                        .create()
-                        .show()
+                try {
+                    AlertDialog.Builder(this@MainActivity).setTitle("Usunąć grę?").setPositiveButton("Tak") { dialog, which ->
+                                gameList.removeAt(position)
+                                adapter.notifyItemRemoved(position)
+                            }.setNegativeButton("Nie", null).create().show()
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
         })
 
@@ -100,7 +103,7 @@ class MainActivity : AppCompatActivity() {
             val position = data!!.getIntExtra("resultPosition", 0)
             if (resultCode == Activity.RESULT_OK) {
                 gameList[position].maxLevel = data.getIntExtra("resultMaxLevel", resources.getInteger(R.integer.default_rules))
-                gameList[position].minLevel = data.getIntExtra("resultMinLevel", resources.getInteger(R.integer.default_min_level))
+                gameList[position].minLevel = data.getIntExtra("resultMinLevel", resources.getInteger(R.integer.min_level))
                 gameList[position].name = data.getStringExtra("resultName")
                 setGameAdapter(gameList)
             }
@@ -118,15 +121,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     //Zapisywanie listy gier do SharedPreferences
-    fun saveGameListInSharedPreferences(gameList: ArrayList<Game>) {
+    private fun saveGameListInSharedPreferences(gameList: ArrayList<Game>) {
         val jsonGame = Gson().toJson(gameList)
         val editor = getSharedPreferences(sharedPrefsName, Context.MODE_PRIVATE).edit()
         editor.putString("ListaGierPrefs", jsonGame)
-        editor.commit()
+        editor.apply()
     }
 
     //Wczytanie listy gier z SharedPreferences
-    fun getGameListFromSharedPreferences(): ArrayList<Game>? {
+    private fun getGameListFromSharedPreferences(): ArrayList<Game>? {
         val prefs = getSharedPreferences(sharedPrefsName, Context.MODE_PRIVATE)
         val listaGier: String? = prefs.getString("ListaGierPrefs", null)
         val listType = object : TypeToken<ArrayList<Game>>() {}.type

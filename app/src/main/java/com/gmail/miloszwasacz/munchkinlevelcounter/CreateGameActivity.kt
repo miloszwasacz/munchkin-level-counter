@@ -24,9 +24,11 @@ class CreateGameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         maxLevel = resources.getInteger(R.integer.default_rules)
-        minLevel = resources.getInteger(R.integer.default_min_level)
+        minLevel = resources.getInteger(R.integer.min_level)
         gameListSize = intent.getIntExtra("EXTRA_SIZE", 0)
+        setSupportActionBar(toolbar)
         supportActionBar!!.title = "Nowa Gra"
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         //Zaktualizuj pozycje switch'y
         when (maxLevel) {
@@ -83,9 +85,9 @@ class CreateGameActivity : AppCompatActivity() {
     //Tworzenie domyślnej listy graczy
     fun createDefaultPlayerList(): String {
         val playerList = ArrayList<Player>()
-        playerList.add(Player("Gracz 1", resources.getInteger(R.integer.default_min_level)))
-        playerList.add(Player("Gracz 2", resources.getInteger(R.integer.default_min_level)))
-        playerList.add(Player("Gracz 3", resources.getInteger(R.integer.default_min_level)))
+        playerList.add(Player("Gracz 1", resources.getInteger(R.integer.min_level)))
+        playerList.add(Player("Gracz 2", resources.getInteger(R.integer.min_level)))
+        playerList.add(Player("Gracz 3", resources.getInteger(R.integer.min_level)))
         return Gson().toJson(playerList)
     }
 

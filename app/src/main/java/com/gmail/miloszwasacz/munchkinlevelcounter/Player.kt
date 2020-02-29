@@ -1,3 +1,4 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter
 
-data class Player(var name: String, var level: Int = 1)
+
+class Player(var name: String, value: Int = 1) : BaseItem(value)

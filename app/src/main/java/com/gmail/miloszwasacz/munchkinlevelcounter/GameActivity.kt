@@ -35,12 +35,12 @@ class GameActivity : AppCompatActivity() {
         //Przywracanie stanu poprzedniego listy graczy
         if(savedInstanceState != null){
             val jsonGame = savedInstanceState.getString("Gra")
-            val gameType = object : TypeToken<Game>() {}.type
             game = Gson().fromJson<Game>(jsonGame, gameType)
 
             gameIndex = savedInstanceState.getInt("Index")
         }
 
+        setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.title = game.name
 
@@ -74,7 +74,6 @@ class GameActivity : AppCompatActivity() {
 
     //RecyclerView i PlayerAdapter
     fun setPlayerAdapter(game: Game) {
-
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager = LinearLayoutManager(this)
         val list: ArrayList<Player> = extractPlayerListFromGame(game)
@@ -82,66 +81,70 @@ class GameActivity : AppCompatActivity() {
 
         //Sprawdzenie czy poziomy graczy są w dozwolonym zakresie
         for (element in list) {
-            if (element.level > game.maxLevel)
-                element.level = game.maxLevel
-            else if (element.level < game.minLevel)
-                element.level = game.minLevel
+            if (element.value > game.maxLevel)
+                element.value = game.maxLevel
+            else if (element.value < game.minLevel)
+                element.value = game.minLevel
         }
         insertPlayerListIntoGame(list, game)
 
         //Obsługa kontrolek
         adapter.setOnItemClickListener(object : PlayerAdapter.OnItemClickListener {
             //Edycja poszczególnego gracza
-            override fun onItemClick(position: Int) {
-                val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
-                val editTextName = frameLayout.findViewById<EditText>(R.id.editText)
-                editTextName.setText(list[position].name)
+            override fun onEditClick(position: Int) {
+                try {
+                    val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
+                    val editTextName = frameLayout.findViewById<EditText>(R.id.editText)
+                    editTextName.setText(list[position].name)
 
-                AlertDialog.Builder(this@GameActivity)
-                        .setTitle("Edytuj gracza")
-                        .setPositiveButton("Ok") { dialog, which ->
-                            if (editTextName.text.toString() != "")
-                                list[position].name = editTextName.text.toString()
-                            insertPlayerListIntoGame(list, game)
-                            adapter.notifyItemChanged(position)
-                        }
-                        .setNegativeButton("Anuluj", null)
-                        .setNeutralButton("Usuń") { dialog, which ->
-                            list.removeAt(position)
-                            insertPlayerListIntoGame(list, game)
-                            setPlayerAdapter(game)
-                        }
-                        .setView(frameLayout)
-                        .create()
-                        .show()
+                    AlertDialog.Builder(this@GameActivity).setTitle("Edytuj gracza").setPositiveButton("Ok") { dialog, which ->
+                                if(editTextName.text.toString() != "") list[position].name = editTextName.text.toString()
+                                insertPlayerListIntoGame(list, game)
+                                adapter.notifyItemChanged(position)
+                            }.setNegativeButton("Anuluj", null).setNeutralButton("Usuń") { dialog, which ->
+                                list.removeAt(position)
+                                insertPlayerListIntoGame(list, game)
+                                setPlayerAdapter(game)
+                            }.setView(frameLayout).create().show()
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
 
             //Zwiększenie poziomu gracza
             override fun onAddClick(position: Int) {
-                if (list[position].level < game.maxLevel) {
-                    list[position].level++
-                    insertPlayerListIntoGame(list, game)
-                    adapter.notifyItemChanged(position)
+                try {
+                    if(list[position].value < game.maxLevel) {
+                        list[position].value++
+                        insertPlayerListIntoGame(list, game)
+                        adapter.notifyItemChanged(position)
+                    }
                 }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
 
             //Zmniejszenie poziomu gracza
             override fun onRemoveClick(position: Int) {
-                if (list[position].level > game.minLevel) {
-                    list[position].level--
-                    insertPlayerListIntoGame(list, game)
-                    adapter.notifyItemChanged(position)
+                try {
+                    if(list[position].value > game.minLevel) {
+                        list[position].value--
+                        insertPlayerListIntoGame(list, game)
+                        adapter.notifyItemChanged(position)
+                    }
                 }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
 
             //Wejście w tryb Kill-O-Meter
             override fun onFightClick(position: Int) {
-                insertPlayerListIntoGame(list, game)
-                val intent = Intent(this@GameActivity, KillOMeterActivity::class.java)
-                intent.putExtra("EXTRA_GAME_INDEX", gameIndex)
-                intent.putExtra("EXTRA_PLAYER_POSITION", position)
-                intent.putExtra("EXTRA_GAME", Gson().toJson(game))
-                startActivityForResult(intent, 4)
+                try {
+                    insertPlayerListIntoGame(list, game)
+                    val intent = Intent(this@GameActivity, KillOMeterActivity::class.java)
+                    intent.putExtra("EXTRA_GAME_INDEX", gameIndex)
+                    intent.putExtra("EXTRA_PLAYER_POSITION", position)
+                    intent.putExtra("EXTRA_GAME", Gson().toJson(game))
+                    startActivityForResult(intent, 4)
+                }
+                catch(e: ArrayIndexOutOfBoundsException) {}
             }
         })
 
@@ -179,7 +182,7 @@ class GameActivity : AppCompatActivity() {
         val jsonGame = Gson().toJson(gameList)
         val editor = getSharedPreferences(sharedPrefsName, Context.MODE_PRIVATE).edit()
         editor.putString("ListaGierPrefs", jsonGame)
-        editor.commit()
+        editor.apply()
     }
 
     //Wczytanie listy gier z SharedPreferences
