@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
@@ -52,7 +53,7 @@ class GameActivity : AppCompatActivity() {
             val editTextName = frameLayout.findViewById<EditText>(R.id.editText)
             editTextName.hint = "Nazwa gracza"
 
-            AlertDialog.Builder(this@GameActivity)
+            val dialog: AlertDialog = AlertDialog.Builder(this@GameActivity)
                     .setTitle("Dodaj nowego gracza")
                     .setPositiveButton("Dodaj") { dialog, which ->
                         val list = extractPlayerListFromGame(game)
@@ -68,7 +69,8 @@ class GameActivity : AppCompatActivity() {
                     .setNegativeButton("Anuluj", null)
                     .setView(frameLayout)
                     .create()
-                    .show()
+            dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+            dialog.show()
         }
     }
 
@@ -97,15 +99,23 @@ class GameActivity : AppCompatActivity() {
                     val editTextName = frameLayout.findViewById<EditText>(R.id.editText)
                     editTextName.setText(list[position].name)
 
-                    AlertDialog.Builder(this@GameActivity).setTitle("Edytuj gracza").setPositiveButton("Ok") { dialog, which ->
-                                if(editTextName.text.toString() != "") list[position].name = editTextName.text.toString()
+                    val dialog: AlertDialog = AlertDialog.Builder(this@GameActivity)
+                            .setTitle("Edytuj gracza")
+                            .setPositiveButton("Ok") { dialog, which ->
+                                if(editTextName.text.toString() != "")
+                                    list[position].name = editTextName.text.toString()
                                 insertPlayerListIntoGame(list, game)
                                 adapter.notifyItemChanged(position)
-                            }.setNegativeButton("Anuluj", null).setNeutralButton("Usuń") { dialog, which ->
+                            }
+                            .setNegativeButton("Anuluj", null).setNeutralButton("Usuń") { dialog, which ->
                                 list.removeAt(position)
                                 insertPlayerListIntoGame(list, game)
                                 setPlayerAdapter(game)
-                            }.setView(frameLayout).create().show()
+                            }
+                            .setView(frameLayout)
+                            .create()
+                    dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+                    dialog.show()
                 }
                 catch(e: ArrayIndexOutOfBoundsException) {}
             }

@@ -11,9 +11,9 @@
         android:id="@+id/imageViewAddBonus"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:scaleType="center"
         android:layout_gravity="center_vertical"
-        app:srcCompat="@drawable/ic_munchkin_sword_24dp" />
+        android:scaleType="center"
+        app:srcCompat="@drawable/ic_card_add_24dp" />
 
     <TextView
         android:id="@+id/textViewName"

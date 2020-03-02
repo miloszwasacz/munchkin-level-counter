@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
@@ -148,8 +149,9 @@ class KillOMeterActivity : AppCompatActivity() {
                 val frameLayout = layoutInflater.inflate(R.layout.monster_dialog, null, false) as FrameLayout
                 val editTextName = frameLayout.findViewById<EditText>(R.id.editTextName)
                 val editTextLevel = frameLayout.findViewById<EditText>(R.id.editTextLevel)
+                editTextName.requestFocus()
 
-                AlertDialog.Builder(this@KillOMeterActivity)
+                val dialog: AlertDialog = AlertDialog.Builder(this@KillOMeterActivity)
                         .setTitle("Dodaj potwora")
                         .setPositiveButton("Dodaj") { dialog, which ->
                             editTextName.text.trim()
@@ -171,7 +173,8 @@ class KillOMeterActivity : AppCompatActivity() {
                         .setNegativeButton("Anuluj", null)
                         .setView(frameLayout)
                         .create()
-                        .show()
+                dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+                dialog.show()
             }
         }
 
@@ -255,7 +258,9 @@ class KillOMeterActivity : AppCompatActivity() {
                     val frameLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as FrameLayout
                     val editTextValue = frameLayout.findViewById<EditText>(R.id.editText)
 
-                    AlertDialog.Builder(this@KillOMeterActivity).setTitle("Dodaj bonus").setPositiveButton("Dodaj") { dialog, which ->
+                    val dialog: AlertDialog = AlertDialog.Builder(this@KillOMeterActivity)
+                            .setTitle("Dodaj bonus")
+                            .setPositiveButton("Dodaj") { dialog, which ->
                                 removeLeadingZeros(editTextValue)
                                 if(editTextValue.text.toString() != "") {
                                     if(tryParse(editTextValue.text.toString(), maxViewValue) >= maxViewValue) editTextValue.setText(maxViewValue.toString())
@@ -267,7 +272,12 @@ class KillOMeterActivity : AppCompatActivity() {
                                     titleList[0] = "Gracze: ${UpdateSumarry(playerFieldList)}"
                                     pagerAdapter.notifyDataSetChanged()
                                 }
-                            }.setNegativeButton("Anuluj", null).setView(frameLayout).create().show()
+                            }
+                            .setNegativeButton("Anuluj", null)
+                            .setView(frameLayout)
+                            .create()
+                    dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+                    dialog.show()
                 }
                 catch(e: ArrayIndexOutOfBoundsException) {}
             }
@@ -345,7 +355,9 @@ class KillOMeterActivity : AppCompatActivity() {
                     val frameLayout = layoutInflater.inflate(R.layout.bonus_dialog, null, false) as FrameLayout
                     val editTextValue = frameLayout.findViewById<EditText>(R.id.editText)
 
-                    AlertDialog.Builder(this@KillOMeterActivity).setTitle("Dodaj bonus").setPositiveButton("Dodaj") { dialog, which ->
+                    val dialog: AlertDialog = AlertDialog.Builder(this@KillOMeterActivity)
+                            .setTitle("Dodaj bonus")
+                            .setPositiveButton("Dodaj") { dialog, which ->
                                 removeLeadingZeros(editTextValue)
                                 if(editTextValue.text.toString() != "") {
                                     if(tryParse(editTextValue.text.toString(), maxViewValue) >= maxViewValue) editTextValue.setText(maxViewValue.toString())
@@ -357,7 +369,12 @@ class KillOMeterActivity : AppCompatActivity() {
                                     titleList[1] = "Potwory: ${UpdateSumarry(monsterFieldList)}"
                                     pagerAdapter.notifyDataSetChanged()
                                 }
-                            }.setNegativeButton("Anuluj", null).setView(frameLayout).create().show()
+                            }
+                            .setNegativeButton("Anuluj", null)
+                            .setView(frameLayout)
+                            .create()
+                    dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+                    dialog.show()
                 }
                 catch(e: ArrayIndexOutOfBoundsException) {}
             }
