@@ -1,5 +1,4 @@
 # Munchkin Level Counter
-Application for counting levels and bonuses in Munchkin Card Game. It can be also used for counting HP, money etc. in other games.
 
 ## Table of contents
 * [General info](#general-info)
@@ -8,7 +7,7 @@ Application for counting levels and bonuses in Munchkin Card Game. It can be als
 * [Contact](#contact)
 
 ## General info
-Add more general information about project. What the purpose of the project is? Motivation?
+Application for counting levels and bonuses in Munchkin Card Game. It can be also used for counting HP, money etc. in other games.
 
 ## Features
 * Multiple game slots
