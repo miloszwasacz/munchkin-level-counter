@@ -15,8 +15,7 @@ Application for counting levels and bonuses in Munchkin Card Game. It comes with
 To install this app just go to https://github.com/miloszwasacz/munchkin-level-counter/releases, choose latest version and download the attached apk file. You will probably have to enable "Install Unknown Apps" setting.
 
 ***Disclaimer:***
-* Miniamal android version necessary to run this app is Android 7.0 (Nougat) 
-* Application is made in Polish. English translation is planned to be added in near future
+Minimal android version necessary to run this app is Android 7.0 (Nougat) 
 
 ## Features
 * Multiple game slots
@@ -25,7 +24,6 @@ To install this app just go to https://github.com/miloszwasacz/munchkin-level-co
 
 To-do list:
 * List of all monsters
-* English translation
 
 ## Inspiration
 This project is inspired by Munchkin Card Game. It has been made to make counting levels easier and to improve my programming skills.
