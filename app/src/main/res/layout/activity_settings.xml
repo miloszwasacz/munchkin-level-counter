@@ -50,7 +50,7 @@
                     android:layout_gravity="center_vertical"
                     android:ellipsize="end"
                     android:lines="1"
-                    android:text="Nazwa"
+                    android:text="@string/label_name"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="@color/colorPrimary" />
 
@@ -59,7 +59,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_gravity="center_vertical"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+                    android:inputType="textPersonName"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    tools:ignore="Autofill,LabelFor" />
             </LinearLayout>
 
             <View
@@ -67,7 +69,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_weight="1"
-                android:background="?android:attr/listDivider" />
+                android:background="?android:attr/listDivider"
+                tools:ignore="InefficientWeight" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -81,13 +84,13 @@
                 <TextView
                     android:id="@+id/textViewRulesCategory"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginBottom="8dp"
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:lines="1"
-                    android:text="Limit poziomów"
+                    android:text="@string/label_level_cap"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="@color/colorPrimary" />
 
@@ -98,14 +101,14 @@
 
                     <TextView
                         android:id="@+id/textViewGamemode"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:ellipsize="end"
                         android:gravity="center_vertical"
                         android:lines="1"
-                        android:text="Zasady Epickie"
+                        android:text="@string/label_epic_rules"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
                     <Switch
@@ -113,7 +116,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="8dp" />
+                        android:layout_marginStart="8dp" />
 
                 </LinearLayout>
 
@@ -124,14 +127,14 @@
 
                     <TextView
                         android:id="@+id/textViewDungeon"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:ellipsize="end"
                         android:gravity="center_vertical"
                         android:lines="1"
-                        android:text="Loch Zwięszonego Wysiłku"
+                        android:text="@string/label_dungeon_rules"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
                     <Switch
@@ -139,9 +142,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="8dp" />
+                        android:layout_marginStart="8dp" />
                 </LinearLayout>
-
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

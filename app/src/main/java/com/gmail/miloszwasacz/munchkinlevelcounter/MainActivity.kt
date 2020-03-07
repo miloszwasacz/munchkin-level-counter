@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar)
-        supportActionBar!!.title = resources.getString(R.string.title_game_list)
+        supportActionBar!!.title = resources.getString(R.string.activity_title_game_list)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
         gameList = getGameListFromSharedPreferences() ?: ArrayList()
@@ -73,10 +73,15 @@ class MainActivity : AppCompatActivity() {
             //Usunięcie gry
             override fun onDeleteClick(position: Int) {
                 try {
-                    AlertDialog.Builder(this@MainActivity).setTitle("Usunąć grę?").setPositiveButton("Usuń") { dialog, which ->
+                    AlertDialog.Builder(this@MainActivity)
+                            .setTitle(resources.getString(R.string.dialog_delete_game))
+                            .setPositiveButton(resources.getString(R.string.button_delete)) { dialog, which ->
                                 gameList.removeAt(position)
                                 adapter.notifyItemRemoved(position)
-                            }.setNegativeButton("Anuluj", null).create().show()
+                            }
+                            .setNegativeButton(resources.getString(R.string.button_cancel), null)
+                            .create()
+                            .show()
                 }
                 catch(e: ArrayIndexOutOfBoundsException) {}
             }
@@ -93,7 +98,7 @@ class MainActivity : AppCompatActivity() {
             val json = data.getStringExtra("resultGame")
             val listType = object : TypeToken<Game>() {}.type
             if (resultCode == Activity.RESULT_OK) {
-                gameList[position] = Gson().fromJson<Game>(json, listType)
+                gameList[position] = Gson().fromJson(json, listType)
                 saveGameListInSharedPreferences(gameList)
                 setGameAdapter(gameList)
             }
@@ -113,7 +118,7 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 val json = data!!.getStringExtra("resultGame")
                 val listType = object : TypeToken<Game>() {}.type
-                gameList.add(Gson().fromJson<Game>(json, listType))
+                gameList.add(Gson().fromJson(json, listType))
                 setGameAdapter(gameList)
             }
         }

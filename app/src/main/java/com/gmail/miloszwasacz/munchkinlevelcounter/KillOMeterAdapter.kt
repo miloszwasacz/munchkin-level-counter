@@ -40,10 +40,7 @@ class KillOMeterAdapter
                     monsterLinearLayout.findViewById<View>(R.id.textViewLevel) as TextView,
                     monsterLinearLayout.findViewById<View>(R.id.imageViewAddBonus) as ImageView,
                     monsterLinearLayout.findViewById<View>(R.id.imageViewDelete) as ImageView)
-            else -> BonusViewHolder(bonusLinearLayout,
-                    bonusLinearLayout.findViewById<View>(R.id.textViewName) as TextView,
-                    bonusLinearLayout.findViewById<View>(R.id.textViewValue) as TextView,
-                    bonusLinearLayout.findViewById<View>(R.id.imageViewDelete) as ImageView)
+            else -> BonusViewHolder(bonusLinearLayout, bonusLinearLayout.findViewById<View>(R.id.textViewValue) as TextView, bonusLinearLayout.findViewById<View>(R.id.imageViewDelete) as ImageView)
         }
     }
 
@@ -103,7 +100,7 @@ class KillOMeterAdapter
                     holder.imageViewRemove.isEnabled = false
             }
             TYPE_MONSTER -> {
-                val monsterViewHolder = holder as MonsterViewHolder
+                holder as MonsterViewHolder
                 val item: Monster = fieldList[holder.adapterPosition] as Monster
                 holder.textViewFieldName.text = item.name
                 holder.textViewLevel.text = item.value.toString()
@@ -121,7 +118,7 @@ class KillOMeterAdapter
                 }
             }
             else -> {
-                val bonusViewHolder = holder as BonusViewHolder
+                holder as BonusViewHolder
                 holder.textViewValue.text = fieldList[holder.adapterPosition].value.toString()
 
                 holder.imageViewDelete.setOnClickListener {
@@ -146,13 +143,13 @@ class KillOMeterAdapter
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     class PlayerViewHolder(// each data item is just a string in this case
-            var linearLayout: LinearLayout, var textViewFieldName: TextView, var imageViewRemove: ImageView, var textViewLevel: TextView, var imageViewAdd: ImageView, var imageViewAddBonus: ImageView, var imageViewDelete: ImageView) : RecyclerView.ViewHolder(linearLayout)
+            linearLayout: LinearLayout, var textViewFieldName: TextView, var imageViewRemove: ImageView, var textViewLevel: TextView, var imageViewAdd: ImageView, var imageViewAddBonus: ImageView, var imageViewDelete: ImageView) : RecyclerView.ViewHolder(linearLayout)
 
     class MonsterViewHolder(// each data item is just a string in this case
-            var linearLayout: LinearLayout, var textViewFieldName: TextView, var textViewLevel: TextView, var imageViewAddBonus: ImageView, var imageViewDelete: ImageView) : RecyclerView.ViewHolder(linearLayout)
+            linearLayout: LinearLayout, var textViewFieldName: TextView, var textViewLevel: TextView, var imageViewAddBonus: ImageView, var imageViewDelete: ImageView) : RecyclerView.ViewHolder(linearLayout)
 
     class BonusViewHolder(// each data item is just a string in this case
-            var linearLayout: LinearLayout, var textViewFieldName: TextView, var textViewValue: TextView, var imageViewDelete: ImageView) : RecyclerView.ViewHolder(linearLayout)
+            linearLayout: LinearLayout, var textViewValue: TextView, var imageViewDelete: ImageView) : RecyclerView.ViewHolder(linearLayout)
 
     interface OnItemClickListener {
         fun onAddClick(position: Int)

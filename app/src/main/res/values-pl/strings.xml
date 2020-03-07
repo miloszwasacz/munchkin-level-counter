@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Munchkin Level Counter</string>
+    <string name="activity_title_game_list">Lista Gier</string>
+    <string name="activity_title_settings">Ustawienia</string>
+    <string name="activity_title_new_game">Nowa Gra</string>
+    <string name="title_confirm">Potwierdź</string>
+    <string name="title_monsters">Potwory</string>
+    <string name="title_players">Gracze</string>
+    <string name="button_add">Dodaj</string>
+    <string name="button_delete">Usuń</string>
+    <string name="button_cancel">Anuluj</string>
+    <string name="dialog_delete_game">Usunąć grę?</string>
+    <string name="dialog_add_new_player">Dodaj nowego gracza</string>
+    <string name="dialog_edit_player">Edytuj gracza</string>
+    <string name="dialog_choose_player">Wybierz gracza</string>
+    <string name="dialog_add_new_monster">Dodaj potwora</string>
+    <string name="dialog_add_new_bonus">Dodaj bonus</string>
+    <string name="game">Gra</string>
+    <string name="player">Gracz</string>
+    <string name="monster">Potwór</string>
+    <string name="hint_level">Poziom</string>
+    <string name="bonus">Bonus</string>
+    <string name="label_name">Nazwa</string>
+    <string name="label_level_cap">Limit poziomów</string>
+    <string name="label_epic_rules">Zasady Epickie</string>
+    <string name="label_dungeon_rules">Loch Zwięszonego Wysiłku</string>
+    <string name="content_description_open_settings">Otwórz ustawienia</string>
+    <string name="content_description_delete">Usuń element</string>
+    <string name="content_description_add_bonus">Dodaj bonus</string>
+    <string name="hint_name">Nazwa</string>
+    <string name="content_description_change_level">Zmień poziom</string>
+    <string name="content_description_edit">Edytuj</string>
+</resources>
