@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class GameAdapter
-(var gameList: ArrayList<Game>) : RecyclerView.Adapter<GameAdapter.MyViewHolder>() {
+(private var gameList: ArrayList<Game>) : RecyclerView.Adapter<GameAdapter.MyViewHolder>() {
     private var listener: OnItemClickListener? = null
 
     // Create new views (invoked by the layout manager)

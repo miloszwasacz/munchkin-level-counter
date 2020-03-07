@@ -14,10 +14,10 @@ class PlayerAdapter// Provide a suitable constructor (depends on the kind of dat
 (var game: Game) : RecyclerView.Adapter<PlayerAdapter.MyViewHolder>() {
     private var listener: OnItemClickListener? = null
     private val playerListType = object : TypeToken<ArrayList<Player>>() {}.type
-    var playerList: ArrayList<Player> = Gson().fromJson<ArrayList<Player>>(game.content, playerListType)
+    private var playerList: ArrayList<Player> = Gson().fromJson(game.content, playerListType)
 
     // Create new views (invoked by the layout manager)
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerAdapter.MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         // create a new view
         val linearLayout = LayoutInflater.from(parent.context)
                 .inflate(R.layout.player_item, parent, false) as LinearLayout
@@ -33,7 +33,7 @@ class PlayerAdapter// Provide a suitable constructor (depends on the kind of dat
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        playerList = Gson().fromJson<ArrayList<Player>>(game.content, playerListType)
+        playerList = Gson().fromJson(game.content, playerListType)
         val level = playerList[holder.adapterPosition].value
 
         holder.textViewPlayerName.setOnClickListener {

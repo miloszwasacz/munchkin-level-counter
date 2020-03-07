@@ -1,5 +1,6 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -22,6 +23,7 @@ class GameActivity : AppCompatActivity() {
     internal lateinit var adapter: PlayerAdapter
     private var sharedPrefsName = "com.gmail.miloszwasacz.munchkinlevelcounter.prefs"
 
+    @SuppressLint("InflateParams", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -31,12 +33,12 @@ class GameActivity : AppCompatActivity() {
         gameIndex = intent.getIntExtra("EXTRA_POSITION", 0)
         val json  = intent.getStringExtra("EXTRA_GAME")
         val gameType = object : TypeToken<Game>() {}.type
-        game = Gson().fromJson<Game>(json, gameType)
+        game = Gson().fromJson(json, gameType)
 
         //Przywracanie stanu poprzedniego listy graczy
         if(savedInstanceState != null){
             val jsonGame = savedInstanceState.getString("Gra")
-            game = Gson().fromJson<Game>(jsonGame, gameType)
+            game = Gson().fromJson(jsonGame, gameType)
 
             gameIndex = savedInstanceState.getInt("Index")
         }
@@ -51,22 +53,22 @@ class GameActivity : AppCompatActivity() {
         floatingActionButton.setOnClickListener {
             val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
             val editTextName = frameLayout.findViewById<EditText>(R.id.editText)
-            editTextName.hint = "Nazwa gracza"
+            editTextName.hint = resources.getString(R.string.hint_name)
 
             val dialog: AlertDialog = AlertDialog.Builder(this@GameActivity)
-                    .setTitle("Dodaj nowego gracza")
-                    .setPositiveButton("Dodaj") { dialog, which ->
+                    .setTitle(resources.getString(R.string.dialog_add_new_player))
+                    .setPositiveButton(resources.getString(R.string.button_add)) { dialog, which ->
                         val list = extractPlayerListFromGame(game)
 
                         editTextName.setText(editTextName.text.toString().trim())
                         if (editTextName.text.toString() == "")
-                            editTextName.setText("Gracz " + (list.size + 1))
+                            editTextName.setText("${resources.getString(R.string.player)} ${(list.size + 1)}")
 
                         list.add(Player(editTextName.text.toString(), game.minLevel))
                         insertPlayerListIntoGame(list, game)
                         setPlayerAdapter(game)
                     }
-                    .setNegativeButton("Anuluj", null)
+                    .setNegativeButton(resources.getString(R.string.button_cancel), null)
                     .setView(frameLayout)
                     .create()
             dialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
@@ -93,6 +95,7 @@ class GameActivity : AppCompatActivity() {
         //Obsługa kontrolek
         adapter.setOnItemClickListener(object : PlayerAdapter.OnItemClickListener {
             //Edycja poszczególnego gracza
+            @SuppressLint("InflateParams")
             override fun onEditClick(position: Int) {
                 try {
                     val frameLayout = layoutInflater.inflate(R.layout.player_dialog, null, false) as FrameLayout
@@ -100,14 +103,15 @@ class GameActivity : AppCompatActivity() {
                     editTextName.setText(list[position].name)
 
                     val dialog: AlertDialog = AlertDialog.Builder(this@GameActivity)
-                            .setTitle("Edytuj gracza")
-                            .setPositiveButton("Ok") { dialog, which ->
+                            .setTitle(resources.getString(R.string.dialog_edit_player))
+                            .setPositiveButton(resources.getString(android.R.string.ok)) { dialog, which ->
                                 if(editTextName.text.toString() != "")
                                     list[position].name = editTextName.text.toString()
                                 insertPlayerListIntoGame(list, game)
                                 adapter.notifyItemChanged(position)
                             }
-                            .setNegativeButton("Anuluj", null).setNeutralButton("Usuń") { dialog, which ->
+                            .setNegativeButton(resources.getString(R.string.button_cancel), null)
+                            .setNeutralButton(resources.getString(R.string.button_delete)) { dialog, which ->
                                 list.removeAt(position)
                                 insertPlayerListIntoGame(list, game)
                                 setPlayerAdapter(game)
@@ -167,7 +171,7 @@ class GameActivity : AppCompatActivity() {
         if (requestCode == 4) {
             val json = data!!.getStringExtra("resultGame")
             val listType = object : TypeToken<Game>() {}.type
-            game = Gson().fromJson<Game>(json, listType)
+            game = Gson().fromJson(json, listType)
             if (resultCode == Activity.RESULT_OK)
                 setPlayerAdapter(game)
         }
@@ -184,11 +188,11 @@ class GameActivity : AppCompatActivity() {
     fun extractPlayerListFromGame(game: Game): ArrayList<Player> {
         val json = game.content
         val listType = object : TypeToken<ArrayList<Player>>() {}.type
-        return Gson().fromJson<ArrayList<Player>>(json, listType)
+        return Gson().fromJson(json, listType)
     }
 
     //Zapisywanie listy gier do SharedPreferences
-    fun saveGameListInSharedPreferences(gameList: ArrayList<Game>) {
+    private fun saveGameListInSharedPreferences(gameList: ArrayList<Game>) {
         val jsonGame = Gson().toJson(gameList)
         val editor = getSharedPreferences(sharedPrefsName, Context.MODE_PRIVATE).edit()
         editor.putString("ListaGierPrefs", jsonGame)
@@ -196,7 +200,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     //Wczytanie listy gier z SharedPreferences
-    fun getGameListFromSharedPreferences(): ArrayList<Game>? {
+    private fun getGameListFromSharedPreferences(): ArrayList<Game>? {
         val prefs = getSharedPreferences(sharedPrefsName, Context.MODE_PRIVATE)
         val listaGier: String? = prefs.getString("ListaGierPrefs", null)
         val listType = object : TypeToken<ArrayList<Game>>() {}.type

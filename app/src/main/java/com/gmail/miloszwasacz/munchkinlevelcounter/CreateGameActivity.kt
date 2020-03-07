@@ -1,5 +1,6 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -27,7 +28,7 @@ class CreateGameActivity : AppCompatActivity() {
         minLevel = resources.getInteger(R.integer.min_level)
         gameListSize = intent.getIntExtra("EXTRA_SIZE", 0)
         setSupportActionBar(toolbar)
-        supportActionBar!!.title = "Nowa Gra"
+        supportActionBar!!.title = resources.getString(R.string.activity_title_new_game)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         //Zaktualizuj pozycje switch'y
@@ -52,32 +53,33 @@ class CreateGameActivity : AppCompatActivity() {
 
         //Ustaw maksymalny poziom gracza
         switchGamemode.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+            maxLevel = if (isChecked) {
                 if (switchDungeon.isChecked)
-                    maxLevel = resources.getInteger(R.integer.epic_dungeon_rules)
+                    resources.getInteger(R.integer.epic_dungeon_rules)
                 else
-                    maxLevel = resources.getInteger(R.integer.epic_rules)
+                    resources.getInteger(R.integer.epic_rules)
             }
             else {
                 if (switchDungeon.isChecked)
-                    maxLevel = resources.getInteger(R.integer.dungeon_rules)
+                    resources.getInteger(R.integer.dungeon_rules)
                 else
-                    maxLevel = resources.getInteger(R.integer.default_rules)
+                    resources.getInteger(R.integer.default_rules)
             }
         }
 
         //Ustaw maksymalny poziom gracza
         switchDungeon.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+            maxLevel = if (isChecked) {
                 if (switchGamemode.isChecked)
-                    maxLevel = resources.getInteger(R.integer.epic_dungeon_rules)
+                    resources.getInteger(R.integer.epic_dungeon_rules)
                 else
-                    maxLevel = resources.getInteger(R.integer.dungeon_rules)
-            } else {
+                    resources.getInteger(R.integer.dungeon_rules)
+            }
+            else {
                 if (switchGamemode.isChecked)
-                    maxLevel = resources.getInteger(R.integer.epic_rules)
+                    resources.getInteger(R.integer.epic_rules)
                 else
-                    maxLevel = resources.getInteger(R.integer.default_rules)
+                    resources.getInteger(R.integer.default_rules)
             }
         }
     }
@@ -85,9 +87,9 @@ class CreateGameActivity : AppCompatActivity() {
     //Tworzenie domyślnej listy graczy
     fun createDefaultPlayerList(): String {
         val playerList = ArrayList<Player>()
-        playerList.add(Player("Gracz 1", resources.getInteger(R.integer.min_level)))
-        playerList.add(Player("Gracz 2", resources.getInteger(R.integer.min_level)))
-        playerList.add(Player("Gracz 3", resources.getInteger(R.integer.min_level)))
+        playerList.add(Player("${resources.getString(R.string.player)} 1", resources.getInteger(R.integer.min_level)))
+        playerList.add(Player("${resources.getString(R.string.player)} 2", resources.getInteger(R.integer.min_level)))
+        playerList.add(Player("${resources.getString(R.string.player)} 3", resources.getInteger(R.integer.min_level)))
         return Gson().toJson(playerList)
     }
 
@@ -117,10 +119,11 @@ class CreateGameActivity : AppCompatActivity() {
     }
 
     //Wyjście z Activity
-    fun onBackPressed(result: Int) {
+    @SuppressLint("SetTextI18n")
+    private fun onBackPressed(result: Int) {
         editTextName.setText(editTextName.text.trim())
         if (editTextName.text.toString() == "")
-            editTextName.setText("Gra " + (gameListSize + 1))
+            editTextName.setText("${resources.getString(R.string.game)} ${(gameListSize + 1)}")
         name = editTextName.text.toString()
         val returnIntent = Intent()
         returnIntent.putExtra("resultGame", Gson().toJson(Game(name, createDefaultPlayerList(), maxLevel, minLevel)))

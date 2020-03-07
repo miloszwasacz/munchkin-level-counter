@@ -31,52 +31,59 @@ class SettingsActivity : AppCompatActivity() {
         position = intent.getIntExtra("EXTRA_POSITION", 0)
 
         setSupportActionBar(toolbar)
-        supportActionBar!!.title = "Ustawienia - $name"
+        supportActionBar!!.title = "${resources.getString(R.string.activity_title_settings)} - $name"
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         editTextName.setText(name)
 
         //Zaktualizuj pozycje switch'y
-        if (maxLevel == resources.getInteger(R.integer.default_rules)) {
-            switchGamemode.isChecked = false
-            switchDungeon.isChecked = false
-        } else if (maxLevel == resources.getInteger(R.integer.dungeon_rules)) {
-            switchGamemode.isChecked = false
-            switchDungeon.isChecked = true
-        } else if (maxLevel == resources.getInteger(R.integer.epic_rules)) {
-            switchGamemode.isChecked = true
-            switchDungeon.isChecked = false
-        } else if (maxLevel == resources.getInteger(R.integer.epic_dungeon_rules)) {
-            switchGamemode.isChecked = true
-            switchDungeon.isChecked = true
+        when(maxLevel) {
+            resources.getInteger(R.integer.default_rules) -> {
+                switchGamemode.isChecked = false
+                switchDungeon.isChecked = false
+            }
+            resources.getInteger(R.integer.dungeon_rules) -> {
+                switchGamemode.isChecked = false
+                switchDungeon.isChecked = true
+            }
+            resources.getInteger(R.integer.epic_rules) -> {
+                switchGamemode.isChecked = true
+                switchDungeon.isChecked = false
+            }
+            resources.getInteger(R.integer.epic_dungeon_rules) -> {
+                switchGamemode.isChecked = true
+                switchDungeon.isChecked = true
+            }
         }
 
         //Ustaw maksymalny poziom gracza
         switchGamemode.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+            maxLevel = if (isChecked) {
                 if (switchDungeon.isChecked)
-                    maxLevel = resources.getInteger(R.integer.epic_dungeon_rules)
+                    resources.getInteger(R.integer.epic_dungeon_rules)
                 else
-                    maxLevel = resources.getInteger(R.integer.epic_rules)
-            } else {
+                    resources.getInteger(R.integer.epic_rules)
+            }
+            else {
                 if (switchDungeon.isChecked)
-                    maxLevel = resources.getInteger(R.integer.dungeon_rules)
+                    resources.getInteger(R.integer.dungeon_rules)
                 else
-                    maxLevel = resources.getInteger(R.integer.default_rules)
+                    resources.getInteger(R.integer.default_rules)
             }
         }
 
         //Ustaw maksymalny poziom gracza
         switchDungeon.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+            maxLevel = if (isChecked) {
                 if (switchGamemode.isChecked)
-                    maxLevel = resources.getInteger(R.integer.epic_dungeon_rules)
+                    resources.getInteger(R.integer.epic_dungeon_rules)
                 else
-                    maxLevel = resources.getInteger(R.integer.dungeon_rules)
-            } else {
+                    resources.getInteger(R.integer.dungeon_rules)
+            }
+            else {
                 if (switchGamemode.isChecked)
-                    maxLevel = resources.getInteger(R.integer.epic_rules)
+                    resources.getInteger(R.integer.epic_rules)
                 else
-                    maxLevel = resources.getInteger(R.integer.default_rules)
+                    resources.getInteger(R.integer.default_rules)
             }
         }
     }

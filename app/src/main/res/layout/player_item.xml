@@ -24,7 +24,8 @@
         android:layout_height="56dp"
         android:scaleType="center"
         android:layout_gravity="center_vertical"
-        app:srcCompat="@drawable/ic_remove_24dp" />
+        app:srcCompat="@drawable/ic_remove_24dp"
+        android:contentDescription="@string/content_description_change_level" />
 
     <TextView
         android:id="@+id/textViewLevel"
@@ -43,7 +44,8 @@
         android:layout_height="56dp"
         android:scaleType="center"
         android:layout_gravity="center_vertical"
-        app:srcCompat="@drawable/ic_add_24dp" />
+        app:srcCompat="@drawable/ic_add_24dp"
+        android:contentDescription="@string/content_description_change_level" />
 
     <ImageView
         android:id="@+id/imageViewEdit"
@@ -51,6 +53,7 @@
         android:layout_height="56dp"
         android:scaleType="center"
         android:layout_gravity="center_vertical"
-        app:srcCompat="@drawable/ic_edit_24dp" />
+        app:srcCompat="@drawable/ic_edit_24dp"
+        android:contentDescription="@string/content_description_edit" />
 
 </LinearLayout>
