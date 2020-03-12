@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -15,7 +14,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_kill_o_meter.*
@@ -92,16 +92,24 @@ class KillOMeterActivity : AppCompatActivity() {
         //Ustawianie adapterów dla pagera
         val playerRecyclerView = layoutInflater.inflate(R.layout.player_kill_o_meter, pager, false) as RecyclerView
         val monsterRecyclerView = layoutInflater.inflate(R.layout.monster_kill_o_meter, pager, false) as RecyclerView
-        val viewList = ArrayList<View>()
+        val viewList = ArrayList<RecyclerView>()
         viewList.add(playerRecyclerView)
         viewList.add(monsterRecyclerView)
 
         titleList.add("${resources.getString(R.string.title_players)}: ${updateSumarry(playerFieldList)}")
         titleList.add("${resources.getString(R.string.title_monsters)}: ${updateSumarry(monsterFieldList)}")
 
-        pagerAdapter = KillOMeterPagerAdapter(viewList, titleList)
+        //pagerAdapter = KillOMeterPagerAdapter(viewList, titleList)
+        pagerAdapter = KillOMeterPagerAdapter(viewList)
         pager.adapter = pagerAdapter
-        tabLayout.setupWithViewPager(pager)
+        //tabLayout.setupWithViewPager(pager)
+        TabLayoutMediator(tabLayout, pager) { tab, position ->
+            tab.text = when (position) {
+                0 -> titleList[0]
+                else -> titleList[1]
+            }
+        }.attach()
+
 
         //Ustawianie adapterów dla recyclerView
         setPlayerAdapter(playerFieldList, playerRecyclerView, game)
@@ -110,7 +118,7 @@ class KillOMeterActivity : AppCompatActivity() {
         //Dodawanie nowych graczy/potworów
         floatingActionButton.setOnClickListener {
             //Dodawanie nowych graczy
-            if(pager.focusedChild == viewList[0]) {
+            if(pager.currentItem == 0/*viewList[0]*/) {
                 //Tworzenie listy graczy jeszcze nie dodanych
                 val tempPlayers = ArrayList<Player>()
                 for(player in playerList) {
@@ -184,7 +192,32 @@ class KillOMeterActivity : AppCompatActivity() {
         }
 
         //Ukrywanie FABa
-        pager.addOnPageChangeListener(object: OnPageChangeListener {
+        val pageChangeCallback: OnPageChangeCallback = object: OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                if(position == 0) {
+                    pager.currentItem = 0
+                    val tempPlayers = ArrayList<Player>()
+                    for(player in playerList) {
+                        tempPlayers.add(player)
+                    }
+                    for(element in playerFieldList) {
+                        if(element is Player)
+                            tempPlayers.remove(element)
+                    }
+                    if(tempPlayers.isEmpty())
+                        floatingActionButton.hide()
+                    else
+                        floatingActionButton.show()
+                }
+                else {
+                    pager.currentItem = 1
+                    floatingActionButton.show()
+                }
+            }
+        }
+        pager.registerOnPageChangeCallback(pageChangeCallback)
+        /*pager.onPa(object: OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
             override fun onPageSelected(position: Int) {
                 if(position == 0) {
@@ -206,7 +239,7 @@ class KillOMeterActivity : AppCompatActivity() {
                 }
             }
             override fun onPageScrollStateChanged(state: Int) {}
-        })
+        })*/
     }
 
     //PlayerAdapter

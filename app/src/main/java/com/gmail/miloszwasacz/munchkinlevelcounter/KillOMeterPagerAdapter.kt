@@ -1,11 +1,12 @@
 package com.gmail.miloszwasacz.munchkinlevelcounter
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.viewpager.widget.PagerAdapter
+import androidx.recyclerview.widget.RecyclerView
 
 
-class KillOMeterPagerAdapter(private val viewList: ArrayList<View>, private val titleList: ArrayList<String>): PagerAdapter() {
+/*class KillOMeterPagerAdapter(private val viewList: ArrayList<View>, private val titleList: ArrayList<String>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun instantiateItem(collection: ViewGroup, position: Int): Any {
         val layout = viewList[position]
@@ -13,7 +14,7 @@ class KillOMeterPagerAdapter(private val viewList: ArrayList<View>, private val 
         return layout
     }
 
-    override fun getCount(): Int {
+    override fun getItemCount(): Int {
         return viewList.size
     }
 
@@ -25,6 +26,38 @@ class KillOMeterPagerAdapter(private val viewList: ArrayList<View>, private val 
         return titleList[position]
     }
 
+}*/
+class KillOMeterPagerAdapter(private val layouts: ArrayList<RecyclerView>): RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
+
+    private var TYPE_PLAYER = 0
+    private var TYPE_MONSTER = 1
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        /*val playerRecyclerView = LayoutInflater.from(parent.context)
+                .inflate(R.layout.player_kill_o_meter, parent, false) as RecyclerView
+        val monsterRecyclerView = LayoutInflater.from(parent.context)
+                .inflate(R.layout.monster_kill_o_meter, parent, false) as RecyclerView
+        return when(viewType) {
+            TYPE_PLAYER -> PagerViewHolder(playerRecyclerView)
+            else -> PagerViewHolder(monsterRecyclerView)
+        }*/
+        return PagerViewHolder(layouts[viewType])
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {}
+
+    override fun getItemViewType(position: Int): Int {
+        return when(position) {
+            0 -> TYPE_PLAYER
+            else -> TYPE_MONSTER
+        }
+    }
+
+    override fun getItemCount(): Int {
+        return layouts.size
+    }
+
+    class PagerViewHolder(recyclerView: RecyclerView): RecyclerView.ViewHolder(recyclerView)
 }
 
     /*
