@@ -9,7 +9,8 @@ jobs:
   add-reviews:
     runs-on: ubuntu-latest
     steps:
-      - uses: kentaro-m/auto-assign-action@v1.1.0
+      - name: Auto Assign Action
+        uses: kentaro-m/auto-assign-action@v1.1.0
         if: github.event.action == 'opened'
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
